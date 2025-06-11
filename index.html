@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação: Manual Técnico SAC IRED com IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .slide-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            margin: 2rem auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            background-color: #ffffff;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 3rem 4rem;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+            transform: translateY(20px);
+            visibility: hidden;
+            background-color: #fff;
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+            z-index: 10;
+        }
+        .slide-title-bg {
+            background: linear-gradient(135deg, #991b1b, #dc2626, #f87171);
+            color: white;
+        }
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 { font-size: 4rem; font-weight: 900; text-shadow: 2px 2px 6px rgba(0,0,0,0.25); }
+        h2 { font-size: 3rem; font-weight: 900; color: #991b1b; margin-bottom: 2rem; }
+        h3 { font-size: 1.5rem; font-weight: 700; color: #b91c1c; margin-top: 1rem; margin-bottom: 0.5rem; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: flex-start; }
+        li svg {
+            width: 28px;
+            height: 28px;
+            margin-right: 14px;
+            flex-shrink: 0;
+            margin-top: 4px;
+            color: #ef4444;
+        }
+        .nav-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: -1rem;
+        }
+        .nav-button, .ai-button, .modal-button, .tech-assistant-button {
+            background-color: #b91c1c;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(185, 28, 28, 0.3);
+        }
+        .nav-button:hover, .ai-button:hover, .modal-button:hover, .tech-assistant-button:hover {
+            background-color: #991b1b;
+            transform: translateY(-2px);
+        }
+        .nav-button:disabled, .modal-button:disabled, .tech-assistant-button:disabled {
+            background-color: #fca5a5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .tech-assistant-button {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+            box-shadow: none;
+        }
+        .slide-counter {
+            font-size: 1rem;
+            color: #4b5563;
+            width: 80px;
+            text-align: center;
+        }
+        .logo-footer {
+            position: absolute;
+            bottom: 2rem;
+            right: 3rem;
+            width: 100px;
+            opacity: 0.9;
+        }
+        .logo-footer img {
+            width: 100%;
+            height: auto;
+        }
+        .title-logo {
+            margin-top: 2rem;
+            width: 200px;
+        }
+        .title-logo img {
+            width: 100%;
+        }
+        .card {
+            background-color: #fef2f2;
+            border-left: 5px solid #ef4444;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        .alert-box {
+            background-color: #fffbeb;
+            border: 2px solid #f59e0b;
+            color: #d97706;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        .alert-box svg {
+            width: 32px; height: 32px; margin-right: 12px; flex-shrink: 0;
+        }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 1.2rem; border: 1px solid #fee2e2; border-radius: 0.75rem; overflow: hidden; }
+        th, td { padding: 1.25rem; text-align: left; border-bottom: 1px solid #fee2e2; }
+        th { background-color: #fecaca; color: #991b1b; font-weight: 700; }
+        td { background-color: #fff1f2; }
+        tr:last-child td { border-bottom: none; }
+        .signal-good { color: #16a34a; font-weight: 700; }
+        .signal-bad { color: #b91c1c; font-weight: 700; }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        #ai-loader, #tech-assistant-loader { display: none; margin: 1rem 0; }
+        #ai-results, #tech-assistant-results { margin-top: 1.5rem; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb; }
+        .scrollable-content { max-height: 10rem; overflow-y: auto; padding-right: 0.5rem;}
+        .scrollable-content-large { max-height: 16rem; overflow-y: auto; padding-right: 0.5rem;}
+        .prose strong { color: #7f1d1d; }
+        .prose em { color: #991b1b; }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container">
+        <div class="slide active slide-title-bg text-center"><div class="slide-content justify-center items-center"><h1 class="mb-4">Manual Técnico Básico</h1><p class="text-3xl opacity-90">SAC IRED: Atendimento Nível 1</p><div class="title-logo"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div></div>
+        <div class="slide"><div class="slide-content justify-center"><h2 class="text-center">📌 Nosso Objetivo</h2><p class="text-2xl mb-10 text-gray-700 text-center max-w-5xl mx-auto">Capacitar nossa equipe para oferecer um suporte técnico de excelência, com agilidade e precisão.</p><div class="grid grid-cols-4 gap-8 w-full"><div class="flex flex-col items-center text-center"><div class="bg-red-100 rounded-full p-5 mb-4"><svg class="w-12 h-12 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg></div><h3 class="text-xl font-bold text-red-800">Diagnóstico Eficiente</h3><p class="text-lg text-gray-600 mt-1">Identificar a raiz dos problemas rapidamente.</p></div><div class="flex flex-col items-center text-center"><div class="bg-red-100 rounded-full p-5 mb-4"><svg class="w-12 h-12 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></div><h3 class="text-xl font-bold text-red-800">Resolução no N1</h3><p class="text-lg text-gray-600 mt-1">Solucionar demandas comuns no primeiro contato.</p></div><div class="flex flex-col items-center text-center"><div class="bg-red-100 rounded-full p-5 mb-4"><svg class="w-12 h-12 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg></div><h3 class="text-xl font-bold text-red-800">Encaminhamento Correto</h3><p class="text-lg text-gray-600 mt-1">Escalar para o N2 com informações precisas.</p></div><div class="flex flex-col items-center text-center"><div class="bg-red-100 rounded-full p-5 mb-4"><svg class="w-12 h-12 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4.5 4.5 0 0 1-6.364 0M14.828 14.828A4.5 4.5 0 0 0 16.5 10.5h-1.875a.375.375 0 0 1-.375-.375V8.25A4.5 4.5 0 0 0 14.828 14.828Z"/></svg></div><h3 class="text-xl font-bold text-red-800">Satisfação do Cliente</h3><p class="text-lg text-gray-600 mt-1">Aumentar a confiança através de um atendimento seguro.</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>O que vamos aprender hoje?</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8"><div class="card"><h3>🛠️ 1. Conceitos Fundamentais</h3><p class="text-lg text-gray-600">Conhecendo os equipamentos na casa do cliente.</p></div><div class="card"><h3>🧪 2. Diagnóstico de Conexão</h3><p class="text-lg text-gray-600">O primeiro passo obrigatório para todo atendimento.</p></div><div class="card"><h3>🐢 3. Diagnóstico de Lentidão</h3><p class="text-lg text-gray-600">Entendendo os verdadeiros gargalos de velocidade.</p></div><div class="card"><h3>📶 4. Diagnóstico de Wi-Fi</h3><p class="text-lg text-gray-600">Mapeando a cobertura de sinal e as interferências.</p></div><div class="card col-span-1 md:col-span-2"><h3>🔥 5. Checklist Rápido</h3><p class="text-lg text-gray-600">O passo a passo para um atendimento de sucesso.</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>🛠️ Conector da Fibra</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="A importância de não manusear o conector da fibra e a diferença entre os tipos (azul e verde).">✨ Assistente Técnico</button></div><div class="grid grid-cols-2 gap-8 flex-grow mt-4"><div class="flex flex-col justify-center space-y-6"><div><h3 class="text-2xl">O que é?</h3><p class="text-xl text-gray-600 mt-2">É a ponta final do cabo de fibra óptica, responsável por transmitir o sinal de luz para a ONU.</p></div><div><h3 class="text-2xl">Tipos e Padrões:</h3><p class="text-xl text-gray-600 mt-2">Existem dois tipos principais, identificados pela cor:</p><ul class="mt-4 text-lg space-y-2"><li class="items-center"><div class="w-5 h-5 rounded-full bg-green-500 border-2 border-gray-400 mr-3 flex-shrink-0"></div> <strong>Verde (APC):</strong> Nosso padrão principal. Possui um polimento angular para melhor performance.</li><li class="items-center"><div class="w-5 h-5 rounded-full bg-blue-500 border-2 border-gray-400 mr-3 flex-shrink-0"></div> <strong>Azul (UPC):</strong> Menos comum em nossa rede. Possui polimento reto.</li></ul></div></div><div class="flex flex-col justify-center"><div class="bg-yellow-50 border-4 border-yellow-400 rounded-2xl p-6 h-full flex flex-col justify-center"><div class="text-center"><svg class="w-20 h-20 text-yellow-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg></div><h3 class="text-2xl text-yellow-800 text-center font-extrabold mt-4">PONTO CRÍTICO!</h3><p class="text-xl text-yellow-900 text-center mt-2">A ponta do conector é **extremamente sensível** a poeira, gordura e arranhões. Um dano mínimo pode interromper o sinal completamente.</p><p class="text-2xl text-center mt-4 font-bold text-red-700 bg-white p-2 rounded">NUNCA instrua o cliente a desconectá-lo!</p></div></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>🛠️ ONU (Optical Network Unit)</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="A função da ONU e suas luzes (POWER, PON, LOS, LAN)">✨ Assistente Técnico</button></div><p class="text-xl mb-6">A "tradutora" do sinal: Recebe a LUZ da fibra e a converte para o sinal ELÉTRICO que o roteador entende.</p><h3 class="mb-4">Interpretando as Luzes:</h3><div class="grid grid-cols-2 gap-5 mt-4 text-lg"><div class="bg-red-50 p-5 rounded-lg"><p class="font-bold text-xl flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"/></svg>POWER</p><p class="ml-8"><strong>Acesa e estável:</strong> OK, equipamento ligado.</p></div><div class="bg-red-50 p-5 rounded-lg"><p class="font-bold text-xl flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m0-3-3-3m0 0-3 3m3-3v11.25"/></svg>PON</p><p class="ml-8"><strong>Acesa e estável:</strong> OK, sinal da fibra recebido. <em class="text-sm text-gray-600">(Piscando? Escalar N2).</em></p></div><div class="bg-red-50 p-5 rounded-lg"><p class="font-bold text-xl flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2 text-gray-500"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>LOS</p><p class="ml-8"><strong>Apagada:</strong> OK. <strong class="text-red-600">(Acesa/Piscando: Perda de sinal. Agendar O.S.).</strong></p></div><div class="bg-red-50 p-5 rounded-lg"><p class="font-bold text-xl flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2 text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>LAN</p><p class="ml-8"><strong>Piscando:</strong> OK, comunicando com o roteador.</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>🛠️ Cabo de Rede (RJ45)</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="A diferença entre cabos de rede CAT 5 e CAT 5e e como isso afeta a velocidade da internet do cliente.">✨ Assistente Técnico</button></div><p class="text-xl mb-6">A ponte entre os equipamentos que pode ser um gargalo de velocidade.</p><h3>Atenção às Categorias!</h3><table class="mt-4"><thead><tr><th>Categoria</th><th>Limite de Velocidade</th><th>Como Identificar</th></tr></thead><tbody><tr><td>CAT 5 (ou inferior)</td><td class="signal-bad">Limita a rede em 100 Mbps</td><td>Geralmente não há nada escrito no cabo.</td></tr><tr><td>CAT 5e (ou superior)</td><td class="signal-good">Não limita a rede (Suporta 1 Gbps+)</td><td>Procure pelo texto "CAT 5e" ou "CAT 6" no cabo.</td></tr></tbody></table><p class="mt-8 text-lg text-center font-semibold text-red-700">Essencial verificar em casos de lentidão em planos acima de 100 Mega!</p></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>🛠️ Roteador</h2><p class="text-xl mb-6">O cérebro e o distribuidor da rede do cliente.</p><div class="grid grid-cols-2 gap-8"><div class="card"><h3>Funções Principais</h3><ul class="space-y-4 mt-4"><li><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg><div><strong>Autenticação:</strong> Valida o login e senha (PPPoE) para liberar o acesso à internet.</div></li><li><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12.75 19.5v-.75a7.5 7.5 0 00-7.5-7.5h-.75"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5v-.75a10.5 10.5 0 00-10.5-10.5h-.75"/><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5v-.75a13.5 13.5 0 00-13.5-13.5h-.75"/></svg><div><strong>Distribuição:</strong> Cria as redes Wi-Fi e gerencia os dispositivos conectados via cabo.</div></li></ul></div><div class="card"><h3>Conexão e Luzes</h3><ul class="space-y-4 mt-4"><li><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h18"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3 21 7.5m0 0L16.5 12M21 7.5H3"/></svg><div><strong>Conexão Correta:</strong> Cabo da ONU (porta LAN) deve ser ligado na porta WAN (🌐) do roteador.</div></li><li><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg><div><strong>Luzes Essenciais:</strong> POWER, WAN (ou 🌐) e Wi-Fi (📶) devem estar acesas.</div></li></ul></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>🧪 Diagnóstico Básico: O Ponto de Partida</h2><p class="text-xl mt-4 mb-8 text-center text-gray-600">Esta análise inicial é o passo mais crucial do atendimento. O nosso objetivo é diferenciar um problema <strong>interno</strong> de um <strong>externo</strong>.</p><div class="grid grid-cols-2 gap-8 flex-grow"><div class="card bg-red-50 border-l-8 border-red-500 p-6"><div class="flex items-center mb-4"><svg class="w-12 h-12 text-red-600 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205 3 1m-3-1L6.75 3"/></svg><h3 class="text-2xl font-bold">Problema Interno</h3></div><p class="text-lg text-gray-700">A causa está dentro da casa do cliente.</p><ul class="list-disc pl-5 mt-4 text-lg space-y-1"><li>Configuração do roteador</li><li>Sinal Wi-Fi fraco</li><li>Cabo de rede defeituoso</li><li>Dispositivo do cliente (PC, TV, celular)</li></ul></div><div class="card bg-blue-50 border-l-8 border-blue-500 p-6"><div class="flex items-center mb-4"><svg class="w-12 h-12 text-blue-600 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-2.6-5.228 4.5 4.5 0 00-8.242 2.113A4.5 4.5 0 002.25 15z"/></svg><h3 class="text-2xl font-bold text-blue-800">Problema Externo</h3></div><p class="text-lg text-gray-700">A causa está na nossa infraestrutura de rede.</p><ul class="list-disc pl-5 mt-4 text-lg space-y-1"><li>Fibra óptica rompida na rua</li><li>Falha em equipamento no poste (CTO)</li><li>Falha massiva na região (PON)</li><li>Problemas na central</li></ul></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>Cenário A: Cliente DESCONECTADO</h2><div class="grid grid-cols-2 gap-8 mt-4 flex-grow"><div class="card bg-red-100 border-red-500 p-6 flex flex-col justify-center text-center"><h3 class="text-2xl font-bold text-red-800">Sintoma</h3><p class="text-xl text-gray-700 mt-4">O cliente consta como <strong class="text-red-900">offline</strong> em nosso sistema.</p></div><div class="flex flex-col space-y-2 justify-center"><div class="card p-3 flex items-center"><span class="text-3xl font-black text-red-300 mx-4">1</span><p class="text-gray-700"><strong>Verificar Falha Massiva ❗:</strong> Consulte o grupo de "Massivas". Se a PON ou caixa estiver listada, informe o cliente sobre a instabilidade e o prazo.</p></div><div class="card p-3 flex items-center"><span class="text-3xl font-black text-red-300 mx-4">2</span><p class="text-gray-700"><strong>Analisar Causa Individual:</strong> Confirme se a luz <strong>LOS</strong> está acesa. Verifique outros na mesma PON para confirmar se o problema é isolado.</p></div><div class="card p-3 flex items-center"><span class="text-3xl font-black text-red-300 mx-4">3</span><p class="text-gray-700"><strong>Decisão Final:</strong> Se for um caso único com sinal de LOS, o próximo passo é agendar uma Ordem de Serviço (O.S.).</p></div></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>Cenário B: Cliente CONECTADO</h2><div class="grid grid-cols-2 gap-8 mt-4 flex-grow"><div class="card bg-green-100 border-l-8 border-green-500 p-6 flex flex-col justify-center text-center"><h3 class="text-2xl font-bold text-green-800">Sintoma</h3><p class="text-xl text-gray-700 mt-4">O cliente está <strong class="text-green-900">online</strong>, mas relata quedas ou instabilidade.</p></div><div class="flex flex-col space-y-2 justify-center"><div class="card p-3 flex items-center"><span class="text-3xl font-black text-red-300 mx-4">1</span><p class="text-gray-700"><strong>Verificar Histórico:</strong> Analise o log de quedas do cliente. Existe um padrão de horário ou frequência?</p></div><div class="card p-3 flex items-center"><span class="text-3xl font-black text-red-300 mx-4">2</span><p class="text-gray-700"><strong>Analisar Alertas:</strong> Procure por alertas na ONU (olt cloud), como "Dying Gasp", que indicam perda de energia.</p></div><div class="card p-3 flex items-center"><span class="text-3xl font-black text-red-300 mx-4">3</span><p class="text-gray-700"><strong>Analisar Sinal:</strong> Verifique os níveis de sinal da fibra (dBm) para identificar se estão dentro do padrão aceitável.</p></div></div></div><p class="mt-4 text-lg font-bold text-center text-red-800">Uma boa análise do histórico evita visitas técnicas desnecessárias!</p></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>⚙️ Padrão de Sinal da Fibra (dBm)</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="O que é o sinal de fibra em dBm e por que um sinal de -28 é pior que -25.">✨ Assistente Técnico</button></div><p class="text-xl mb-6">Quanto mais perto de 0, melhor o sinal.</p><div class="grid grid-cols-2 gap-8"><div class="bg-gray-100 p-6 rounded-lg text-center"><h3 class="text-red-700">Sinal na ONU (RX ONU)</h3><div class="relative w-full h-4 bg-gray-200 rounded-full mt-4 overflow-hidden"><div class="absolute top-0 left-0 h-full bg-gradient-to-r from-green-400 to-red-500" style="width:100%"></div></div><div class="flex justify-between text-sm mt-2"><span>-14 (Ótimo)</span><span>-27 (Limite)</span></div><hr class="my-6 border-red-200"><p class="text-lg"><strong class="signal-good">Bom:</strong> -14 a -27 dBm</p><p class="text-lg mt-2"><strong class="signal-bad">Ruim:</strong> Abaixo de -27 dBm (Agendar O.S.)</p></div><div class="bg-gray-100 p-6 rounded-lg text-center"><h3 class="text-red-700">Sinal na OLT (RX OLT)</h3><div class="relative w-full h-4 bg-gray-200 rounded-full mt-4 overflow-hidden"><div class="absolute top-0 left-0 h-full bg-gradient-to-r from-green-400 to-red-500" style="width:100%"></div></div><div class="flex justify-between text-sm mt-2"><span>-15 (Ótimo)</span><span>-28 (Limite)</span></div><hr class="my-6 border-red-200"><p class="text-lg"><strong class="signal-good">Bom:</strong> -15 a -28 dBm</p><p class="text-lg mt-2"><strong class="signal-bad">Ruim:</strong> Abaixo de -28 dBm (Agendar O.S.)</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content text-center"><h2>🐢 Cliente Relata Lentidão</h2><p class="text-xl mb-8">Após o diagnóstico básico não mostrar falhas de conexão, vamos testar a velocidade.</p><div class="flex justify-center gap-8"><div class="bg-red-50 p-8 rounded-lg w-2/5"><h3 class="text-red-700">1. Peça para Testar</h3><a href="https://fast.com" target="_blank" class="block mt-4 text-4xl font-bold text-red-600 hover:text-red-800 transition-colors">fast.com</a><p class="text-2xl my-2">ou</p><a href="https://speedtest.net" target="_blank" class="block mt-2 text-4xl font-bold text-red-600 hover:text-red-800 transition-colors">speedtest.net</a></div><div class="bg-yellow-100 p-8 rounded-lg w-2/5 flex flex-col justify-center"><h3 class="text-yellow-700">2. ⚠️ Alerte o Cliente!</h3><p class="mt-4 text-xl">Antes do teste, explique que a velocidade total do plano só é garantida sob condições ideais, e que vamos investigar juntos os possíveis <strong>limitadores</strong>.</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>Por que o teste pode não bater a velocidade?</h2><div class="grid grid-cols-3 gap-8 mt-8 text-center"><div class="card p-6"><h3>1. Cabo de Rede</h3><p class="text-lg mt-4"><strong>CAT 5:</strong> <span class="signal-bad">Limita a conexão em 100 Mbps.</span></p><p class="text-lg mt-2"><strong>CAT 5e:</strong> <span class="signal-good">Não limita a velocidade.</span></p></div><div class="card p-6"><h3>2. Rede Wi-Fi</h3><p class="text-lg mt-4"><strong>2.4 GHz:</strong> <span class="signal-bad">Velocidade entre 20-100 Mbps.</span></p><p class="text-lg mt-2"><strong>5 GHz:</strong> <span class="signal-good">Velocidade entre 100-450 Mbps.</span></p></div><div class="card p-6"><h3>3. Equipamento do Cliente</h3><p class="text-lg mt-4">Um PC ou celular antigo pode ter placa de rede ou processador que não suportam a velocidade total do plano.</p></div></div><div class="alert-box mt-12"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75"/></svg><p>O teste de velocidade <strong>garantido</strong> só é válido em um <strong>computador compatível</strong> conectado via <strong>cabo de rede CAT 5e ou superior</strong>.</p></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>Estudo de Caso: "Lentidão" na TV</h2><div class="grid grid-cols-2 gap-8 mt-6"><div class="p-4 space-y-6"><div><h3 class="text-2xl">Relato do Cliente:</h3><p class="text-2xl italic text-gray-600 mt-2">"Minha internet está uma carroça! O YouTube na TV fica travando o tempo todo."</p></div><div><h3 class="text-2xl">Nossa Investigação:</h3><p class="text-xl mt-2">Teste de velocidade no celular, ao lado do roteador, bateu <strong class="text-green-600">300 Mbps</strong>.</p></div><div class="bg-red-50 p-4 rounded-lg"><h3 class="text-2xl text-red-800">Conclusão:</h3><p class="text-xl font-bold mt-2">O problema NÃO é a velocidade da internet, mas sim a conexão ou o desempenho da própria TV.</p></div></div><div class="bg-red-50 p-6 rounded-lg"><h3 class="text-center mb-4">Checklist para este caso:</h3><ul class="text-lg space-y-3"><li>A TV está conectada no cabo ou no Wi-Fi?</li><li>Se Wi-Fi, está na rede 2.4 ou 5GHz?</li><li>Qual a distância da TV para o roteador?</li><li>O aplicativo do YouTube na TV está atualizado?</li><li>A televisão possui um sistema operacional antigo ou lento?</li><li><strong>Teste Simples:</strong> Peça para o cliente retirar a TV da tomada, aguardar 20 segundos e conectar novamente.</li></ul></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>📶 "O Wi-Fi não pega no meu quarto!"</h2><h3 class="mt-8">Como diagnosticar a cobertura do sinal:</h3><ol class="list-decimal list-inside text-xl mt-4 space-y-6"><li class="card"><strong>Análise Remota:</strong> Pelo sistema, verifique o nível de sinal (em dBm) dos equipamentos que estão conectados ao Wi-Fi do cliente.</li><li class="card"><strong>Teste com o Cliente:</strong> Instrua-o a instalar o App <strong>WiFiMan</strong> (Ubiquiti) para medir a força do sinal nos diferentes cômodos.</li><li class="card"><strong>Entenda o Ambiente Físico:</strong> Questione sobre o número de paredes, lajes (andares), espelhos e outros obstáculos entre o roteador e o local com sinal ruim.</li></ol></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>Interpretando o Sinal Wi-Fi (dBm)</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="A diferença prática de qualidade de sinal Wi-Fi em dBm, por exemplo, o que o cliente sente com um sinal 'Regular' (-66 a -70) vs 'Ruim' (-71 a -80).">✨ Assistente Técnico</button></div><p class="text-2xl text-gray-600 mb-8">Lembre-se: quanto mais perto de 0, melhor a qualidade do sinal.</p><div class="grid grid-cols-2 gap-4"><div class="bg-green-100 p-4 rounded-lg"><strong>-30 a -50 dBm:</strong> <span class="font-bold bg-green-200 text-green-800 px-3 py-1 rounded-full text-base">EXCELENTE</span></div><div class="bg-lime-100 p-4 rounded-lg"><strong>-51 a -65 dBm:</strong> <span class="font-bold bg-lime-200 text-lime-800 px-3 py-1 rounded-full text-base">BOM</span></div><div class="bg-yellow-100 p-4 rounded-lg"><strong>-66 a -70 dBm:</strong> <span class="font-bold bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-base">REGULAR</span></div><div class="bg-orange-100 p-4 rounded-lg"><strong>-71 a -80 dBm:</strong> <span class="font-bold bg-orange-200 text-orange-800 px-3 py-1 rounded-full text-base">RUIM</span></div><div class="bg-red-100 p-4 rounded-lg col-span-2"><strong>Abaixo de -80 dBm:</strong> <span class="font-bold bg-red-200 text-red-800 px-3 py-1 rounded-full text-base">INVIÁVEL</span></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>📡 Inimigos do Wi-Fi: Barreiras Físicas</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="Como barreiras físicas como paredes, lajes e espelhos afetam o sinal de Wi-Fi.">✨ Assistente Técnico</button></div><p class="text-xl mb-6">Esses elementos absorvem, refletem ou enfraquecem o sinal, criando "zonas mortas" na cobertura.</p><div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center"><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">🧱</p><p class="mt-2 font-bold text-lg">Paredes e Lajes</p><p class="text-sm text-gray-600">Principalmente de concreto e tijolo.</p></div><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">🚪</p><p class="mt-2 font-bold text-lg">Portas e Vidros</p><p class="text-sm text-gray-600">Portas metálicas e janelas espelhadas são piores.</p></div><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">🖼️</p><p class="mt-2 font-bold text-lg">Espelhos</p><p class="text-sm text-gray-600">Refletem o sinal de Wi-Fi como um espelho reflete luz.</p></div><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">🐠</p><p class="mt-2 font-bold text-lg">Aquários</p><p class="text-sm text-gray-600">A água é uma grande barreira para as ondas de rádio.</p></div></div><h3 class="mt-8">Ambientes Críticos:</h3><p class="text-xl"><strong>Cozinha</strong> (azulejos, eletrodomésticos) e <strong>Banheiros</strong> (azulejos, canos) costumam ter o pior sinal da casa.</p></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="flex justify-between items-start"><h2>📡 Inimigos do Wi-Fi: Interferência Eletrônica</h2><button class="openTechAssistantBtn tech-assistant-button" data-topic="Como aparelhos eletrônicos, especialmente o micro-ondas, e redes de vizinhos causam interferência no sinal Wi-Fi de 2.4GHz.">✨ Assistente Técnico</button></div><p class="text-xl mb-6">Esses aparelhos "poluem" o ar com ondas de rádio na mesma frequência do Wi-Fi (especialmente a 2.4GHz), causando lentidão e quedas.</p><div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center"><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">🍳</p><p class="mt-2 font-bold text-lg">Micro-ondas</p><p class="text-sm text-gray-600">O maior vilão. Interfere muito quando está em uso.</p></div><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">📞</p><p class="mt-2 font-bold text-lg">Telefone sem Fio</p><p class="text-sm text-gray-600">Modelos mais antigos operam na mesma frequência.</p></div><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">👶</p><p class="mt-2 font-bold text-lg">Babás Eletrônicas</p><p class="text-sm text-gray-600">Causam interferência constante no canal que utilizam.</p></div><div class="bg-gray-100 p-4 rounded-lg"><p class="text-6xl">📶</p><p class="mt-2 font-bold text-lg">Wi-Fi de Vizinhos</p><p class="text-sm text-gray-600">Muitas redes próximas competem pelo mesmo espaço.</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><h2>📦 Política de Roteadores IRED</h2><div class="card p-6 text-center bg-red-100 border-red-500 mb-8"><h3 class="text-2xl font-bold text-red-800">Regra Geral</h3><p class="text-xl text-gray-700 mt-2">Trocas de roteador são realizadas, primariamente, mediante uma <strong>atualização de plano</strong>.</p></div><div class="grid grid-cols-3 gap-6 flex-grow"><div class="card items-center text-center p-4"><h3>Planos abaixo de 800 Mbps</h3><p class="mt-2">Roteadores GIGA padrão suprem a necessidade. Trocas são feitas apenas em caso de defeito ou como ferramenta de retenção.</p></div><div class="card items-center text-center p-4"><h3>Plano de 800 Mbps</h3><p class="mt-2">O roteador Huawei pode ser oferecido mediante solicitação do cliente para máxima performance.</p></div><div class="card items-center text-center p-4"><h3>Roteadores "Fast" (antigos)</h3><p class="mt-2">Devem ser <strong>SEMPRE</strong> trocados em qualquer mudança para um plano GIGA.</p></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide"><div class="slide-content"><div class="grid grid-cols-2 gap-8 h-full"><div class="flex flex-col"><h3 class="text-2xl">🔥 Fluxo do Atendimento</h3><div class="flex-grow flex flex-col space-y-3 mt-4"><div class="card p-3 flex-grow flex items-center"><span class="text-4xl font-black text-red-300 mx-4">1</span><p><strong>Abordagem Inicial:</strong> Siga o manual de atendimento com empatia, clareza e profissionalismo.</p></div><div class="card p-3 flex-grow flex items-center"><span class="text-4xl font-black text-red-300 mx-4">2</span><p><strong>Diagnóstico Básico:</strong> Verifique o status da conexão, o histórico de quedas e se há falha massiva na região.</p></div><div class="card p-3 flex-grow flex items-center"><span class="text-4xl font-black text-red-300 mx-4">3</span><p><strong>Diagnóstico Avançado:</strong> Com base na dificuldade, siga os passos para lentidão ou cobertura Wi-Fi.</p></div><div class="card p-3 flex-grow flex items-center"><span class="text-4xl font-black text-red-300 mx-4">4</span><p><strong>Solução:</strong> Ofereça a solução correta (ajuste, O.S., upgrade) com confiança e segurança técnica.</p></div></div></div><div class="card bg-red-50 border-l-8 border-red-700 p-6 flex flex-col"><h3 class="text-2xl">🔬 Prospecção Completa</h3><p class="mt-2 mb-4 text-lg">Entenda a dor real do cliente:</p><ul class="list-disc list-inside text-lg space-y-2 flex-grow"><li>Qual é a dificuldade exata?</li><li>Em qual equipamento é notada?</li><li>Como este equipamento está conectado?</li><li>É intermitente ou contínuo?</li><li>Ocorre em alguma aplicação específica?</li></ul><div class="mt-auto text-center"><button id="openAiModalBtn" class="ai-button">✨ Usar Diagnóstico Inteligente</button></div></div></div></div><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+        <div class="slide slide-title-bg text-center"><h2 class="text-white border-white">Perguntas?</h2><p class="text-6xl mt-12 font-black">Obrigado!</p><div class="logo-footer"><img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="IRED Logo" onerror="this.style.display='none'"></div></div>
+    </div>
+
+    <div class="nav-controls">
+        <button id="prevBtn" class="nav-button">Anterior</button>
+        <div id="slideCounter" class="slide-counter"></div>
+        <button id="nextBtn" class="nav-button">Próximo</button>
+    </div>
+
+    <!-- AI Diagnosis Modal -->
+    <div id="aiModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button id="closeAiModalBtn" class="modal-close-btn">&times;</button>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">✨ Diagnóstico Inteligente com Gemini</h2>
+            <label for="problemDescription" class="block text-gray-700 font-semibold mb-2">Descreva o problema relatado pelo cliente:</label>
+            <textarea id="problemDescription" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="Ex: 'Minha internet está caindo toda hora na TV quando tento assistir Netflix. No celular parece normal.'"></textarea>
+            <button id="analyzeBtn" class="modal-button mt-4 w-full">Analisar Problema</button>
+            <div id="ai-loader" class="text-center">
+                <svg class="animate-spin h-8 w-8 text-red-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="text-gray-600 mt-2">Analisando... Por favor, aguarde.</p>
+            </div>
+            <div id="ai-results" class="hidden">
+                <h3 class="font-bold text-lg text-gray-800">📋 Diagnóstico Sugerido:</h3>
+                <div id="diagnosis-output" class="prose mt-2 text-gray-700 p-3 bg-gray-50 rounded-lg scrollable-content"></div>
+                <h3 class="font-bold text-lg text-gray-800 mt-6">💬 Script de Atendimento Sugerido:</h3>
+                <div id="script-output" class="prose mt-2 text-gray-700 bg-red-50 p-3 rounded-md border border-red-200 scrollable-content"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tech Assistant Modal -->
+    <div id="techAssistantModal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button id="closeTechAssistantModalBtn" class="modal-close-btn">&times;</button>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">✨ Assistente Técnico</h2>
+            <div class="mb-4">
+                <h3 class="font-semibold text-gray-700">Tópico Técnico:</h3>
+                <p id="tech-topic-content" class="mt-1 p-3 bg-gray-100 rounded-md"></p>
+            </div>
+            <div class="flex gap-4">
+                 <button id="explainForMeBtn" class="modal-button flex-1">Explique para mim</button>
+                 <button id="explainForCustomerBtn" class="modal-button flex-1 bg-red-700 hover:bg-red-800">Gerar fala para o cliente</button>
+            </div>
+            <div id="tech-assistant-loader" class="text-center">
+                <svg class="animate-spin h-8 w-8 text-red-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="text-gray-600 mt-2">Gerando... Por favor, aguarde.</p>
+            </div>
+            <div id="tech-assistant-results" class="hidden">
+                <h3 id="tech-assistant-result-title" class="font-bold text-lg text-gray-800"></h3>
+                <div id="tech-assistant-output" class="prose mt-2 text-gray-700 bg-red-50 p-3 rounded-md border border-red-200 scrollable-content-large"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = Array.from(document.querySelectorAll('.slide'));
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slideCounter');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                if (slideCounter) {
+                    slideCounter.textContent = `${index + 1} / ${slides.length}`;
+                }
+                if (prevBtn) {
+                    prevBtn.disabled = index === 0;
+                }
+                if (nextBtn) {
+                    nextBtn.disabled = index === slides.length - 1;
+                }
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (currentSlide < slides.length - 1) {
+                        currentSlide++;
+                        showSlide(currentSlide);
+                    }
+                });
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        showSlide(currentSlide);
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName === 'TEXTAREA') return;
+                if (e.key === 'ArrowRight' && nextBtn && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && prevBtn && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(currentSlide);
+            
+            function parseSimpleMarkdown(text) {
+                if (!text) return '';
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                text = text.replace(/\n/g, '<br>');
+                return text;
+            }
+
+            // --- Gemini AI Modal Logic ---
+            const aiModal = document.getElementById('aiModal');
+            const openAiModalBtn = document.querySelector('#openAiModalBtn');
+            const closeAiModalBtn = document.getElementById('closeAiModalBtn');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const problemDescription = document.getElementById('problemDescription');
+            const aiLoader = document.getElementById('ai-loader');
+            const aiResults = document.getElementById('ai-results');
+            const diagnosisOutput = document.getElementById('diagnosis-output');
+            const scriptOutput = document.getElementById('script-output');
+
+            if(openAiModalBtn) {
+                openAiModalBtn.addEventListener('click', () => {
+                    if(aiModal) aiModal.classList.add('visible');
+                });
+            }
+
+            if (closeAiModalBtn) {
+                closeAiModalBtn.addEventListener('click', () => {
+                    if(aiModal) aiModal.classList.remove('visible');
+                });
+            }
+            
+            if (aiModal) {
+                aiModal.addEventListener('click', (e) => {
+                    if(e.target === aiModal) {
+                         aiModal.classList.remove('visible');
+                    }
+                });
+            }
+
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener('click', async () => {
+                    if (!problemDescription.value.trim()) {
+                        alert('Por favor, descreva o problema do cliente.');
+                        return;
+                    }
+                    aiLoader.style.display = 'block';
+                    aiResults.classList.add('hidden');
+                    analyzeBtn.disabled = true;
+                    try {
+                        const diagnosisPrompt = `Você é um assistente especialista para um atendente de suporte técnico de um provedor de internet chamado IRED. Sua tarefa é analisar a descrição do problema de um cliente e, com base no Manual Técnico da IRED, sugerir um checklist estruturado de passos de verificação. O manual cobre: 1. Diagnóstico de Conexão (status do sistema, falhas massivas, níveis de sinal), 2. Diagnóstico de Lentidão (testes de velocidade, categoria de cabo, bandas Wi-Fi), 3. Diagnóstico de Cobertura Wi-Fi (força do sinal, interferências). Com base no seguinte problema do cliente, forneça a causa provável e um checklist curto e priorizado do que o atendente deve investigar. Formate a resposta de forma clara, com tópicos e usando Markdown para negrito. Problema do cliente: "${problemDescription.value}"`;
+                        const diagnosis = await callGemini(diagnosisPrompt);
+                        diagnosisOutput.innerHTML = parseSimpleMarkdown(diagnosis);
+                        
+                        const scriptPrompt = `Com base no seguinte diagnóstico e problema do cliente, gere um script de atendimento curto, empático e claro para o atendente de suporte usar para iniciar a solução do problema. O tom deve ser profissional e prestativo. Use Markdown para negrito para destacar termos importantes. Diagnóstico: "${diagnosis}". Problema do cliente: "${problemDescription.value}"`;
+                        const script = await callGemini(scriptPrompt);
+                        scriptOutput.innerHTML = parseSimpleMarkdown(script);
+                        aiResults.classList.remove('hidden');
+                    } catch (error) {
+                        console.error('Error calling Gemini API:', error);
+                        diagnosisOutput.innerHTML = 'Ocorreu um erro ao analisar o problema. Por favor, tente novamente.';
+                        scriptOutput.innerHTML = '';
+                        aiResults.classList.remove('hidden');
+                    } finally {
+                        aiLoader.style.display = 'none';
+                        analyzeBtn.disabled = false;
+                    }
+                });
+            }
+            
+            // --- Tech Assistant Modal Logic ---
+            const techAssistantModal = document.getElementById('techAssistantModal');
+            const closeTechAssistantModalBtn = document.getElementById('closeTechAssistantModalBtn');
+            const techTopicContent = document.getElementById('tech-topic-content');
+            const explainForMeBtn = document.getElementById('explainForMeBtn');
+            const explainForCustomerBtn = document.getElementById('explainForCustomerBtn');
+            const techAssistantLoader = document.getElementById('tech-assistant-loader');
+            const techAssistantResults = document.getElementById('tech-assistant-results');
+            const techAssistantResultTitle = document.getElementById('tech-assistant-result-title');
+            const techAssistantOutput = document.getElementById('tech-assistant-output');
+
+            document.querySelectorAll('.openTechAssistantBtn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const topic = e.target.dataset.topic;
+                    if(techTopicContent) techTopicContent.textContent = topic;
+                    if(techAssistantResults) techAssistantResults.classList.add('hidden');
+                    if(techAssistantModal) techAssistantModal.classList.add('visible');
+                });
+            });
+
+            if (closeTechAssistantModalBtn) {
+                closeTechAssistantModalBtn.addEventListener('click', () => {
+                    if(techAssistantModal) techAssistantModal.classList.remove('visible');
+                });
+            }
+            
+            if (techAssistantModal) {
+                techAssistantModal.addEventListener('click', (e) => {
+                    if(e.target === techAssistantModal) {
+                         techAssistantModal.classList.remove('visible');
+                    }
+                });
+            }
+
+            if (explainForMeBtn) {
+                explainForMeBtn.addEventListener('click', async () => {
+                    const topic = techTopicContent.textContent;
+                    techAssistantResultTitle.textContent = "Explicação para o Atendente:";
+                    const prompt = `Como um instrutor sênior de suporte técnico, explique o seguinte tópico de forma simples e clara para um novo atendente. Use Markdown para destacar pontos-chave com negrito. Tópico: "${topic}"`;
+                    await generateTechExplanation(prompt);
+                });
+            }
+
+            if (explainForCustomerBtn) {
+                explainForCustomerBtn.addEventListener('click', async () => {
+                    const topic = techTopicContent.textContent;
+                    techAssistantResultTitle.textContent = "Sugestão de Fala para o Cliente:";
+                    const prompt = `Gere uma explicação curta, empática e muito fácil de entender para um cliente leigo sobre o seguinte tópico técnico. Evite jargões. Use Markdown para negrito para enfatizar termos importantes. Tópico: "${topic}"`;
+                    await generateTechExplanation(prompt);
+                });
+            }
+            
+            async function generateTechExplanation(prompt) {
+                techAssistantLoader.style.display = 'block';
+                techAssistantResults.classList.add('hidden');
+                explainForMeBtn.disabled = true;
+                explainForCustomerBtn.disabled = true;
+
+                try {
+                    const explanation = await callGemini(prompt);
+                    techAssistantOutput.innerHTML = parseSimpleMarkdown(explanation);
+                    techAssistantResults.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error calling Gemini API for tech explanation:', error);
+                    techAssistantOutput.innerHTML = 'Ocorreu um erro ao gerar a explicação. Tente novamente.';
+                    techAssistantResults.classList.remove('hidden');
+                } finally {
+                    techAssistantLoader.style.display = 'none';
+                    explainForMeBtn.disabled = false;
+                    explainForCustomerBtn.disabled = false;
+                }
+            }
+
+            async function callGemini(prompt) {
+                 const apiKey = "AIzaSyApuw2CqMI3AbNjr-SuL6cK7FanRLT95_o"; 
+                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                 const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                 const response = await fetch(apiUrl, {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify(payload)
+                 });
+                 if (!response.ok) { throw new Error(`API call failed with status: ${response.status}`); }
+                 const result = await response.json();
+                 if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                     return result.candidates[0].content.parts[0].text;
+                 } else {
+                    return "Não foi possível gerar uma resposta. A estrutura do retorno da API é inesperada.";
+                 }
+            }
+        });
+    </script>
+</body>
+</html>
