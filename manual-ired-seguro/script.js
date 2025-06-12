@@ -245,38 +245,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function callGeminiWithHistory(history) {
-        // Esta é a rota que seu servidor local ou a função Netlify usará.
-        const apiEndpoint = '/.netlify/functions/gemini.js'; 
-
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history: history })
-            });
-
-            if (!response.ok) {
-                const errorBody = await response.text();
-                throw new Error(`A chamada para a API falhou: ${response.status} - ${errorBody}`);
+                 const apiEndpoint = '/.netlify/functions/gemini';
+                 const response = await fetch(apiEndpoint, {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ history: history })
+                 });
+                 if (!response.ok) { 
+                     const errorText = await response.text();
+                     throw new Error(`API call failed: ${response.status} - ${errorText}`);
+                 }
+                 const result = await response.json();
+                 if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                     return result.candidates[0].content.parts[0].text;
+                 } else {
+                     console.error("Unexpected API response structure:", result);
+                     if (result.promptFeedback && result.promptFeedback.blockReason) {
+                         return `Não foi possível gerar uma resposta. Motivo: ${result.promptFeedback.blockReason}`;
+                     }
+                     return "Não foi possível gerar uma resposta. A estrutura do retorno da API é inesperada.";
+                 }
             }
-
-            const result = await response.json();
-
-            if (result.candidates && result.candidates.length > 0) {
-                return result.candidates[0].content.parts[0].text;
-            } else if (result.error) {
-                 throw new Error(`Erro da API do Gemini: ${result.error.message}`);
-            } else {
-                console.error("Estrutura de resposta inesperada:", result);
-                throw new Error("Não foi possível processar a resposta do servidor.");
-            }
-
-        } catch (error) {
-            console.error("Erro na função callGeminiWithHistory:", error);
-            // Retorna a mensagem de erro para ser exibida na UI
-            return `Erro de comunicação com o servidor. Verifique o console para mais detalhes. (${error.message})`;
-        }
-    }
 
     function parseSimpleMarkdown(text) {
         if (!text) return '';
