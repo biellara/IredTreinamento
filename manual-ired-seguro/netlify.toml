@@ -1,10 +1,14 @@
-# netlify.toml
-
 [build]
-  # Diretório a ser publicado (raiz, onde está o index.html)
-  publish = "." 
-  # Diretório onde as funções serverless estão localizadas
+  publish = "."
   functions = "netlify/functions"
+
+[functions]
+  external_node_modules = ["express", "serverless-http"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/gemini/:splat"
+  status = 200
 
 [[redirects]]
   from = "/*"
