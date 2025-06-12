@@ -745,15 +745,12 @@
             }
 
             async function callGeminiWithHistory(history) {
-                 // It is recommended to handle API keys more securely, e.g., through a backend proxy or environment variables.
-                 const apiKey = "AIzaSyApuw2CqMI3AbNjr-SuL6cK7FanRLT95_o"; 
-                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                 const payload = { contents: history };
-                 const response = await fetch(apiUrl, {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify(payload)
-                 });
+                // A URL agora aponta para a função do Netlify
+                const response = await fetch('/.netlify/functions/gemini', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ history: history })
+                });
                  if (!response.ok) { throw new Error(`API call failed with status: ${response.status}`); }
                  const result = await response.json();
                  
