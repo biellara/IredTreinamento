@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scriptOutput = document.getElementById('script-output');
     
     if (analyzeBtn) {
+        aiLoader.style.display = 'none'; // Garante que o loader comece escondido
         analyzeBtn.addEventListener('click', async () => {
             if (!problemDescription.value.trim()) { problemDescription.focus(); return; }
             aiLoader.style.display = 'block';
@@ -84,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'quedas-constantes-irritado': "Você é um cliente chamado João. Sua internet cai o tempo todo, várias vezes por hora, atrapalhando seu trabalho home office. Você está muito irritado e ameaça cancelar o plano.",
         'velocidade-baixa-cabo': "Você é uma cliente chamada Sandra. Você contratou um plano de 500 Mega, mas quando testa a velocidade no seu computador de mesa (conectado via cabo) nunca passa de 95 Mega. Você está desconfiada que está sendo enganada."
     };
+
+    if (simLoader) simLoader.style.display = 'none';
 
     function appendMessage(text, sender) {
         const bubble = document.createElement('div');
@@ -164,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (startSimBtn) startSimBtn.addEventListener('click', startSimulation);
     if (sendChatBtn) sendChatBtn.addEventListener('click', sendChatMessage);
-    if (chatInput) chatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendChatMessage(); });
+    if (chatInput) chatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !sendChatBtn.disabled) sendChatMessage(); });
     if (endSimBtn) endSimBtn.addEventListener('click', endSimulation);
     if (restartSimBtn) restartSimBtn.addEventListener('click', () => {
         simChatView.style.display = 'none';
@@ -181,6 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const copyReportBtn = document.getElementById('copyReportBtn');
     
     if (generateReportBtn) {
+        reportLoader.style.display = 'none'; // Garante que o loader comece escondido
         generateReportBtn.addEventListener('click', async () => {
             if (!reportSummary.value.trim()) { reportSummary.focus(); return; }
             reportLoader.style.display = 'block';
@@ -235,70 +239,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-     // --- Central API Call Function ---
+    // --- Central API Call Function ---
     async function callGemini(prompt) {
         return callGeminiWithHistory([{ role: "user", parts: [{ text: prompt }] }]);
     }
     
     async function callGeminiWithHistory(history) {
-         // Esta rota funciona tanto para o servidor local (server.js) quanto para o deploy no Netlify (com redirects).
-         const apiEndpoint = '/api/gemini';
-         try {
-             const response = await fetch(apiEndpoint, {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({ history: history })
-             });
-             if (!response.ok) { 
-                 const errorText = await response.text();
-                 throw new Error(`API call failed: ${response.status} - ${errorText}`);
-             }
-             const result = await response.json();
-             if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
-                 return result.candidates[0].content.parts[0].text;
-             } else {
-                 console.error("Unexpected API response structure:", result);
-                 if (result.promptFeedback && result.promptFeedback.blockReason) {
-                     return `Não foi possível gerar uma resposta. Motivo: ${result.promptFeedback.blockReason}`;
-                 }
-                 return "Não foi possível gerar uma resposta. A estrutura do retorno da API é inesperada.";
-             }
-         } catch (error) {
-            console.error("Fetch error:", error);
-            // Tenta a rota de função do Netlify como um fallback, útil para depuração
-            const fallbackEndpoint = '/.netlify/functions/gemini';
-            try {
-                const fallbackResponse = await fetch(fallbackEndpoint, {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ history: history })
-                 });
-                if (!fallbackResponse.ok) {
-                     throw new Error(`Fallback API call failed: ${fallbackResponse.status}`);
-                }
-                const fallbackResult = await fallbackResponse.json();
-                if (fallbackResult.candidates && fallbackResult.candidates.length > 0 && fallbackResult.candidates[0].content && fallbackResult.candidates[0].content.parts && fallbackResult.candidates[0].content.parts.length > 0) {
-                     return fallbackResult.candidates[0].content.parts[0].text;
-                }
-            } catch (fallbackError) {
-                console.error("Fallback fetch error:", fallbackError);
-                 return `Erro de comunicação com o servidor. Verifique o console. Detalhes: ${error.message}`;
+        // Esta é a rota que seu servidor local ou a função Netlify usará.
+        const apiEndpoint = '/api/gemini'; 
+
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ history: history })
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`A chamada para a API falhou: ${response.status} - ${errorBody}`);
             }
-         }
+
+            const result = await response.json();
+
+            if (result.candidates && result.candidates.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else if (result.error) {
+                 throw new Error(`Erro da API do Gemini: ${result.error.message}`);
+            } else {
+                console.error("Estrutura de resposta inesperada:", result);
+                throw new Error("Não foi possível processar a resposta do servidor.");
+            }
+
+        } catch (error) {
+            console.error("Erro na função callGeminiWithHistory:", error);
+            // Retorna a mensagem de erro para ser exibida na UI
+            return `Erro de comunicação com o servidor. Verifique o console para mais detalhes. (${error.message})`;
+        }
     }
 
     function parseSimpleMarkdown(text) {
         if (!text) return '';
-        let newText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        let newText = text;
+        // Converte **negrito** para <strong>
+        newText = newText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Converte *itálico* para <em>
         newText = newText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        // Converte quebras de linha para <br>
         newText = newText.replace(/\n/g, '<br>');
-        
-        // Converte listas numeradas de forma mais robusta
-        if (newText.match(/^\d\./m)) {
-            newText = newText.replace(/(\d+\..*?)(?=\n\d+\.|$)/gs, '<li>$1</li>');
-            newText = '<ol class="list-decimal pl-5">' + newText.replace(/<br>/g, '') + '</ol>';
-        }
-
         return newText;
     }
 });
