@@ -1,5 +1,12 @@
 # netlify.toml
 
 [build]
+  # Diretório a ser publicado (raiz, onde está o index.html)
+  publish = "." 
   # Diretório onde as funções serverless estão localizadas
   functions = "netlify/functions"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
