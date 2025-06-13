@@ -15,31 +15,33 @@
     </a>
 
     <main class="main-container">
-        <!-- SEÇÃO 1: MENU DE SELEÇÃO DE FERRAMENTAS -->
-        <div id="view-tool-selection" class="view active">
-            <div class="hub-content">
+        <!-- Container que alterna entre seleção e a ferramenta ativa -->
+        <div id="tool-wrapper" class="hub-content">
+            
+            <!-- SEÇÃO 1: MENU DE SELEÇÃO DE FERRAMENTAS (Visível por padrão) -->
+            <div id="view-tool-selection" class="view active">
                 <h1 class="hub-title">Ferramentas de IA</h1>
                 <p class="hub-subtitle">Selecione uma ferramenta para otimizar seu atendimento.</p>
                 <nav class="hub-nav">
-                    <a href="#" class="hub-button tool-card" data-target="view-diagnostico">
+                    <a href="#" class="hub-button tool-card" data-target="diagnostico">
                         <i class="fa-solid fa-heart-pulse"></i>
                         <span>Diagnóstico Inteligente</span>
                     </a>
-                    <a href="#" class="hub-button tool-card" data-target="view-simulador">
+                    <a href="#" class="hub-button tool-card" data-target="simulador">
                         <i class="fa-solid fa-comments"></i>
                         <span>Simulador de Atendimento</span>
                     </a>
-                    <a href="#" class="hub-button tool-card" data-target="view-relatorio">
+                    <a href="#" class="hub-button tool-card" data-target="relatorio">
                         <i class="fa-solid fa-file-pen"></i>
                         <span>Gerador de Relatórios</span>
                     </a>
                 </nav>
             </div>
-        </div>
 
-        <!-- SEÇÃO 2: INTERFACE DAS FERRAMENTAS (inicialmente escondidas) -->
-        <div id="view-tool-interface" class="view">
-            <!-- O conteúdo da ferramenta ativa será injetado aqui pelo JavaScript -->
+            <!-- SEÇÃO 2: INTERFACE DA FERRAMENTA ATIVA (Inicialmente vazia) -->
+            <div id="view-tool-interface" class="view">
+                <!-- O conteúdo da ferramenta ativa será injetado aqui pelo JavaScript -->
+            </div>
         </div>
     </main>
 
