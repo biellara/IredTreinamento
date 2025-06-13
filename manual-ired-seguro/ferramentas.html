@@ -3,141 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferramentas de IA | Dashboard IRED</title>
+    <title>Ferramentas de IA | IRED</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo da IRED" class="logo" onerror="this.style.display='none'">
-                <span class="sidebar-title">Suporte IRED</span>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="index.html" class="sidebar-link">
-                    <i class="fa-solid fa-arrow-left fa-fw"></i> Voltar ao Início
-                </a>
-                <h3 class="nav-section-title">FERRAMENTAS</h3>
-                <a href="#" class="sidebar-link active" data-target="view-diagnostico">
-                    <i class="fa-solid fa-heart-pulse fa-fw"></i> Diagnóstico
-                </a>
-                <a href="#" class="sidebar-link" data-target="view-simulador">
-                    <i class="fa-solid fa-comments fa-fw"></i> Simulador
-                </a>
-                <a href="#" class="sidebar-link" data-target="view-relatorio">
-                    <i class="fa-solid fa-file-pen fa-fw"></i> Gerar Relatório
-                </a>
-            </nav>
-        </aside>
+    <a href="index.html" class="back-to-hub-button">
+        <i class="fa-solid fa-arrow-left fa-fw"></i>
+        <span>Voltar ao Início</span>
+    </a>
 
-        <!-- Conteúdo Principal das Ferramentas -->
-        <main class="main-content">
-            <!-- View: Ferramenta de Diagnóstico -->
-            <div id="view-diagnostico" class="view active">
-                <header>
-                    <h1 class="view-title">✨ Diagnóstico Inteligente</h1>
-                    <p class="view-subtitle">Descreva o problema do cliente para receber um checklist de ações e um script de atendimento.</p>
-                </header>
-                <div class="card p-8 mt-8">
-                    <label for="problemDescription" class="block text-gray-700 font-semibold mb-2">Descrição do problema:</label>
-                    <textarea id="problemDescription" rows="4" class="form-textarea" placeholder="Ex: 'Minha internet está caindo toda hora na TV quando tento assistir Netflix. No celular parece normal.'"></textarea>
-                    <button id="analyzeBtn" class="button button-red mt-4 w-full">Analisar Problema</button>
-                    <div id="ai-loader" class="loader-container">
-                         <i class="fa-solid fa-circle-notch fa-spin text-red-600 text-3xl"></i>
-                        <p class="text-gray-600 mt-2">Analisando...</p>
-                    </div>
-                    <div id="ai-results" class="hidden mt-6 space-y-6">
-                        <div>
-                            <h3 class="results-title">📋 Diagnóstico Sugerido:</h3>
-                            <div id="diagnosis-output" class="results-box"></div>
-                        </div>
-                        <div>
-                            <h3 class="results-title">💬 Script de Atendimento Sugerido:</h3>
-                            <div id="script-output" class="results-box bg-red-50 border-red-200"></div>
-                        </div>
-                    </div>
-                </div>
+    <main class="main-container">
+        <!-- SEÇÃO 1: MENU DE SELEÇÃO DE FERRAMENTAS -->
+        <div id="view-tool-selection" class="view active">
+            <div class="hub-content">
+                <h1 class="hub-title">Ferramentas de IA</h1>
+                <p class="hub-subtitle">Selecione uma ferramenta para otimizar seu atendimento.</p>
+                <nav class="hub-nav">
+                    <a href="#" class="hub-button tool-card" data-target="view-diagnostico">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <span>Diagnóstico Inteligente</span>
+                    </a>
+                    <a href="#" class="hub-button tool-card" data-target="view-simulador">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>Simulador de Atendimento</span>
+                    </a>
+                    <a href="#" class="hub-button tool-card" data-target="view-relatorio">
+                        <i class="fa-solid fa-file-pen"></i>
+                        <span>Gerador de Relatórios</span>
+                    </a>
+                </nav>
             </div>
+        </div>
 
-            <!-- View: Ferramenta de Simulador -->
-            <div id="view-simulador" class="view">
-                <div id="sim-setup-view">
-                    <header>
-                        <h1 class="view-title">💬 Simulador de Atendimento</h1>
-                        <p class="view-subtitle">Escolha um cenário e pratique suas habilidades de comunicação.</p>
-                    </header>
-                    <div class="card p-8 mt-8">
-                        <label for="scenarioSelect" class="block text-gray-700 font-semibold mb-2">Selecione um cenário para praticar:</label>
-                        <select id="scenarioSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="lentidao-frustrado">Cliente frustrado com lentidão</option>
-                            <option value="wifi-nao-funciona-leigo">Cliente leigo com Wi-Fi que "não funciona no quarto"</option>
-                            <option value="quedas-constantes-irritado">Cliente irritado com quedas constantes de conexão</option>
-                            <option value="velocidade-baixa-cabo">Cliente com velocidade baixa no computador (via cabo)</option>
-                        </select>
-                        <button id="startSimBtn" class="button button-blue mt-4 w-full">Iniciar Simulação</button>
-                    </div>
-                </div>
-                
-                <div id="sim-chat-view" class="hidden flex flex-col h-[calc(100vh-8rem)]">
-                     <h1 class="view-title">Simulação em Andamento...</h1>
-                     <div class="card p-4 flex-1 flex flex-col mt-8">
-                        <div id="chat-history" class="flex-1 mb-4"></div>
-                        <div id="sim-loader" class="loader-container">
-                             <p class="text-gray-500 italic">Cliente-robô está digitando...</p>
-                        </div>
-                        <div class="mt-auto flex gap-2">
-                            <input type="text" id="chat-input" class="form-input flex-grow" placeholder="Digite sua resposta...">
-                            <button id="sendChatBtn" class="button button-blue flex-shrink-0">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-                     </div>
-                     <button id="endSimBtn" class="button button-red mt-4 w-full">Finalizar e Pedir Feedback</button>
-                </div>
-
-                <div id="sim-feedback-view" class="hidden">
-                     <h1 class="view-title">⭐ Avaliação do Atendimento</h1>
-                     <div class="card p-8 mt-8">
-                         <div id="feedback-results" class="prose max-w-none"></div>
-                         <button id="restartSimBtn" class="button button-blue mt-6 w-full">Iniciar Nova Simulação</button>
-                    </div>
-                </div>
-            </div>
-
-             <!-- View: Ferramenta de Relatório -->
-            <div id="view-relatorio" class="view">
-                 <header>
-                    <h1 class="view-title">📝 Gerador de Relatório</h1>
-                    <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo para o seu sistema de tickets.</p>
-                 </header>
-                 <div class="card p-8 mt-8">
-                    <label for="reportSummary" class="block text-gray-700 font-semibold mb-2">Resumo informal do atendimento:</label>
-                    <textarea id="reportSummary" rows="4" class="form-textarea" placeholder="Ex: cliente com lentidão na netflix, alterado canal do wi-fi para 11, problema resolvido."></textarea>
-                    
-                    <button id="generateReportBtn" class="button button-green mt-4 w-full">Gerar Relatório Técnico</button>
-                    
-                    <div id="report-loader" class="loader-container">
-                        <i class="fa-solid fa-circle-notch fa-spin text-green-600 text-3xl"></i>
-                        <p class="text-gray-600 mt-2">Criando relatório formal...</p>
-                    </div>
-                    
-                    <div id="report-results" class="hidden mt-6">
-                        <h3 class="results-title">Relatório Gerado:</h3>
-                        <textarea id="report-output" rows="10" class="results-textarea mt-2" readonly></textarea>
-                        <button id="copyReportBtn" class="button button-gray mt-2 w-full">
-                            <span class="flex items-center justify-center">
-                                <i class="fa-solid fa-copy mr-2"></i>
-                                <span id="copyBtnText">Copiar Relatório</span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+        <!-- SEÇÃO 2: INTERFACE DAS FERRAMENTAS (inicialmente escondidas) -->
+        <div id="view-tool-interface" class="view">
+            <!-- O conteúdo da ferramenta ativa será injetado aqui pelo JavaScript -->
+        </div>
+    </main>
 
     <script src="ferramentas.js"></script>
 </body>
