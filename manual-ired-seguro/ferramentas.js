@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="tool-interface-container">
                 <header>
                     <h1 class="view-title">✨ Diagnóstico Inteligente</h1>
-                    <p class="view-subtitle">Descreva o problema do cliente para receber um checklist de ações e um script de atendimento.</p>
+                    <p class="view-subtitle">Descreva o problema do cliente para receber uma análise rápida e uma sugestão de ação.</p>
                 </header>
                 <div class="card p-8 mt-8">
                     <label for="problemDescription" class="block text-gray-700 font-semibold mb-2">Descrição do problema:</label>
@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div id="ai-results" class="hidden mt-6 space-y-6">
                         <div>
-                            <h3 class="results-title">📋 Diagnóstico Sugerido:</h3>
+                            <h3 class="results-title">📋 Análise Rápida:</h3>
                             <div id="diagnosis-output" class="results-box prose max-w-none"></div>
                         </div>
                         <div>
-                            <h3 class="results-title">💬 Script de Atendimento Sugerido:</h3>
+                            <h3 class="results-title">💬 Sugestão de Abertura:</h3>
                             <div id="script-output" class="results-box bg-red-50 border-red-200 prose max-w-none"></div>
                         </div>
                     </div>
@@ -155,11 +155,13 @@ document.addEventListener('DOMContentLoaded', function() {
             aiResults.classList.add('hidden');
             analyzeBtn.disabled = true;
             try {
-                const diagnosisPrompt = `Como especialista de suporte IRED, analise: "${problemDescription.value}". Forneça um diagnóstico provável e um checklist de ações. Use Markdown.`;
+                // PROMPT ATUALIZADO PARA SER MAIS RESUMIDO
+                const diagnosisPrompt = `Como especialista de suporte IRED, analise o seguinte problema e forneça uma "Causa Provável" e uma "Ação Imediata" (1-2 passos curtos). Formato: **Causa Provável:** [texto]. **Ação Imediata:** [texto]. Problema: "${problemDescription.value}"`;
                 const diagnosis = await callGemini(diagnosisPrompt);
                 document.getElementById('diagnosis-output').innerHTML = parseSimpleMarkdown(diagnosis);
 
-                const scriptPrompt = `Baseado em "${diagnosis}", gere um script de atendimento.`;
+                // PROMPT ATUALIZADO PARA SER MAIS RESUMIDO
+                const scriptPrompt = `Com base no problema "${problemDescription.value}", crie uma única frase de abertura empática para o atendente usar.`;
                 const script = await callGemini(scriptPrompt);
                 document.getElementById('script-output').innerHTML = parseSimpleMarkdown(script);
                 
@@ -174,12 +176,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupSimulador() {
+        // (O código completo do simulador permanece aqui, sem alterações nesta etapa)
         const simSetupView = document.getElementById('sim-setup-view');
-        const simChatView = document.getElementById('sim-chat-view');
-        const simFeedbackView = document.getElementById('sim-feedback-view');
         const startSimBtn = document.getElementById('startSimBtn');
 
         startSimBtn.addEventListener('click', () => {
+            const simChatView = document.getElementById('sim-chat-view');
+            const simFeedbackView = document.getElementById('sim-feedback-view');
             const scenarioSelect = document.getElementById('scenarioSelect');
             const chatHistoryEl = document.getElementById('chat-history');
             const chatInput = document.getElementById('chat-input');
