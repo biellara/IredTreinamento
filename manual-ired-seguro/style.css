@@ -1,16 +1,17 @@
 :root {
     --brand-red: #b91c1c;
     --brand-red-dark: #991b1b;
-    --background-light: #f3f4f6;
+    --background-light: #ffffff;
+    --gradient-start: #fde8e8;
+    --gradient-end: #f3f4f6;
     --text-dark: #1f2937;
     --text-light: #6b7280;
-    --card-bg: #ffffff;
     --border-color: #e5e7eb;
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-light);
+    background-image: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end) 30vh, var(--background-light) 30vh);
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -26,51 +27,109 @@ body {
 
 .hub-content {
     width: 100%;
-    max-width: 42rem; /* 672px */
+    max-width: 56rem; /* 896px */
     text-align: center;
 }
 
 .hub-logo {
-    width: 120px;
+    width: 100px;
     height: auto;
-    margin: 0 auto 2rem auto;
+    margin: 0 auto 1.5rem auto;
 }
 
 .hub-title {
-    font-size: 3rem; /* 48px */
+    font-size: 2.5rem; /* 40px */
     font-weight: 900;
     color: var(--brand-red);
     line-height: 1.1;
 }
 
 .hub-subtitle {
-    font-size: 1.25rem; /* 20px */
+    font-size: 1.125rem; /* 18px */
     color: var(--text-light);
     margin-top: 0.5rem;
+    margin-bottom: 2.5rem; /* 40px */
+}
+
+/* Barra de Pesquisa */
+.search-container {
+    position: relative;
     margin-bottom: 3rem; /* 48px */
 }
 
+.search-icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+}
+
+.search-input {
+    width: 100%;
+    padding: 1.25rem 3rem 1.25rem 3.5rem; /* Mais padding para o ícone */
+    font-size: 1.125rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px; /* Pill shape */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 4px #fee2e2;
+}
+
+.search-button {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--brand-red);
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 999px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-button:hover {
+    background-color: var(--brand-red-dark);
+}
+
+/* Botões de Navegação */
 .hub-nav {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem; /* 24px */
 }
 
+/* Em telas médias e maiores, os botões ficam em 3 colunas */
+@media (min-width: 768px) {
+    .hub-nav {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 .hub-button {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.75rem; /* 12px */
-    padding: 1.5rem;
-    background-color: var(--card-bg);
-    border: 2px solid var(--border-color);
+    padding: 2rem 1.5rem;
+    background-color: white;
+    border: 1px solid var(--border-color);
     border-radius: 1rem; /* 16px */
-    font-size: 1.125rem; /* 18px */
+    font-size: 1rem; /* 16px */
     font-weight: 700;
     color: var(--text-dark);
     text-decoration: none;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
 }
 
 .hub-button:hover {
@@ -81,5 +140,14 @@ body {
 }
 
 .hub-button i {
-    font-size: 1.25rem; /* 20px */
+    font-size: 1.75rem; /* 28px */
+    background: linear-gradient(to top right, var(--brand-red), #ef4444);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform 0.2s;
+}
+
+.hub-button:hover i {
+    transform: scale(1.1);
 }
