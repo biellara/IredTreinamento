@@ -146,10 +146,10 @@ body {
 }
 .view.active {
     display: block;
-    animation: fadeIn 0.4s ease-in-out forwards;
+    animation: enterAnimation 0.5s ease-out forwards;
 }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+@keyframes enterAnimation {
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .tool-interface-container {
@@ -173,7 +173,7 @@ body {
 .button-gray { background-color: var(--brand-gray); }
 .button-gray:hover { background-color: var(--brand-gray-dark); }
 .button:disabled { background-color: #d1d5db; cursor: not-allowed; }
-.loader-container { display: none; text-align: center; margin-top: 1.5rem; }
+.loader-container { display: none; text-align: center; margin-top: 1.5rem; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;}
 .results-title { font-weight: 700; font-size: 1.125rem; color: var(--text-dark); }
 .results-box, .results-textarea { margin-top: 0.5rem; padding: 1rem; background-color: #fdfdfe; border: 1px solid var(--border-color); border-radius: 0.5rem; }
 .results-textarea { width: 100%; font-family: 'Courier New', Courier, monospace; }

@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const toolSelectionView = document.getElementById('view-tool-selection');
     const toolInterfaceView = document.getElementById('view-tool-interface');
     const toolCards = document.querySelectorAll('.tool-card');
+    const backToToolsButton = document.getElementById('back-to-tools-button');
+    const homeButton = document.getElementById('home-button');
 
     // --- Templates de HTML para cada ferramenta ---
     const toolTemplates = {
@@ -17,7 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <label for="problemDescription" class="block text-gray-700 font-semibold mb-2">Descrição do problema:</label>
                     <textarea id="problemDescription" rows="4" class="form-textarea" placeholder="Ex: 'Minha internet está caindo toda hora na TV...'"></textarea>
                     <button id="analyzeBtn" class="button button-red mt-4 w-full">Analisar Problema</button>
-                    <div id="ai-loader" class="loader-container"></div>
+                    <div id="ai-loader" class="loader-container">
+                        <i class="fa-solid fa-circle-notch fa-spin text-red-600 text-3xl"></i>
+                        <p class="text-gray-600 mt-2">Aguardando resposta da IA...</p>
+                    </div>
                     <div id="ai-results" class="hidden mt-6 space-y-6">
                         <div>
                             <h3 class="results-title">📋 Diagnóstico Sugerido:</h3>
@@ -49,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button id="startSimBtn" class="button button-blue mt-4 w-full">Iniciar Simulação</button>
                     </div>
                 </div>
-                
                 <div id="sim-chat-view" class="hidden flex flex-col h-[calc(100vh-8rem)]">
                      <h1 class="view-title">Simulação em Andamento...</h1>
                      <div class="flex-1 flex flex-col mt-8 overflow-hidden">
@@ -62,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
                      </div>
                      <button id="endSimBtn" class="button button-red mt-4 w-full">Finalizar e Pedir Feedback</button>
                 </div>
-
                 <div id="sim-feedback-view" class="hidden">
                      <h1 class="view-title">⭐ Avaliação do Atendimento</h1>
                      <div class="card p-8 mt-8">
@@ -76,13 +79,16 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="tool-interface-container">
                  <header>
                     <h1 class="view-title">📝 Gerador de Relatório</h1>
-                    <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo para o seu sistema de tickets.</p>
+                    <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo.</p>
                  </header>
                  <div class="card p-8 mt-8">
                     <label for="reportSummary" class="block text-gray-700 font-semibold mb-2">Resumo informal do atendimento:</label>
                     <textarea id="reportSummary" rows="4" class="form-textarea" placeholder="Ex: cliente com lentidão na netflix, alterado canal do wi-fi para 11, problema resolvido."></textarea>
                     <button id="generateReportBtn" class="button button-green mt-4 w-full">Gerar Relatório Técnico</button>
-                    <div id="report-loader" class="loader-container"></div>
+                    <div id="report-loader" class="loader-container">
+                        <i class="fa-solid fa-circle-notch fa-spin text-green-600 text-3xl"></i>
+                        <p class="text-gray-600 mt-2">Aguardando resposta da IA...</p>
+                    </div>
                     <div id="report-results" class="hidden mt-6">
                         <h3 class="results-title">Relatório Gerado:</h3>
                         <textarea id="report-output" rows="10" class="results-textarea mt-2" readonly></textarea>
@@ -99,10 +105,19 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // --- Funções de Controle da UI ---
+    function showToolSelection() {
+        backToToolsButton.style.display = 'none';
+        homeButton.style.display = 'inline-flex';
+        toolInterfaceView.classList.remove('active');
+        toolSelectionView.classList.add('active');
+    }
+
     function showTool(targetId) {
         toolSelectionView.classList.remove('active');
         toolInterfaceView.innerHTML = toolTemplates[targetId];
         toolInterfaceView.classList.add('active');
+        homeButton.style.display = 'none';
+        backToToolsButton.style.display = 'inline-flex';
         activateToolListeners(targetId);
     }
     
@@ -115,15 +130,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    backToToolsButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        showToolSelection();
+    });
+
     // --- Lógica Específica de Cada Ferramenta ---
     function activateToolListeners(toolId) {
-        if (toolId === 'diagnostico') {
-            setupDiagnostico();
-        } else if (toolId === 'simulador') {
-            setupSimulador();
-        } else if (toolId === 'relatorio') {
-            setupRelatorio();
-        }
+        if (toolId === 'diagnostico') setupDiagnostico();
+        if (toolId === 'simulador') setupSimulador();
+        if (toolId === 'relatorio') setupRelatorio();
     }
 
     function setupDiagnostico() {
@@ -131,27 +147,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const problemDescription = document.getElementById('problemDescription');
         const aiLoader = document.getElementById('ai-loader');
         const aiResults = document.getElementById('ai-results');
-        const diagnosisOutput = document.getElementById('diagnosis-output');
-        const scriptOutput = document.getElementById('script-output');
-
         aiLoader.style.display = 'none';
+
         analyzeBtn.addEventListener('click', async () => {
-            if (!problemDescription.value.trim()) { return; }
+            if (!problemDescription.value.trim()) return;
             aiLoader.style.display = 'block';
             aiResults.classList.add('hidden');
             analyzeBtn.disabled = true;
             try {
-                const diagnosisPrompt = `Você é um assistente especialista para um atendente de suporte da IRED. Analise o problema do cliente e sugira um checklist de verificação e um script de atendimento. Formate com Markdown. Problema: "${problemDescription.value}"`;
+                const diagnosisPrompt = `Como especialista de suporte IRED, analise: "${problemDescription.value}". Forneça um diagnóstico provável e um checklist de ações. Use Markdown.`;
                 const diagnosis = await callGemini(diagnosisPrompt);
-                diagnosisOutput.innerHTML = parseSimpleMarkdown(diagnosis);
+                document.getElementById('diagnosis-output').innerHTML = parseSimpleMarkdown(diagnosis);
 
-                const scriptPrompt = `Com base no diagnóstico: "${diagnosis}", gere um script de atendimento empático e claro.`;
+                const scriptPrompt = `Baseado em "${diagnosis}", gere um script de atendimento.`;
                 const script = await callGemini(scriptPrompt);
-                scriptOutput.innerHTML = parseSimpleMarkdown(script);
-
+                document.getElementById('script-output').innerHTML = parseSimpleMarkdown(script);
+                
                 aiResults.classList.remove('hidden');
             } catch (error) {
-                diagnosisOutput.innerHTML = `Erro: ${error.message}`;
+                document.getElementById('diagnosis-output').innerHTML = `Erro: ${error.message}`;
             } finally {
                 aiLoader.style.display = 'none';
                 analyzeBtn.disabled = false;
@@ -164,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const simChatView = document.getElementById('sim-chat-view');
         const simFeedbackView = document.getElementById('sim-feedback-view');
         const startSimBtn = document.getElementById('startSimBtn');
-        
+
         startSimBtn.addEventListener('click', () => {
             const scenarioSelect = document.getElementById('scenarioSelect');
             const chatHistoryEl = document.getElementById('chat-history');
@@ -191,7 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 simSetupView.style.display = 'none';
                 simChatView.style.display = 'flex';
                 simLoader.style.display = 'block';
-                chatInput.disabled = true; sendChatBtn.disabled = true;
                 const systemPrompt = `Vamos simular um atendimento. Você é o CLIENTE. Eu serei o ATENDENTE. Siga o perfil: ${scenarios[scenarioSelect.value]}. Comece com sua primeira reclamação.`;
                 conversationHistory.push({ role: 'user', parts: [{ text: systemPrompt }] });
                 try {
@@ -200,7 +213,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     appendMessage(firstResponse, 'customer');
                 } finally {
                     simLoader.style.display = 'none';
-                    chatInput.disabled = false; sendChatBtn.disabled = false; chatInput.focus();
                 }
             }
             
@@ -211,14 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 conversationHistory.push({ role: 'user', parts: [{ text: messageText }] });
                 chatInput.value = '';
                 simLoader.style.display = 'block';
-                chatInput.disabled = true; sendChatBtn.disabled = true;
                 try {
                     const customerResponse = await callGeminiWithHistory(conversationHistory);
                     conversationHistory.push({ role: 'model', parts: [{ text: customerResponse }] });
                     appendMessage(customerResponse, 'customer');
                 } finally {
                      simLoader.style.display = 'none';
-                    chatInput.disabled = false; sendChatBtn.disabled = false; chatInput.focus();
                 }
             }
 
@@ -256,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         reportLoader.style.display = 'none';
         generateReportBtn.addEventListener('click', async () => {
-            if (!reportSummary.value.trim()) { return; }
+            if (!reportSummary.value.trim()) return;
             reportLoader.style.display = 'block';
             reportResults.classList.add('hidden');
             generateReportBtn.disabled = true;
@@ -296,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (!response.ok) {
                 const errorBody = await response.text();
-                throw new Error(`API call failed: ${response.status} - ${errorBody}`);
+                throw new Error(`A chamada para a API falhou: ${response.status} - ${errorBody}`);
             }
             const result = await response.json();
             if (result.candidates && result.candidates.length > 0) {
