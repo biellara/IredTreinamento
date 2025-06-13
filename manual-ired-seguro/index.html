@@ -21,7 +21,8 @@
         <div class="hub-content">
             <!-- Logo -->
             <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo da IRED" class="hub-logo" onerror="this.style.display='none'">
-
+            <!-- Botão de alternancia claro/escuro -->
+            <button id="theme-toggle" class="theme-toggle">🌙 Alternar tema</button>
             <!-- Mensagem de Boas-Vindas -->
             <h1 class="hub-title">Seja bem vindo ao SAC!</h1>
             <p class="hub-subtitle">O que você precisa hoje?</p>
@@ -50,6 +51,31 @@
             </nav>
         </div>
     </main>
+
+<script>
+  const toggleButton = document.getElementById('theme-toggle');
+  const body = document.body;
+
+  // Aplica o tema salvo ou o do sistema
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (savedTheme) {
+    body.classList.add(savedTheme);
+  } else {
+    body.classList.add(prefersDark ? 'dark' : 'light');
+  }
+
+  toggleButton.addEventListener('click', () => {
+    if (body.classList.contains('dark')) {
+      body.classList.replace('dark', 'light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.classList.replace('light', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+</script>
 
     <!-- JavaScript -->
     <script src="script.js"></script>
