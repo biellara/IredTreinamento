@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function callGeminiWithHistory(history) {
         // Esta é a rota que seu servidor local ou a função Netlify usará.
-        const apiEndpoint = '/.netlify/functions/gemini.js'; 
+        const apiEndpoint = '/.netlify/functions/gemini'; 
         try {
             const response = await fetch(apiEndpoint, {
                 method: 'POST',
