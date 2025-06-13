@@ -109,8 +109,32 @@
 
              <!-- View: Ferramenta de Relatório -->
             <div id="view-relatorio" class="view">
-                 <h1 class="view-title">📝 Gerador de Relatório</h1>
-                 <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo.</p>
+                 <header>
+                    <h1 class="view-title">📝 Gerador de Relatório</h1>
+                    <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo para o seu sistema de tickets.</p>
+                 </header>
+                 <div class="card p-8 mt-8">
+                    <label for="reportSummary" class="block text-gray-700 font-semibold mb-2">Resumo informal do atendimento:</label>
+                    <textarea id="reportSummary" rows="4" class="form-textarea" placeholder="Ex: cliente com lentidão na netflix, alterado canal do wi-fi para 11, problema resolvido."></textarea>
+                    
+                    <button id="generateReportBtn" class="button button-green mt-4 w-full">Gerar Relatório Técnico</button>
+                    
+                    <div id="report-loader" class="loader-container">
+                        <i class="fa-solid fa-circle-notch fa-spin text-green-600 text-3xl"></i>
+                        <p class="text-gray-600 mt-2">Criando relatório formal...</p>
+                    </div>
+                    
+                    <div id="report-results" class="hidden mt-6">
+                        <h3 class="results-title">Relatório Gerado:</h3>
+                        <textarea id="report-output" rows="10" class="results-textarea mt-2" readonly></textarea>
+                        <button id="copyReportBtn" class="button button-gray mt-2 w-full">
+                            <span class="flex items-center justify-center">
+                                <i class="fa-solid fa-copy mr-2"></i>
+                                <span id="copyBtnText">Copiar Relatório</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
