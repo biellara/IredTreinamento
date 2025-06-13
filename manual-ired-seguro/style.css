@@ -111,7 +111,6 @@ body.dark .search-input::placeholder {
 
 body {
     font-family: 'Inter', sans-serif;
-    background: var(--gradient-full);
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
