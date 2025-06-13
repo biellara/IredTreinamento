@@ -41,7 +41,27 @@
                     <h1 class="view-title">✨ Diagnóstico Inteligente</h1>
                     <p class="view-subtitle">Descreva o problema do cliente para receber um checklist de ações e um script de atendimento.</p>
                 </header>
-                 <!-- O conteúdo detalhado virá nas próximas etapas -->
+                <div class="card p-8 mt-8">
+                    <label for="problemDescription" class="block text-gray-700 font-semibold mb-2">Descrição do problema:</label>
+                    <textarea id="problemDescription" rows="4" class="form-textarea" placeholder="Ex: 'Minha internet está caindo toda hora na TV quando tento assistir Netflix. No celular parece normal.'"></textarea>
+                    <button id="analyzeBtn" class="button button-red mt-4 w-full">Analisar Problema</button>
+                    
+                    <div id="ai-loader" class="loader-container">
+                        <i class="fa-solid fa-circle-notch fa-spin text-red-600 text-3xl"></i>
+                        <p class="text-gray-600 mt-2">Analisando... Por favor, aguarde.</p>
+                    </div>
+
+                    <div id="ai-results" class="hidden mt-6 space-y-6">
+                        <div>
+                            <h3 class="results-title">📋 Diagnóstico Sugerido:</h3>
+                            <div id="diagnosis-output" class="results-box"></div>
+                        </div>
+                        <div>
+                            <h3 class="results-title">💬 Script de Atendimento Sugerido:</h3>
+                            <div id="script-output" class="results-box bg-red-50 border-red-200"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Outras views aqui -->
