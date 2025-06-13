@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         toolLinks.forEach(link => {
-            // Ignora o link de "Voltar" na lógica de ativação
             if(link.getAttribute('href') !== 'index.html') {
                 link.classList.toggle('active', link.dataset.target === targetId);
             }
@@ -72,20 +71,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // --- Lógica da Ferramenta de Simulador ---
-    const simSetupView = document.getElementById('sim-setup-view');
-    const simChatView = document.getElementById('sim-chat-view');
-    const simFeedbackView = document.getElementById('sim-feedback-view');
-    const scenarioSelect = document.getElementById('scenarioSelect');
     const startSimBtn = document.getElementById('startSimBtn');
-    const chatHistoryEl = document.getElementById('chat-history');
-    const chatInput = document.getElementById('chat-input');
-    const sendChatBtn = document.getElementById('sendChatBtn');
-    const endSimBtn = document.getElementById('endSimBtn');
-    const simLoader = document.getElementById('sim-loader');
-    const feedbackResults = document.getElementById('feedback-results');
-    const restartSimBtn = document.getElementById('restartSimBtn');
-    
     if (startSimBtn) {
+        const simSetupView = document.getElementById('sim-setup-view');
+        const simChatView = document.getElementById('sim-chat-view');
+        const simFeedbackView = document.getElementById('sim-feedback-view');
+        const scenarioSelect = document.getElementById('scenarioSelect');
+        const chatHistoryEl = document.getElementById('chat-history');
+        const chatInput = document.getElementById('chat-input');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const endSimBtn = document.getElementById('endSimBtn');
+        const simLoader = document.getElementById('sim-loader');
+        const feedbackResults = document.getElementById('feedback-results');
+        const restartSimBtn = document.getElementById('restartSimBtn');
+        
         let conversationHistory = [];
         const scenarios = {
             'lentidao-frustrado': "Você é um cliente chamado Carlos. Você está muito frustrado porque sua internet está lenta há dias, especialmente à noite quando tenta ver filmes. Seja impaciente e um pouco irritado.",
@@ -184,6 +183,51 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- Lógica da Ferramenta de Gerador de Relatório ---
+    const generateReportBtn = document.getElementById('generateReportBtn');
+    if (generateReportBtn) {
+        const reportSummary = document.getElementById('reportSummary');
+        const reportLoader = document.getElementById('report-loader');
+        const reportResults = document.getElementById('report-results');
+        const reportOutput = document.getElementById('report-output');
+        const copyReportBtn = document.getElementById('copyReportBtn');
+
+        reportLoader.style.display = 'none';
+
+        generateReportBtn.addEventListener('click', async () => {
+            if (!reportSummary.value.trim()) { reportSummary.focus(); return; }
+            reportLoader.style.display = 'block';
+            reportResults.classList.add('hidden');
+            generateReportBtn.disabled = true;
+
+            const prompt = `Você é um assistente para atendentes de suporte técnico da IRED. Sua tarefa é converter um resumo informal de um atendimento em um relatório técnico formal e bem-estruturado para ser inserido no sistema de tickets. O relatório deve ser claro, conciso e usar terminologia técnica apropriada (ex: "verificado sinal óptico", "ajustado canal da rede Wi-Fi", "cliente orientado a reiniciar equipamentos"). Estruture o relatório com as seções: "Relato do Cliente:", "Procedimentos Realizados:" e "Conclusão:".\n\nResumo do atendente: "${reportSummary.value}"`;
+            try {
+                const formalReport = await callGemini(prompt);
+                reportOutput.value = formalReport.replace(/<br>/g, '\n');
+                reportResults.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error generating report:", error);
+                reportOutput.value = "Desculpe, ocorreu um erro ao gerar o relatório. Tente novamente.";
+                reportResults.classList.remove('hidden');
+            } finally {
+                reportLoader.style.display = 'none';
+                generateReportBtn.disabled = false;
+            }
+        });
+
+        copyReportBtn.addEventListener('click', () => {
+            reportOutput.select();
+            document.execCommand('copy');
+            const copyBtnText = document.getElementById('copyBtnText');
+            copyBtnText.textContent = 'Copiado!';
+            copyReportBtn.classList.add('bg-green-700');
+            setTimeout(() => {
+                copyBtnText.textContent = 'Copiar Relatório';
+                copyBtnText.classList.remove('bg-green-700');
+            }, 2000);
+        });
+    }
+
     // --- Funções de API e Utilitários ---
     async function callGemini(prompt) {
         return callGeminiWithHistory([{ role: "user", parts: [{ text: prompt }] }]);
@@ -223,5 +267,4 @@ document.addEventListener('DOMContentLoaded', function() {
         newText = newText.replace(/\n/g, '<br>');
         return newText;
     }
-
 });
