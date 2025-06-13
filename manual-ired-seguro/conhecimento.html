@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Conhecimento | IRED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50">
+    <a href="index.html" class="back-to-hub-button">
+        <i class="fa-solid fa-arrow-left fa-fw"></i>
+        <span>Voltar ao Início</span>
+    </a>
+
+    <div id="kb-container" class="kb-container">
+        <!-- Cabeçalho e Pesquisa -->
+        <header class="kb-header">
+            <h1 class="kb-title">📚 Base de Conhecimento</h1>
+            <p class="kb-subtitle">Encontre guias, procedimentos e informações técnicas para o seu atendimento.</p>
+            <div class="search-container mt-8">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="kb-search-input" placeholder="Busque em todos os artigos..." class="search-input">
+            </div>
+        </header>
+
+        <!-- Container de Conteúdo Dinâmico -->
+        <main id="kb-main-content" class="kb-main-content">
+            <!-- As categorias e artigos serão renderizados aqui pelo JavaScript -->
+        </main>
+    </div>
+
+    <!-- Template para um Artigo (escondido) -->
+    <template id="article-template">
+        <div class="article-view">
+            <button class="article-back-button">
+                <i class="fa-solid fa-chevron-left"></i> Voltar para Categorias
+            </button>
+            <h2 class="article-title"></h2>
+            <div class="article-content prose max-w-none"></div>
+        </div>
+    </template>
+    
+    <script src="conhecimento.js"></script>
+</body>
+</html>
