@@ -3,124 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Suporte | IRED</title>
+    <title>Hub de Atendimento | IRED</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (Ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- CSS Customizado -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar de Navegação Lateral -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo da IRED" class="logo" onerror="this.style.display='none'">
-                <span class="sidebar-title">Suporte IRED</span>
+
+    <main class="main-container">
+        <div class="hub-content">
+            <!-- Logo -->
+            <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo da IRED" class="hub-logo" onerror="this.style.display='none'">
+
+            <!-- Mensagem de Boas-Vindas -->
+            <h1 class="hub-title">Seja bem vindo ao SAC!</h1>
+            <p class="hub-subtitle">O que você precisa hoje?</p>
+
+            <!-- Barra de Pesquisa Inteligente -->
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="universalSearch" placeholder="Busque por um problema, procedimento ou política..." class="search-input">
+                <button class="search-button">Buscar</button>
             </div>
-            <nav class="sidebar-nav">
-                <a href="#" class="sidebar-link active" data-target="view-hub">
-                    <i class="fa-solid fa-house fa-fw"></i> Início
+            
+            <!-- Menu de Navegação Principal -->
+            <nav class="hub-nav">
+                <!-- ESTE BOTÃO AGORA LEVA PARA A NOVA PÁGINA -->
+                <a href="ferramentas.html" class="hub-button" id="nav-ferramentas">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Ferramentas de IA</span>
                 </a>
-                <h3 class="nav-section-title">SEÇÕES</h3>
-                <a href="#" class="sidebar-link" data-target="view-ferramentas">
-                    <i class="fa-solid fa-wand-magic-sparkles fa-fw"></i> Ferramentas de IA
+                <a href="#" class="hub-button" id="nav-conhecimento">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Base de Conhecimento</span>
                 </a>
-                <a href="#" class="sidebar-link" data-target="view-conhecimento">
-                    <i class="fa-solid fa-book-open fa-fw"></i> Base de Conhecimento
-                </a>
-                <a href="#" class="sidebar-link" data-target="view-atividades">
-                    <i class="fa-solid fa-pencil-alt fa-fw"></i> Artigos e Atividades
+                <a href="#" class="hub-button" id="nav-atividades">
+                    <i class="fa-solid fa-pencil-alt"></i>
+                    <span>Artigos e Atividades</span>
                 </a>
             </nav>
-        </aside>
+        </div>
+    </main>
 
-        <!-- Conteúdo Principal -->
-        <main class="main-content">
-            <!-- PÁGINA 1: HUB INICIAL -->
-            <div id="view-hub" class="view active">
-                <header>
-                    <h1 class="view-title">Seja bem vindo ao SAC!</h1>
-                    <p class="view-subtitle">O que você precisa hoje?</p>
-                </header>
-                <div class="search-container">
-                    <i class="fa-solid fa-search search-icon"></i>
-                    <input type="text" id="universalSearch" placeholder="Busque por um problema, procedimento ou política..." class="search-input">
-                    <button class="search-button">Buscar</button>
-                </div>
-                <nav class="hub-nav">
-                    <a href="#" class="hub-button" data-target="view-ferramentas">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i><span>Ferramentas de IA</span>
-                    </a>
-                    <a href="#" class="hub-button" data-target="view-conhecimento">
-                        <i class="fa-solid fa-book-open"></i><span>Base de Conhecimento</span>
-                    </a>
-                    <a href="#" class="hub-button" data-target="view-atividades">
-                        <i class="fa-solid fa-pencil-alt"></i><span>Artigos e Atividades</span>
-                    </a>
-                </nav>
-            </div>
-
-            <!-- PÁGINA 2: MENU DE FERRAMENTAS DE IA -->
-            <div id="view-ferramentas" class="view">
-                <header>
-                    <h1 class="view-title">Ferramentas de IA</h1>
-                    <p class="view-subtitle">Selecione uma ferramenta para otimizar seu atendimento.</p>
-                </header>
-                <div class="tool-grid">
-                    <a href="#" class="card tool-card" data-target="view-diagnostico">
-                        <div class="tool-card-icon bg-red-100"><i class="fa-solid fa-heart-pulse text-red-600"></i></div>
-                        <h3 class="tool-card-title">Diagnóstico Inteligente</h3>
-                        <p class="tool-card-desc">Gere checklists e scripts de atendimento a partir da queixa do cliente.</p>
-                    </a>
-                    <a href="#" class="card tool-card" data-target="view-simulador">
-                        <div class="tool-card-icon bg-blue-100"><i class="fa-solid fa-comments text-blue-600"></i></div>
-                        <h3 class="tool-card-title">Simulador de Atendimento</h3>
-                        <p class="tool-card-desc">Pratique chamadas com um "cliente-robô" em um ambiente seguro.</p>
-                    </a>
-                    <a href="#" class="card tool-card" data-target="view-relatorio">
-                        <div class="tool-card-icon bg-green-100"><i class="fa-solid fa-file-pen text-green-600"></i></div>
-                        <h3 class="tool-card-title">Gerador de Relatórios</h3>
-                        <p class="tool-card-desc">Transforme resumos em relatórios técnicos formais para o sistema de tickets.</p>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PÁGINA 3.1: FERRAMENTA DE DIAGNÓSTICO -->
-            <div id="view-diagnostico" class="view">
-                 <h1 class="view-title">✨ Diagnóstico Inteligente</h1>
-                 <p class="view-subtitle">Descreva o problema do cliente para receber um checklist de ações.</p>
-                 <!-- Conteúdo da ferramenta será adicionado aqui -->
-            </div>
-
-            <!-- PÁGINA 3.2: FERRAMENTA DE SIMULADOR -->
-            <div id="view-simulador" class="view">
-                 <h1 class="view-title">💬 Simulador de Atendimento</h1>
-                 <p class="view-subtitle">Escolha um cenário e pratique suas habilidades de comunicação.</p>
-                 <!-- Conteúdo da ferramenta será adicionado aqui -->
-            </div>
-
-            <!-- PÁGINA 3.3: FERRAMENTA DE RELATÓRIO -->
-            <div id="view-relatorio" class="view">
-                 <h1 class="view-title">📝 Gerador de Relatório</h1>
-                 <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo.</p>
-                 <!-- Conteúdo da ferramenta será adicionado aqui -->
-            </div>
-
-            <!-- PÁGINA 4: BASE DE CONHECIMENTO -->
-            <div id="view-conhecimento" class="view">
-                 <h1 class="view-title">📚 Base de Conhecimento</h1>
-                 <p class="view-subtitle">Encontre procedimentos, guias e informações técnicas.</p>
-                <!-- Conteúdo será adicionado aqui -->
-            </div>
-
-            <!-- PÁGINA 5: ARTIGOS E ATIVIDADES -->
-            <div id="view-atividades" class="view">
-                 <h1 class="view-title">📝 Artigos e Atividades</h1>
-                 <p class="view-subtitle">Módulos de treinamento e guias aprofundados.</p>
-                 <!-- Conteúdo será adicionado aqui -->
-            </div>
-        </main>
-    </div>
-
+    <!-- O script.js para esta página pode ser simplificado ou removido se não houver interatividade aqui -->
     <script src="script.js"></script>
 </body>
 </html>
