@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferramentas de IA | Dashboard IRED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo da IRED" class="logo" onerror="this.style.display='none'">
+                <span class="sidebar-title">Suporte IRED</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sidebar-link">
+                    <i class="fa-solid fa-arrow-left fa-fw"></i> Voltar ao Início
+                </a>
+                <h3 class="nav-section-title">FERRAMENTAS</h3>
+                <a href="#" class="sidebar-link active" data-target="view-diagnostico">
+                    <i class="fa-solid fa-heart-pulse fa-fw"></i> Diagnóstico
+                </a>
+                <a href="#" class="sidebar-link" data-target="view-simulador">
+                    <i class="fa-solid fa-comments fa-fw"></i> Simulador
+                </a>
+                <a href="#" class="sidebar-link" data-target="view-relatorio">
+                    <i class="fa-solid fa-file-pen fa-fw"></i> Gerar Relatório
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal das Ferramentas -->
+        <main class="main-content">
+            <!-- View: Ferramenta de Diagnóstico -->
+            <div id="view-diagnostico" class="view active">
+                <header>
+                    <h1 class="view-title">✨ Diagnóstico Inteligente</h1>
+                    <p class="view-subtitle">Descreva o problema do cliente para receber um checklist de ações e um script de atendimento.</p>
+                </header>
+                <div class="card p-8 mt-8">
+                    <label for="problemDescription" class="block text-gray-700 font-semibold mb-2">Descrição do problema:</label>
+                    <textarea id="problemDescription" rows="4" class="form-textarea" placeholder="Ex: 'Minha internet está caindo toda hora na TV quando tento assistir Netflix. No celular parece normal.'"></textarea>
+                    <button id="analyzeBtn" class="button button-red mt-4 w-full">Analisar Problema</button>
+                    <div id="ai-loader" class="loader-container"></div>
+                    <div id="ai-results" class="hidden mt-6 space-y-6">
+                        <div>
+                            <h3 class="results-title">📋 Diagnóstico Sugerido:</h3>
+                            <div id="diagnosis-output" class="results-box"></div>
+                        </div>
+                        <div>
+                            <h3 class="results-title">💬 Script de Atendimento Sugerido:</h3>
+                            <div id="script-output" class="results-box bg-red-50 border-red-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Ferramenta de Simulador -->
+            <div id="view-simulador" class="view">
+                 <h1 class="view-title">💬 Simulador de Atendimento</h1>
+                 <p class="view-subtitle">Escolha um cenário e pratique suas habilidades de comunicação.</p>
+                 <!-- Conteúdo completo será adicionado aqui -->
+            </div>
+
+            <!-- View: Ferramenta de Relatório -->
+            <div id="view-relatorio" class="view">
+                 <h1 class="view-title">📝 Gerador de Relatório</h1>
+                 <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo.</p>
+                 <!-- Conteúdo completo será adicionado aqui -->
+            </div>
+        </main>
+    </div>
+
+    <script src="ferramentas.js"></script>
+</body>
+</html>
