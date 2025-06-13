@@ -7,14 +7,16 @@
     --text-dark: #1f2937;
     --text-light: #6b7280;
     --border-color: #e5e7eb;
+    --gradient-full: linear-gradient(to bottom, var(--brand-red), #ffffff);
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-image: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end) 30vh, var(--background-light) 30vh);
+    background: var(--gradient-full);
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
 }
 
 .main-container {
@@ -67,10 +69,10 @@ body {
 
 .search-input {
     width: 100%;
-    padding: 1.25rem 3rem 1.25rem 3.5rem; /* Mais padding para o ícone */
+    padding: 1.25rem 3rem 1.25rem 3.5rem;
     font-size: 1.125rem;
     border: 1px solid var(--border-color);
-    border-radius: 999px; /* Pill shape */
+    border-radius: 999px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     transition: all 0.2s ease-in-out;
 }
@@ -104,10 +106,9 @@ body {
 .hub-nav {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem; /* 24px */
+    gap: 1.5rem;
 }
 
-/* Em telas médias e maiores, os botões ficam em 3 colunas */
 @media (min-width: 768px) {
     .hub-nav {
         grid-template-columns: repeat(3, 1fr);
@@ -119,12 +120,12 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem; /* 12px */
+    gap: 0.75rem;
     padding: 2rem 1.5rem;
     background-color: white;
     border: 1px solid var(--border-color);
-    border-radius: 1rem; /* 16px */
-    font-size: 1rem; /* 16px */
+    border-radius: 1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text-dark);
     text-decoration: none;
@@ -140,7 +141,7 @@ body {
 }
 
 .hub-button i {
-    font-size: 1.75rem; /* 28px */
+    font-size: 1.75rem;
     background: linear-gradient(to top right, var(--brand-red), #ef4444);
     background-clip: text;
     -webkit-background-clip: text;
