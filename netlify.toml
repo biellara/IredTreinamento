@@ -2,7 +2,3 @@
   publish = "manual-ired-seguro"
   functions = "netlify/functions"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
