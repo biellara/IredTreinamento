@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hub de Atendimento | IRED</title>
-    <!-- Tailwind CSS (Framework de Estilo) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome (Ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -12,10 +12,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <!-- Link para o seu arquivo de CSS customizado -->
+    <!-- CSS Customizado -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100">
+<body>
 
     <main class="main-container">
         <div class="hub-content">
@@ -24,8 +24,15 @@
 
             <!-- Mensagem de Boas-Vindas -->
             <h1 class="hub-title">Seja bem vindo ao SAC!</h1>
-            <p class="hub-subtitle">Selecione uma das opções abaixo para iniciar.</p>
+            <p class="hub-subtitle">O que você precisa hoje?</p>
 
+            <!-- Barra de Pesquisa Inteligente -->
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="universalSearch" placeholder="Busque por um problema, procedimento ou política..." class="search-input">
+                <button class="search-button">Buscar</button>
+            </div>
+            
             <!-- Menu de Navegação Principal -->
             <nav class="hub-nav">
                 <a href="#" class="hub-button" id="nav-ferramentas">
@@ -44,7 +51,7 @@
         </div>
     </main>
 
-    <!-- Link para o seu arquivo JavaScript -->
+    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
