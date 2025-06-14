@@ -238,3 +238,48 @@ body {
 .back-to-hub-button:hover {
     color: var(--brand-red); border-color: #fecaca; background-color: #fef2f2;
 }
+
+/* NOVOS ESTILOS PARA CAIXAS DE ALERTA (CALLOUTS) */
+.callout {
+    padding: 1.5rem;
+    border-left-width: 4px;
+    border-radius: 0.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.callout-icon {
+    font-size: 1.25rem;
+    margin-top: 0.25rem;
+}
+.callout-content {
+    flex: 1;
+}
+.callout-content p, .callout-content strong {
+    margin: 0;
+    color: inherit;
+}
+.callout.note {
+    background-color: #eff6ff;
+    border-color: var(--brand-blue);
+    color: #1d4ed8;
+}
+.callout.warning {
+    background-color: #fefce8;
+    border-color: var(--brand-yellow);
+    color: #a16207;
+}
+.callout.danger {
+    background-color: #fef2f2;
+    border-color: var(--brand-red);
+    color: var(--brand-red-dark);
+}
+
+.back-to-hub-button {
+    position: absolute; top: 1.5rem; left: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: white; border: 1px solid var(--border-color); border-radius: 999px; font-weight: 500; color: var(--text-light); text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s; z-index: 10;
+}
+.back-to-hub-button:hover {
+    color: var(--brand-red); border-color: #fecaca; background-color: #fef2f2;
+}
