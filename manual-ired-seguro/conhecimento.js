@@ -8,14 +8,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 { id: 'analise-sinal', title: 'Análise de Sinais Ópticos (ONU/OLT)', description: 'Como interpretar os níveis de sinal dBm para diagnosticar problemas.', file: 'analise-sinal.md' },
                 { id: 'leds-onu', title: 'Interpretação de LEDs da ONU', description: 'O que significam as luzes POWER, PON, LOS e LAN.', file: 'leds-onu.md' },
                 { id: 'procedimento-los', title: 'Procedimento para Luz LOS Vermelha', description: 'Passo a passo para quando o cliente está sem sinal óptico.', file: 'procedimento-los.md' },
-                { id: 'falha-massiva', title: 'Verificação de Falhas Massivas', description: 'Como identificar se o problema afeta uma região inteira.', file: 'falha-massiva.md' },
+                { id: 'falhas-massivas', title: 'Verificação de Falhas Massivas', description: 'Como identificar se o problema afeta uma região inteira.', file: 'falha-massiva.md' },
             ]
         },
         {
             category: 'Rede Local e Wi-Fi',
             articles: [
                 { id: 'cabos-rede', title: 'Diferença entre Cabos de Rede', description: 'Impacto dos cabos CAT5 e CAT5e na velocidade contratada.', file: 'cabos-rede.md' },
-                { id: 'otimizacao-wifi', title: 'Otimização de Canais Wi-Fi', description: 'Melhores práticas para as redes 2.4GHz e 5GHz.', file: 'otimizacao-wifi.md' },
+                { id: 'canais-wifi', title: 'Otimização de Canais Wi-Fi', description: 'Melhores práticas para as redes 2.4GHz e 5GHz.', file: 'otimizacao-wifi.md' },
             ]
         },
         // Adicione mais categorias e artigos aqui no futuro
