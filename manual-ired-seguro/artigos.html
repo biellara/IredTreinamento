@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artigos e Atividades | IRED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50">
+    <a href="index.html" class="back-to-hub-button">
+        <i class="fa-solid fa-arrow-left fa-fw"></i>
+        <span>Voltar ao Início</span>
+    </a>
+
+    <div class="kb-container">
+        <!-- Cabeçalho -->
+        <header class="kb-header">
+            <h1 class="kb-title">📝 Artigos e Atividades</h1>
+            <p class="kb-subtitle">Aprofunde seu conhecimento com guias detalhados, módulos de treinamento e testes práticos.</p>
+            <div class="search-container mt-8">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="activities-search-input" placeholder="Busque por um artigo ou módulo..." class="search-input">
+            </div>
+        </header>
+
+        <!-- Container de Conteúdo -->
+        <main id="activities-main-content" class="kb-main-content">
+            
+            <!-- Seção de Artigos Aprofundados -->
+            <section class="mb-12">
+                <h2 class="kb-category-title"><i class="fa-solid fa-microscope mr-3"></i>Artigos Aprofundados</h2>
+                <div class="kb-category-grid">
+                    <!-- Artigos serão inseridos aqui -->
+                    <a href="#" class="kb-article-card">
+                        <h3 class="kb-article-title">A Arquitetura de uma Rede PON</h3>
+                        <p class="kb-article-desc">Entenda o caminho do sinal da OLT até a ONU do cliente.</p>
+                    </a>
+                    <a href="#" class="kb-article-card">
+                        <h3 class="kb-article-title">Entendendo o Espectro Wi-Fi</h3>
+                        <p class="kb-article-desc">O "porquê" da troca de canais e as bandas de frequência.</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Seção de Módulos de Treinamento -->
+            <section class="mb-12">
+                <h2 class="kb-category-title"><i class="fa-solid fa-graduation-cap mr-3"></i>Módulos de Treinamento</h2>
+                <div class="kb-category-grid">
+                    <!-- Módulos serão inseridos aqui -->
+                     <a href="#" class="kb-article-card">
+                        <h3 class="kb-article-title">Onboarding N1: Semana 1</h3>
+                        <p class="kb-article-desc">Conceitos essenciais para novos colaboradores do suporte.</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Seção de Atividades Práticas -->
+            <section class="mb-12">
+                <h2 class="kb-category-title"><i class="fa-solid fa-vial-circle-check mr-3"></i>Atividades Práticas (Quizzes)</h2>
+                <div class="kb-category-grid">
+                    <!-- Quizzes serão inseridos aqui -->
+                    <a href="#" class="kb-article-card">
+                        <h3 class="kb-article-title">Quiz: LEDs da ONU</h3>
+                        <p class="kb-article-desc">Teste seu conhecimento sobre os indicadores dos equipamentos.</p>
+                    </a>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    
+    <script src="atividades.js"></script>
+</body>
+</html>
