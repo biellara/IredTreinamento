@@ -1,15 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const activityDatabase = [
-        { category: 'Artigos Aprofundados', icon: 'fa-microscope', articles: [ { id: 'arquitetura-pon', title: 'A Arquitetura de uma Rede PON', description: 'Entenda o caminho do sinal da OLT até a ONU do cliente.', file: 'deep-dives/arquitetura-pon.md' }, { id: 'espectro-wifi', title: 'Entendendo o Espectro Wi-Fi', description: 'O "porquê" da troca de canais e as bandas de frequência.', file: 'deep-dives/espectro-wifi.md' } ] },
-        { category: 'Módulos de Treinamento', icon: 'fa-graduation-cap', articles: [ { id: 'onboarding-n1', title: 'Onboarding N1: Semana 1', description: 'Conceitos essenciais para novos colaboradores do suporte.', file: 'modulos/onboarding-n1.md' } ] },
-        { category: 'Atividades Práticas (Quizzes)', icon: 'fa-vial-circle-check', articles: [ { id: 'quiz-leds-onu', title: 'Quiz: LEDs da ONU', description: 'Teste seu conhecimento sobre os indicadores dos equipamentos.', file: 'quizzes/quiz-leds-onu.md' } ] }
-    ];
-
+    let activityDatabase = [];
     const mainContent = document.getElementById('activities-main-content');
     const categoriesTemplate = document.getElementById('categories-template');
     const articleTemplate = document.getElementById('article-template');
     const converter = new showdown.Converter();
+
+    async function loadAndRender() {
+        try {
+            const response = await fetch('./database.json');
+            if(!response.ok) throw new Error('Falha ao carregar a base de dados.');
+            const db = await response.json();
+            activityDatabase = db.activities;
+            checkURLForArticle();
+        } catch (error) {
+            console.error("Erro:", error);
+            mainContent.innerHTML = `<p class="text-red-500">Não foi possível carregar o conteúdo.</p>`;
+        }
+    }
 
     function renderCategories() {
         mainContent.innerHTML = '';
@@ -77,5 +85,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    checkURLForArticle();
+    loadAndRender();
 });
