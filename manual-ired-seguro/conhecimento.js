@@ -83,11 +83,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkURLForArticle() {
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = urlParams.get('id');
+        const header = document.querySelector('.kb-header');
+
         if (articleId) {
-            document.querySelector('.kb-header').style.display = 'none';
+            if(header) header.style.display = 'none';
             renderArticle(articleId);
         } else {
-            document.querySelector('.kb-header').style.display = 'block';
+            if(header) header.style.display = 'block';
             renderCategories();
         }
     }
