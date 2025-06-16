@@ -1,6 +1,3 @@
 [build]
   publish = "manual-ired-seguro"
   functions = "netlify/functions"
-  
-[functions]
-  timeout = 20
