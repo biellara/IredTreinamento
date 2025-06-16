@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- Bancos de Dados para a Busca ---
+    // Para a busca funcionar na página inicial, precisamos ter acesso aos dados de todas as seções.
     const knowledgeBaseData = [
         {
             category: 'Diagnóstico de Conexão',
@@ -80,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         results.forEach(item => {
             const resultItem = document.createElement('a');
+            // O link agora passa o ID do artigo como um parâmetro na URL
             resultItem.href = `${item.url}?id=${item.id}`;
             resultItem.className = 'search-result-item';
             resultItem.innerHTML = `
@@ -101,5 +103,4 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsContainer.style.display = 'none';
         }
     });
-
 });
