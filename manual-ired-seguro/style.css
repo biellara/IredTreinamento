@@ -397,3 +397,36 @@ body {
 .back-to-hub-button:hover {
     color: var(--brand-red); border-color: #fecaca; background-color: #fef2f2;
 }
+
+/* --- NOVOS ESTILOS PARA OS RESULTADOS DA BUSCA --- */
+#universal-search-results {
+    display: none;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    margin-top: 0.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-height: 400px;
+    overflow-y: auto;
+    text-align: left;
+}
+.search-result-item {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-dark);
+    border-bottom: 1px solid var(--border-color);
+}
+.search-result-item:last-child {
+    border-bottom: none;
+}
+.search-result-item:hover {
+    background-color: #f9fafb;
+}
+.search-result-item-none {
+    padding: 1rem 1.5rem;
+    color: var(--text-light);
+}
