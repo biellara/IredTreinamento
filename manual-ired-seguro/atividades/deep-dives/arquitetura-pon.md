@@ -5,7 +5,7 @@ Conheça a estrutura da rede PON e descubra como entender rapidamente seu funcio
 
 ---
 
-## O que é uma Rede PON?
+## **O que é uma Rede PON?**
 
 Imagine uma rede que conecta muitos clientes usando um único feixe de luz, sem precisar de equipamentos eletrônicos entre o provedor e o cliente. Essa é a **Rede PON (Passive Optical Network)**, uma solução inteligente e eficiente que usamos na IRED para entregar internet de alta qualidade.
 
