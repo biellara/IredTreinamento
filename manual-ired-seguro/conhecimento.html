@@ -1,52 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base de Conhecimento | IRED</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <!-- Biblioteca para converter Markdown em HTML -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Base de Conhecimento | IRED</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-50">
-    <a href="index.html" class="back-to-hub-button">
-        <i class="fa-solid fa-arrow-left fa-fw"></i>
-        <span>Voltar ao Início</span>
-    </a>
+<body class="bg-gray-50 text-gray-800">
 
-    <div id="kb-container" class="kb-container">
-        <!-- Cabeçalho (visível apenas na visualização de categorias) -->
-        <header class="kb-header">
-            <h1 class="kb-title">📚 Base de Conhecimento</h1>
-            <p class="kb-subtitle">Encontre guias, procedimentos e informações técnicas para o seu atendimento.</p>
-        </header>
+  <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded m-4 text-sm font-medium">
+    <i class="fa-solid fa-arrow-left"></i> Voltar ao Início
+  </a>
 
-        <!-- Container de Conteúdo Dinâmico -->
-        <main id="kb-main-content">
-            <!-- As categorias ou o artigo selecionado serão renderizados aqui pelo JavaScript -->
-        </main>
+  <div id="kb-container" class="max-w-5xl mx-auto px-4">
+    <!-- Cabeçalho -->
+    <header class="kb-header text-center mb-10">
+      <h1 class="text-3xl font-bold">📚 Base de Conhecimento</h1>
+      <p class="text-gray-600 mt-2">Encontre guias, procedimentos e informações técnicas para o seu atendimento.</p>
+
+      <div class="relative mt-6 max-w-md mx-auto">
+        <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+        <input id="kb-search-input" type="text" placeholder="Busque em todos os artigos..." class="w-full pl-10 pr-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+      </div>
+    </header>
+
+    <!-- Conteúdo dinâmico -->
+    <main id="kb-main-content" class="space-y-8"></main>
+  </div>
+
+  <!-- Template de artigo -->
+  <template id="article-template">
+    <div class="article-view">
+      <!-- UPDATE: Header do artigo agora inclui o botão do Assistente Técnico -->
+      <div class="article-header">
+        <button class="article-back-button">
+            <i class="fa-solid fa-chevron-left"></i> Voltar para a lista
+        </button>
+        <button class="tech-assistant-button">
+            <i class="fa-solid fa-brain mr-2"></i> Assistente Técnico
+        </button>
+      </div>
+      <h2 class="article-title text-2xl font-semibold mb-4"></h2>
+      <div class="article-content prose max-w-none"></div>
     </div>
+  </template>
 
-    <!-- Template para a tela de seleção de categorias -->
-    <template id="categories-template">
-        <div id="categories-container" class="kb-main-content">
-             <!-- As categorias serão injetadas aqui -->
+  <!-- Template de categorias -->
+  <template id="categories-template">
+    <div id="categories-container" class="space-y-10"></div>
+  </template>
+
+  <!-- Modal Assistente Técnico -->
+  <div id="techAssistantModal" class="modal-overlay">
+    <div class="modal-content">
+        <button id="closeTechAssistantModalBtn" class="modal-close-btn">&times;</button>
+        <h2 class="modal-title"><i class="fa-solid fa-brain mr-2 text-red-600"></i>Assistente Técnico</h2>
+        <div class="my-4">
+            <h3 class="font-semibold text-gray-700">Tópico do Artigo:</h3>
+            <p id="tech-topic-content" class="mt-1 p-3 bg-gray-100 rounded-md"></p>
         </div>
-    </template>
-    
-    <!-- Template para um Artigo (escondido) -->
-    <template id="article-template">
-        <div class="article-view">
-            <button class="article-back-button">
-                <i class="fa-solid fa-chevron-left"></i> Voltar para Categorias
-            </button>
-            <h2 class="article-title"></h2>
-            <div class="article-content prose max-w-none"></div>
+        <div class="flex gap-4">
+             <button id="explainForMeBtn" class="button button-blue flex-1">Explique para mim</button>
+             <button id="explainForCustomerBtn" class="button button-red flex-1">Gerar fala para o cliente</button>
         </div>
-    </template>
-    
-    <script src="conhecimento.js"></script>
+        <div id="tech-assistant-loader" class="loader-container" style="display: none;">
+             <i class="fa-solid fa-circle-notch fa-spin text-red-600 text-3xl"></i>
+             <p class="text-gray-600 mt-2">Aguardando resposta da IA...</p>
+        </div>
+        <div id="tech-assistant-results" class="hidden mt-6">
+            <h3 class="results-title"></h3>
+            <div id="tech-assistant-output" class="results-box prose max-w-none"></div>
+        </div>
+    </div>
+  </div>
+
+  <script src="conhecimento.js"></script>
 </body>
 </html>

@@ -1,15 +1,26 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const activityDatabase = [
-        { category: 'Artigos Aprofundados', icon: 'fa-microscope', articles: [ { id: 'arquitetura-pon', title: 'A Arquitetura de uma Rede PON', description: 'Entenda o caminho do sinal da OLT até a ONU do cliente.', file: 'deep-dives/arquitetura-pon.md' }, { id: 'espectro-wifi', title: 'Entendendo o Espectro Wi-Fi', description: 'O "porquê" da troca de canais e as bandas de frequência.', file: 'deep-dives/espectro-wifi.md' } ] },
-        { category: 'Módulos de Treinamento', icon: 'fa-graduation-cap', articles: [ { id: 'onboarding-n1', title: 'Onboarding N1: Semana 1', description: 'Conceitos essenciais para novos colaboradores do suporte.', file: 'modulos/onboarding-n1.md' } ] },
-        { category: 'Atividades Práticas (Quizzes)', icon: 'fa-vial-circle-check', articles: [ { id: 'quiz-leds-onu', title: 'Quiz: LEDs da ONU', description: 'Teste seu conhecimento sobre os indicadores dos equipamentos.', file: 'quizzes/quiz-leds-onu.md' } ] }
-    ];
-
+    // --- Elementos do DOM ---
     const mainContent = document.getElementById('activities-main-content');
     const categoriesTemplate = document.getElementById('categories-template');
     const articleTemplate = document.getElementById('article-template');
+    
+    // --- Elementos do Modal (NOVO) ---
+    const techAssistantModal = document.getElementById('techAssistantModal');
+    const closeTechAssistantModalBtn = document.getElementById('closeTechAssistantModalBtn');
+    const explainForMeBtn = document.getElementById('explainForMeBtn');
+    const explainForCustomerBtn = document.getElementById('explainForCustomerBtn');
+    const techTopicContent = document.getElementById('tech-topic-content');
+    const techAssistantLoader = document.getElementById('tech-assistant-loader');
+    const techAssistantResults = document.getElementById('tech-assistant-results');
+    const techAssistantOutput = document.getElementById('tech-assistant-output');
+    const resultsTitle = techAssistantResults.querySelector('.results-title');
 
+    // --- Dados ---
+    let activityDatabase = [];
+    let allArticles = [];
+
+    // --- Configuração do Conversor Markdown ---
     const calloutExtension = () => {
         return [{
             type: 'output',
@@ -27,9 +38,24 @@ document.addEventListener('DOMContentLoaded', function () {
             replace: '</div></div>'
         }];
     };
-    
-    const converter = new showdown.Converter({ extensions: [calloutExtension] });
+    const converter = new showdown.Converter({ extensions: [calloutExtension], strikethrough: true, tables: true });
 
+    // --- Carregamento de Dados ---
+    async function loadAndRender() {
+        try {
+            const response = await fetch('./database.json');
+            if(!response.ok) throw new Error('Falha ao carregar a base de dados.');
+            const db = await response.json();
+            activityDatabase = db.activities;
+            allArticles = activityDatabase.flatMap(c => c.articles); // Flatten para busca fácil
+            checkURLForArticle();
+        } catch (error) {
+            console.error("Erro:", error);
+            mainContent.innerHTML = `<p class="text-red-500">Não foi possível carregar o conteúdo.</p>`;
+        }
+    }
+
+    // --- Funções de Renderização ---
     function renderCategories() {
         mainContent.innerHTML = '';
         const templateNode = categoriesTemplate.content.cloneNode(true);
@@ -49,39 +75,107 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function renderArticle(articleId) {
-        let articleData = null;
-        for (const category of activityDatabase) {
-            articleData = category.articles.find(a => a.id === articleId);
-            if (articleData) break;
-        }
+        const articleData = allArticles.find(a => a.id === articleId);
         if (!articleData) { mainContent.innerHTML = '<p>Artigo não encontrado.</p>'; return; }
 
         try {
-            const response = await fetch(`./atividades/${articleData.file}`);
+            // Assumindo que os artigos de atividades estão em uma pasta 'articles' como os de conhecimento
+            const response = await fetch(`./articles/${articleData.file}`);
             if (!response.ok) throw new Error(`Arquivo não encontrado`);
             const markdownContent = await response.text();
             const htmlContent = converter.makeHtml(markdownContent);
+            
             const templateNode = articleTemplate.content.cloneNode(true);
             templateNode.querySelector('.article-title').textContent = articleData.title;
             templateNode.querySelector('.article-content').innerHTML = htmlContent;
+            
             mainContent.innerHTML = '';
             mainContent.appendChild(templateNode);
-            mainContent.querySelector('.article-back-button').addEventListener('click', checkURLForArticle);
+            mainContent.querySelector('.article-back-button').addEventListener('click', () => history.back());
+
+            // UPDATE: Adicionando lógica para o botão do assistente técnico
+            const techButton = mainContent.querySelector('.tech-assistant-button');
+            if (techButton) {
+                techButton.addEventListener('click', () => {
+                    const topic = `${articleData.title}\n\n${articleData.description}`;
+                    techTopicContent.textContent = topic;
+                    techAssistantResults.classList.add('hidden');
+                    techAssistantLoader.style.display = 'none';
+                    techAssistantModal.classList.add('visible');
+                });
+            }
+
         } catch (error) {
             console.error('Erro ao renderizar o artigo:', error);
             mainContent.innerHTML = `<p class="text-red-500"><strong>Erro:</strong> ${error.message}.</p>`;
         }
     }
 
+    // --- Lógica do Assistente Técnico (NOVO) ---
+    async function handleTechAssistant(promptPrefix) {
+        const topic = techTopicContent.textContent.trim();
+        const fullPrompt = `${promptPrefix}:\n${topic}`;
+
+        techAssistantLoader.style.display = 'block';
+        techAssistantResults.classList.add('hidden');
+
+        try {
+            const responseText = await callGeminiAPI(fullPrompt);
+            techAssistantOutput.innerHTML = converter.makeHtml(responseText);
+            resultsTitle.textContent = promptPrefix.split(',')[0];
+            techAssistantResults.classList.remove('hidden');
+        } catch (err) {
+            techAssistantOutput.innerHTML = `<p class="text-red-600 font-semibold">Erro: ${err.message}</p>`;
+            resultsTitle.textContent = "Erro";
+            techAssistantResults.classList.remove('hidden');
+        } finally {
+            techAssistantLoader.style.display = 'none';
+        }
+    }
+
+    async function callGeminiAPI(prompt) {
+        const apiEndpoint = '/.netlify/functions/gemini';
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`A API retornou um erro: ${response.status} - ${errorBody}`);
+            }
+            const result = await response.json();
+            if (result.response) return result.response;
+            if (result.candidates && result.candidates.length > 0) return result.candidates[0].content.parts[0].text;
+            throw new Error("Formato de resposta da API inesperado.");
+        } catch (error) {
+            console.error("Erro ao chamar a API Gemini:", error);
+            throw error;
+        }
+    }
+
+    // --- Event Listeners ---
     function addCardListeners() {
         document.querySelectorAll('.kb-article-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 e.preventDefault();
-                renderArticle(card.dataset.id);
+                const articleId = card.dataset.id;
+                window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
+                renderArticle(articleId);
             });
         });
     }
 
+    // --- Event Listeners do Modal (NOVO) ---
+    closeTechAssistantModalBtn.addEventListener('click', () => techAssistantModal.classList.remove('visible'));
+    explainForMeBtn.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma técnica e detalhada"));
+    explainForCustomerBtn.addEventListener('click', () => handleTechAssistant("Gere uma fala simples e empática para explicar isso a um cliente leigo"));
+    techAssistantModal.addEventListener('click', (e) => {
+        if (e.target === techAssistantModal) techAssistantModal.classList.remove('visible');
+    });
+
+    // --- Controle de Navegação e URL ---
     function checkURLForArticle() {
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = urlParams.get('id');
@@ -96,5 +190,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    checkURLForArticle();
+    window.addEventListener('popstate', (event) => {
+        checkURLForArticle();
+    });
+
+    // --- Inicialização ---
+    loadAndRender();
 });
