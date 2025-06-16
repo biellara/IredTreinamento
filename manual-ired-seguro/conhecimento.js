@@ -170,13 +170,17 @@ async function callGeminiAPI(prompt) {
         }
 
         const result = await response.json();
+        console.log("Resposta bruta da API Gemini:", result);
 
-        const resposta = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!resposta) {
+        // Verifica o formato esperado
+        if (
+            result?.candidates?.[0]?.content?.parts?.[0]?.text
+        ) {
+            return result.candidates[0].content.parts[0].text;
+        } else {
+            // Tenta retornar algo genérico ou mostrar no console o conteúdo exato
             throw new Error("Formato de resposta da API inesperado.");
         }
-
-        return resposta;
 
     } catch (error) {
         console.error("Erro ao chamar a API Gemini:", error);
