@@ -155,7 +155,7 @@ async function callGeminiAPI(prompt) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [
+                history: [
                     {
                         role: "user",
                         parts: [{ text: prompt }]
@@ -187,8 +187,6 @@ async function callGeminiAPI(prompt) {
         throw error;
     }
 }
-
-
 
     // --- Event Listeners ---
     function addCardListeners() {
