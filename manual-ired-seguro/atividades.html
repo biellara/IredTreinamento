@@ -16,26 +16,26 @@
     </a>
 
     <div id="kb-container" class="kb-container">
-        <!-- O conteúdo será renderizado aqui pelo JavaScript -->
-        <main id="activities-main-content"></main>
-    </div>
-
-    <!-- Template para a tela de seleção de categorias -->
-    <template id="categories-template">
+        <!-- Cabeçalho -->
         <header class="kb-header">
             <h1 class="kb-title">📝 Artigos e Atividades</h1>
             <p class="kb-subtitle">Aprofunde seu conhecimento com guias detalhados, módulos de treinamento e testes práticos.</p>
-            <div class="search-container mt-8">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="activities-search-input" placeholder="Busque por um artigo ou módulo..." class="search-input">
-            </div>
         </header>
+
+        <!-- Container de Conteúdo Dinâmico -->
+        <main id="activities-main-content">
+            <!-- Conteúdo será renderizado aqui -->
+        </main>
+    </div>
+    
+    <!-- Template para a tela de seleção de categorias -->
+    <template id="categories-template">
         <div id="categories-container" class="kb-main-content">
-            <!-- As categorias serão injetadas aqui -->
+             <!-- As categorias serão injetadas aqui -->
         </div>
     </template>
-    
-    <!-- Template para a visualização de um artigo -->
+
+    <!-- Template para um Artigo -->
     <template id="article-template">
         <div class="article-view">
             <button class="article-back-button">
