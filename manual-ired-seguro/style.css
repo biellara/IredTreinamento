@@ -398,8 +398,6 @@ body {
     color: var(--brand-red); border-color: #fecaca; background-color: #fef2f2;
 }
 
-/* ... (todo o CSS anterior permanece o mesmo) ... */
-
 /* --- NOVOS ESTILOS PARA OS RESULTADOS DA BUSCA --- */
 #universal-search-results {
     display: none;
