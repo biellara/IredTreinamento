@@ -148,27 +148,42 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    async function callGeminiAPI(prompt) {
-        const apiEndpoint = '/.netlify/functions/gemini';
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt })
-            });
-            if (!response.ok) {
-                const errorBody = await response.text();
-                throw new Error(`A API retornou um erro: ${response.status} - ${errorBody}`);
-            }
-            const result = await response.json();
-            if (result.response) return result.response;
-            if (result.candidates && result.candidates.length > 0) return result.candidates[0].content.parts[0].text;
-            throw new Error("Formato de resposta da API inesperado.");
-        } catch (error) {
-            console.error("Erro ao chamar a API Gemini:", error);
-            throw error;
+async function callGeminiAPI(prompt) {
+    const apiEndpoint = '/.netlify/functions/gemini';
+    try {
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: prompt }]
+                    }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`A API retornou um erro: ${response.status} - ${errorBody}`);
         }
+
+        const result = await response.json();
+
+        const resposta = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!resposta) {
+            throw new Error("Formato de resposta da API inesperado.");
+        }
+
+        return resposta;
+
+    } catch (error) {
+        console.error("Erro ao chamar a API Gemini:", error);
+        throw error;
     }
+}
+
 
 
     // --- Event Listeners ---
