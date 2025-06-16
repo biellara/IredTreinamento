@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- Simulação dos Bancos de Dados ---
-    // Em um projeto real, isso viria de um único ponto ou de chamadas de API.
-    // Por enquanto, duplicamos os dados aqui para a busca funcionar.
+    // --- Bancos de Dados para a Busca ---
     const knowledgeBaseData = [
         {
             category: 'Diagnóstico de Conexão',
@@ -43,19 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Elementos do DOM ---
     const searchInput = document.getElementById('universalSearch');
+    const searchContainer = document.querySelector('.search-container');
     const resultsContainer = document.createElement('div');
     resultsContainer.id = 'universal-search-results';
-    // Garante que o container de resultados seja adicionado ao local correto.
-    const searchContainer = document.querySelector('.search-container');
     if(searchContainer) {
         searchContainer.appendChild(resultsContainer);
     }
 
-
     // --- Funções da Busca ---
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        resultsContainer.innerHTML = ''; // Limpa resultados anteriores
+        resultsContainer.innerHTML = ''; 
 
         if (searchTerm.length < 3) {
             resultsContainer.style.display = 'none';
@@ -100,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Event Listeners ---
     searchInput.addEventListener('input', performSearch);
     
-    // Esconde os resultados se clicar fora
     document.addEventListener('click', function(event) {
         if (!searchContainer.contains(event.target)) {
             resultsContainer.style.display = 'none';
