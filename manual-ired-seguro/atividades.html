@@ -16,35 +16,57 @@
     </a>
 
     <div id="kb-container" class="kb-container">
-        <!-- Cabeçalho -->
+        <main id="activities-main-content"></main>
+    </div>
+    
+    <template id="categories-template">
         <header class="kb-header">
             <h1 class="kb-title">📝 Artigos e Atividades</h1>
             <p class="kb-subtitle">Aprofunde seu conhecimento com guias detalhados, módulos de treinamento e testes práticos.</p>
         </header>
-
-        <!-- Container de Conteúdo Dinâmico -->
-        <main id="activities-main-content">
-            <!-- Conteúdo será renderizado aqui -->
-        </main>
-    </div>
-    
-    <!-- Template para a tela de seleção de categorias -->
-    <template id="categories-template">
         <div id="categories-container" class="kb-main-content">
-             <!-- As categorias serão injetadas aqui -->
         </div>
     </template>
 
-    <!-- Template para um Artigo -->
     <template id="article-template">
         <div class="article-view">
-            <button class="article-back-button">
-                <i class="fa-solid fa-chevron-left"></i> Voltar para a lista
-            </button>
+            <!-- UPDATE: Header do artigo agora inclui o botão do Assistente Técnico -->
+            <div class="article-header">
+                <button class="article-back-button">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar para a lista
+                </button>
+                <button class="tech-assistant-button">
+                    <i class="fa-solid fa-brain mr-2"></i> Assistente Técnico
+                </button>
+            </div>
             <h2 class="article-title"></h2>
             <div class="article-content prose max-w-none"></div>
         </div>
     </template>
+
+    <!-- UPDATE: Modal agora tem a classe 'visible' para controle e CSS ajustado -->
+    <div id="techAssistantModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeTechAssistantModalBtn" class="modal-close-btn">&times;</button>
+            <h2 class="modal-title"><i class="fa-solid fa-brain mr-2 text-red-600"></i>Assistente Técnico</h2>
+            <div class="my-4">
+                <h3 class="font-semibold text-gray-700">Tópico do Artigo:</h3>
+                <p id="tech-topic-content" class="mt-1 p-3 bg-gray-100 rounded-md"></p>
+            </div>
+            <div class="flex gap-4">
+                 <button id="explainForMeBtn" class="button button-blue flex-1">Explique para mim</button>
+                 <button id="explainForCustomerBtn" class="button button-red flex-1">Gerar fala para o cliente</button>
+            </div>
+            <div id="tech-assistant-loader" class="loader-container" style="display: none;">
+                 <i class="fa-solid fa-circle-notch fa-spin text-red-600 text-3xl"></i>
+                 <p class="text-gray-600 mt-2">Aguardando resposta da IA...</p>
+            </div>
+            <div id="tech-assistant-results" class="hidden mt-6">
+                <h3 class="results-title"></h3>
+                <div id="tech-assistant-output" class="results-box prose max-w-none"></div>
+            </div>
+        </div>
+    </div>
     
     <script src="atividades.js"></script>
 </body>
