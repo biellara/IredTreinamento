@@ -4,25 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferramentas de IA | IRED</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    
+    <!-- CSS Customizado -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <a href="index.html" class="back-to-hub-button" id="home-button">
-        <i class="fa-solid fa-house fa-fw"></i>
+    <!-- Botões de Navegação -->
+    <a href="index.html" class="back-button" id="home-button">
+        <i class="fa-solid fa-house"></i>
         <span>Início</span>
     </a>
-     <button class="back-to-hub-button" id="back-to-tools-button" style="display: none;">
-        <i class="fa-solid fa-arrow-left fa-fw"></i>
+     <button class="back-button" id="back-to-tools-button" style="display: none;">
+        <i class="fa-solid fa-arrow-left"></i>
         <span>Voltar para Ferramentas</span>
     </button>
 
-    <main class="main-container">
-        <!-- Container que alterna entre seleção e a ferramenta ativa -->
+    <!-- Container principal com o gradiente -->
+    <main class="page-container">
         <div id="tool-wrapper" class="hub-content">
             
-            <!-- SEÇÃO 1: MENU DE SELEÇÃO DE FERRAMENTAS (Visível por padrão) -->
+            <!-- SEÇÃO 1: MENU DE SELEÇÃO DE FERRAMENTAS -->
             <div id="view-tool-selection" class="view active">
                 <h1 class="hub-title">Ferramentas de IA</h1>
                 <p class="hub-subtitle">Selecione uma ferramenta para otimizar seu atendimento.</p>
@@ -42,13 +52,114 @@
                 </nav>
             </div>
 
-            <!-- SEÇÃO 2: INTERFACE DA FERRAMENTA ATIVA (Inicialmente vazia) -->
+            <!-- SEÇÃO 2: INTERFACE DA FERRAMENTA ATIVA -->
             <div id="view-tool-interface" class="view">
                 <!-- O conteúdo da ferramenta ativa será injetado aqui pelo JavaScript -->
             </div>
         </div>
     </main>
 
+    <!-- ===================================================================== -->
+    <!-- TEMPLATES DAS FERRAMENTAS (MOVIMOS DO JS PARA CÁ) -->
+    <!-- ===================================================================== -->
+
+    <template id="template-diagnostico">
+        <div class="tool-interface-container">
+            <header>
+                <h1 class="view-title">✨ Diagnóstico Inteligente</h1>
+                <p class="view-subtitle">Descreva o problema do cliente para receber uma análise e sugestão de ação.</p>
+            </header>
+            <div class="card" style="margin-top: 2rem;">
+                <label for="problemDescription" style="font-weight: 700; display: block; margin-bottom: 0.5rem;">Descrição do problema:</label>
+                <textarea id="problemDescription" rows="4" class="form-textarea" placeholder="Ex: 'Minha internet está caindo toda hora na TV...'"></textarea>
+                <button id="analyzeBtn" class="button button-red" style="margin-top: 1rem; width: 100%;">Analisar Problema</button>
+                <div id="ai-loader" class="loader-container">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--brand-red); font-size:1.875rem;"></i>
+                    <p>Aguardando resposta da IA...</p>
+                </div>
+                <div id="ai-results" style="display: none; margin-top: 1.5rem;">
+                    <div>
+                        <h3 class="results-title">📋 Análise Rápida:</h3>
+                        <div id="diagnosis-output" class="results-box prose"></div>
+                    </div>
+                    <div style="margin-top: 1.5rem;">
+                        <h3 class="results-title">💬 Sugestão de Abertura:</h3>
+                        <div id="script-output" class="results-box prose"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="template-simulador">
+        <div class="tool-interface-container">
+            <div id="sim-setup-view">
+                <header>
+                    <h1 class="view-title">💬 Simulador de Atendimento</h1>
+                    <p class="view-subtitle">Escolha um cenário e pratique suas habilidades de comunicação.</p>
+                </header>
+                <div class="card" style="margin-top: 2rem;">
+                    <label for="scenarioSelect" style="font-weight: 700; display: block; margin-bottom: 0.5rem;">Selecione um cenário:</label>
+                    <select id="scenarioSelect" class="form-select">
+                        <option value="lentidao-frustrado">Cliente frustrado com lentidão</option>
+                        <option value="wifi-nao-funciona-leigo">Cliente leigo com Wi-Fi que "não funciona no quarto"</option>
+                        <option value="quedas-constantes-irritado">Cliente irritado com quedas constantes</option>
+                        <option value="velocidade-baixa-cabo">Cliente com velocidade baixa no cabo</option>
+                    </select>
+                    <button id="startSimBtn" class="button button-blue" style="margin-top: 1rem; width: 100%;">Iniciar Simulação</button>
+                </div>
+            </div>
+            <div id="sim-chat-view" style="display: none; flex-direction: column; height: calc(100vh - 10rem);">
+                 <h1 class="view-title">Simulação em Andamento...</h1>
+                 <div style="flex: 1; display: flex; flex-direction: column; margin-top: 2rem; overflow: hidden;">
+                    <div id="chat-history"></div>
+                    <div id="sim-loader" class="loader-container"><p>Cliente-robô está digitando...</p></div>
+                    <div style="margin-top: auto; display: flex; gap: 0.5rem;">
+                        <input type="text" id="chat-input" class="form-input" placeholder="Digite sua resposta..." style="flex-grow: 1;">
+                        <button id="sendChatBtn" class="button button-blue"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                 </div>
+                 <button id="endSimBtn" class="button button-red" style="margin-top: 1rem; width: 100%;">Finalizar e Pedir Feedback</button>
+            </div>
+            <div id="sim-feedback-view" style="display: none;">
+                 <h1 class="view-title">⭐ Avaliação do Atendimento</h1>
+                 <div class="card" style="margin-top: 2rem;">
+                     <div id="feedback-results" class="results-box prose"></div>
+                     <button id="restartSimBtn" class="button button-blue" style="margin-top: 1.5rem; width: 100%;">Iniciar Nova Simulação</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-relatorio">
+        <div class="tool-interface-container">
+             <header>
+                <h1 class="view-title">📝 Gerador de Relatório</h1>
+                <p class="view-subtitle">Transforme um resumo simples em um relatório técnico completo.</p>
+             </header>
+             <div class="card" style="margin-top: 2rem;">
+                <label for="reportSummary" style="font-weight: 700; display: block; margin-bottom: 0.5rem;">Resumo informal do atendimento:</label>
+                <textarea id="reportSummary" rows="4" class="form-textarea" placeholder="Ex: cliente com lentidão na netflix, alterado canal do wi-fi para 11, problema resolvido."></textarea>
+                <button id="generateReportBtn" class="button button-green" style="margin-top: 1rem; width: 100%;">Gerar Relatório Técnico</button>
+                <div id="report-loader" class="loader-container">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-green); font-size: 1.875rem;"></i>
+                    <p>Aguardando resposta da IA...</p>
+                </div>
+                <div id="report-results" style="display: none; margin-top: 1.5rem;">
+                    <h3 class="results-title">Relatório Gerado:</h3>
+                    <textarea id="report-output" rows="10" class="form-textarea" readonly style="margin-top: 0.5rem;"></textarea>
+                    <button id="copyReportBtn" class="button button-green" style="margin-top: 0.5rem; width: 100%;">
+                        <span id="copyBtnTextContainer" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copiar Relatório</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts da Página -->
     <script src="ferramentas.js" defer></script>
     <script src="script.js"></script>
 </body>
