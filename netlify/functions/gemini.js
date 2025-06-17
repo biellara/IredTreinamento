@@ -13,10 +13,13 @@ exports.handler = async function (event, context) {
   let contents;
   try {
     const bodyData = JSON.parse(event.body);
-    contents = bodyData.history || bodyData.contents;
+    const history = Array.isArray(bodyData.history) ? bodyData.history : [];
+    const newContents = Array.isArray(bodyData.contents) ? bodyData.contents : [];
 
-    if (!Array.isArray(contents)) {
-      throw new Error("Formato inválido de conteúdo. Esperado um array.");
+    contents = history.concat(newContents);
+
+    if (!Array.isArray(contents) || contents.length === 0) {
+      throw new Error("Formato inválido de conteúdo. Esperado um array não vazio.");
     }
 
   } catch (parseError) {
@@ -27,7 +30,7 @@ exports.handler = async function (event, context) {
   }
 
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  
+
   try {
     const response = await fetch(apiUrl, {
       method: 'POST',
