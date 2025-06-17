@@ -1,3 +1,12 @@
+/* ==========================================================================
+   1. CONFIGURAÇÃO GLOBAL E VARIÁVEIS
+   ========================================================================== */
+
+/**
+ * :root -> Define variáveis de cor e tema para uso em todo o site.
+ * Isso permite alterar o design de forma consistente mudando apenas
+ * um valor.
+ */
 :root {
     --brand-red: #b91c1c;
     --brand-red-dark: #991b1b;
@@ -5,54 +14,283 @@
     --brand-blue-dark: #1d4ed8;
     --brand-green: #16a34a;
     --brand-green-dark: #15803d;
-    --brand-gray: #4b5563;
-    --brand-gray-dark: #374151;
-    --brand-yellow: #f59e0b; /* Adicionado para warnings */
-    --background-light: #f9fafb;
-    --gradient-start: #fef2f2;
-    --gradient-end: #f9fafb;
+    --brand-yellow: #f59e0b;
+    
     --text-dark: #1f2937;
     --text-light: #6b7280;
     --border-color: #e5e7eb;
+    
+    --background-body: #f9fafb;
+    --background-card: #ffffff;
+    --background-accent: #fef2f2;
 }
 
+/**
+ * body -> Estilos base para todo o documento.
+ * Define a fonte principal ('Inter'), a cor de fundo e do texto,
+ * e melhora a renderização da fonte.
+ */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-light);
+    background-color: var(--background-body);
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin: 0;
 }
 
-/* --- ESTILOS GERAIS --- */
+/**
+ * @keyframes fadeIn -> Animação de entrada sutil para elementos.
+ */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- ESTILOS DO HUB (index.html) --- */
-.main-container {
+
+/* ==========================================================================
+   2. LAYOUT E CONTAINERS
+   ========================================================================== */
+
+/**
+ * .page-container -> Usado no `main` da `index.html`. Cria a tela inicial
+ * com o gradiente no topo e centraliza o conteúdo principal.
+ */
+.page-container {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     padding: 2rem;
-    background-image: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end) 40vh, var(--background-light) 40vh);
+    background-image: linear-gradient(to bottom, var(--background-accent), var(--background-body) 40vh);
 }
-.hub-content { width: 100%; max-width: 56rem; text-align: center; }
-.hub-logo { width: 100px; margin: 0 auto 1.5rem auto; }
+
+/**
+ * .content-wrapper -> Usado em `conhecimento.html` e `atividades.html`.
+ * Define a largura máxima e o espaçamento para as páginas
+ * de conteúdo.
+ */
+.content-wrapper {
+    width: 100%;
+    max-width: 64rem; /* 1024px */
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* ==========================================================================
+   3. COMPONENTES REUTILIZÁVEIS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   BOTÕES
+---------------------------------------------------------------------------*/
+
+/**
+ * .button -> Classe base para todos os botões principais de ação.
+ * Usada nos botões do modal e nas ferramentas de IA.
+ */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+}
+
+.button:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Modificadores de cor para os botões */
+.button-red { background-color: var(--brand-red); }
+.button-red:hover { background-color: var(--brand-red-dark); }
+.button-blue { background-color: var(--brand-blue); }
+.button-blue:hover { background-color: var(--brand-blue-dark); }
+
+/**
+ * .back-button -> Botão de 'Voltar' no topo das páginas internas.
+ */
+.back-button {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--background-card);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    font-weight: 500;
+    color: var(--text-light);
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.back-button:hover {
+    color: var(--brand-red);
+    border-color: #fecaca;
+    background-color: var(--background-accent);
+}
+
+/* --------------------------------------------------------------------------
+   FORMULÁRIOS E INPUTS
+---------------------------------------------------------------------------*/
+
+/**
+ * .search-input -> Barra de busca principal na `index.html`.
+ */
+.search-input {
+    width: 100%;
+    padding: 1.25rem 3rem 1.25rem 3.5rem;
+    font-size: 1.125rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 4px #fee2e2;
+}
+
+/**
+ * .form-input, .form-textarea -> Campos de texto genéricos usados nas
+ * ferramentas de IA.
+ */
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--background-body);
+    box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--brand-red);
+    box-shadow: 0 0 0 3px #fee2e2;
+}
+
+
+/* --------------------------------------------------------------------------
+   MODAL (Usado pelo Assistente Técnico)
+---------------------------------------------------------------------------*/
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--background-card);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s ease-out;
+    position: relative;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: #f3f4f6;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #9ca3af;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-btn:hover {
+    background: var(--border-color);
+    color: var(--text-dark);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+
+/* ==========================================================================
+   4. SEÇÕES ESPECÍFICAS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   HUB DE NAVEGAÇÃO (index.html)
+---------------------------------------------------------------------------*/
+
+.hub-content {
+    width: 100%;
+    max-width: 56rem; /* 896px */
+    text-align: center;
+}
+
+.hub-logo { width: 100px; margin: 0 auto 1.5rem; }
 .hub-title { font-size: 2.5rem; font-weight: 900; color: var(--brand-red); }
-.hub-subtitle { font-size: 1.125rem; color: var(--text-light); margin-top: 0.5rem; margin-bottom: 2.5rem; }
+.hub-subtitle { font-size: 1.125rem; color: var(--text-light); margin: 0.5rem 0 2.5rem; }
+
 .search-container { position: relative; margin-bottom: 3rem; }
 .search-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-.search-input { width: 100%; padding: 1.25rem 3rem 1.25rem 3.5rem; font-size: 1.125rem; border: 1px solid var(--border-color); border-radius: 999px; box-shadow: 0 4px_10px rgba(0,0,0,0.05); }
-.search-input:focus { outline: none; border-color: var(--brand-red); box-shadow: 0 0 0 4px #fee2e2; }
 
-/* --- RESULTADOS DA BUSCA UNIVERSAL --- */
+/* Resultados da busca que aparecem sob a barra */
 #universal-search-results {
     display: none;
     position: absolute;
-    background-color: white;
+    background-color: var(--background-card);
     width: 100%;
     border: 1px solid var(--border-color);
     border-radius: 1rem;
@@ -65,95 +303,133 @@ body {
 }
 .search-result-item { display: block; padding: 1rem 1.5rem; text-decoration: none; color: var(--text-dark); border-bottom: 1px solid var(--border-color); }
 .search-result-item:last-child { border-bottom: none; }
-.search-result-item:hover { background-color: #f9fafb; }
+.search-result-item:hover { background-color: var(--background-body); }
 .search-result-item-none { padding: 1rem 1.5rem; color: var(--text-light); }
 
-/* --- NAVEGAÇÃO DO HUB --- */
+/* Grid de botões de navegação */
 .hub-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-.hub-button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; padding: 2rem 1.5rem; background-color: white; border: 1px solid var(--border-color); border-radius: 1rem; font-weight: 700; color: var(--text-dark); text-decoration: none; transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+.hub-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1.5rem;
+    background-color: var(--background-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
 .hub-button:hover { transform: translateY(-5px); border-color: var(--brand-red); color: var(--brand-red); }
 .hub-button i { font-size: 1.75rem; color: var(--brand-red); }
 
-/* --- BOTÃO 'VOLTAR' GLOBAL --- */
-.back-to-hub-button {
-    position: absolute; top: 1.5rem; left: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: white; border: 1px solid var(--border-color); border-radius: 999px; font-weight: 500; color: var(--text-light); text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s; z-index: 10;
-}
-.back-to-hub-button:hover { color: var(--brand-red); border-color: #fecaca; background-color: #fef2f2; }
 
-/* --- PÁGINA DE CONHECIMENTO & ATIVIDADES --- */
-.kb-container { width: 100%; max-width: 64rem; margin: 0 auto; padding: 4rem 2rem; }
-.kb-header { text-align: center; margin-bottom: 3rem; animation: fadeIn 0.5s ease-out; }
-.kb-title { font-size: 2.5rem; font-weight: 800; color: var(--text-dark); }
-.kb-subtitle { font-size: 1.125rem; color: var(--text-light); margin-top: 0.5rem; max-width: 40rem; margin-left: auto; margin-right: auto; }
-.kb-main-content { animation: fadeIn 0.5s ease-out; }
+/* --------------------------------------------------------------------------
+   PÁGINAS DE CONTEÚDO (Conhecimento e Atividades)
+---------------------------------------------------------------------------*/
+
+.kb-header { text-align: center; margin-bottom: 3rem; animation: fadeIn 0.5s; }
+.kb-title { font-size: 2.5rem; font-weight: 700; color: var(--text-dark); }
+.kb-subtitle { font-size: 1.125rem; color: var(--text-light); max-width: 40rem; margin: 0.5rem auto 0; }
+
 .kb-category-title { font-size: 1.5rem; font-weight: 700; color: var(--brand-red); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem;}
 .kb-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-.kb-article-card { display: block; padding: 1.25rem; background-color: white; border-radius: 0.75rem; border: 1px solid var(--border-color); transition: all 0.2s ease-in-out; text-decoration: none; }
+.kb-article-card {
+    display: block;
+    padding: 1.25rem;
+    background-color: var(--background-card);
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+}
 .kb-article-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.07); border-color: #fca5a5; }
-.kb-article-title { font-weight: 600; color: var(--text-dark); }
+.kb-article-title { font-weight: 700; color: var(--text-dark); }
 .kb-article-desc { font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem; }
 
-/* --- VISUALIZAÇÃO DE ARTIGO --- */
-.article-view { padding: 1rem; animation: fadeIn 0.5s ease-out; }
+
+/* --------------------------------------------------------------------------
+   VISUALIZAÇÃO DE ARTIGO (Dentro das páginas de conteúdo)
+---------------------------------------------------------------------------*/
+
+.article-view { padding: 1rem; animation: fadeIn 0.5s; }
 .article-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-.article-back-button { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-light); font-weight: 500; background: none; border: none; cursor: pointer; padding: 0.5rem; }
-.article-back-button:hover { color: var(--brand-red); }
-.article-title { font-size: 2.25rem; font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2; }
+/* O botão de voltar usa a classe genérica .back-button */
+.article-title { font-size: 2.25rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.2; }
 .article-content { font-size: 1.125rem; line-height: 1.75; }
 
-/* --- BOTÃO E MODAL DO ASSISTENTE TÉCNICO --- */
-.tech-assistant-button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background-color: #fef2f2; border: 1px solid #fca5a5; color: var(--brand-red); border-radius: 999px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+/* Botão específico do assistente técnico */
+.tech-assistant-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--background-accent);
+    border: 1px solid #fca5a5;
+    color: var(--brand-red);
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
 .tech-assistant-button:hover { background-color: #fee2e2; border-color: var(--brand-red); }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
-.modal-overlay.visible { opacity: 1; visibility: visible; }
-.modal-content { background-color: white; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transform: scale(0.95) translateY(10px); transition: transform 0.3s ease-out; position: relative; }
-.modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
-.modal-close-btn { position: absolute; top: 0.75rem; right: 0.75rem; background: #f3f4f6; border: none; font-size: 1.25rem; cursor: pointer; color: #9ca3af; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.modal-close-btn:hover { background: #e5e7eb; color: #1f2937; }
-.modal-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; }
 
-/* --- ESTILOS DE COMPONENTES RICOS (PROSE) --- */
-.prose h1, .prose h2, .prose h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-weight: 700; }
+/**
+ * #tech-assistant-output -> A caixa de resposta da IA dentro do modal.
+ * Adicionamos uma altura máxima e rolagem vertical.
+ */
+#tech-assistant-output {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    background-color: var(--background-body);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    max-height: 40vh; /* Altura máxima antes de rolar */
+    overflow-y: auto;   /* Adiciona rolagem vertical quando necessário */
+}
+
+/* Estilos para o conteúdo Markdown renderizado (listas, negrito, etc.) */
+.prose h1, .prose h2, .prose h3 { margin: 1.5em 0 0.5em; font-weight: 700; }
 .prose strong { color: var(--brand-red-dark); }
 .prose a { color: var(--brand-blue); text-decoration: underline; }
 .prose ul, .prose ol { list-style-position: inside; padding-left: 1.5rem; margin-top: 1rem; }
 .prose li { margin-bottom: 0.5rem; }
-.prose code { background-color: #e5e7eb; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: 'Courier New', Courier, monospace; color: #374151; }
+.prose code { background-color: var(--border-color); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-family: 'Courier New', Courier, monospace; color: var(--text-dark); }
 .prose blockquote { border-left: 4px solid var(--border-color); padding-left: 1rem; margin-left: 0; font-style: italic; color: var(--text-light); }
 
-/* --- CALLOUTS --- */
+/* Caixas de destaque (Note, Warning, Danger) */
 .callout { padding: 1.5rem; border-left-width: 4px; border-radius: 0.5rem; margin: 1.5rem 0; display: flex; align-items: flex-start; gap: 1rem; }
 .callout-icon { font-size: 1.25rem; margin-top: 0.25rem; }
-.callout-content { flex: 1; }
 .callout-content p, .callout-content strong { margin: 0; color: inherit; font-size: 1rem; }
 .callout.note { background-color: #eff6ff; border-color: var(--brand-blue); color: #1d4ed8; }
 .callout.warning { background-color: #fefce8; border-color: var(--brand-yellow); color: #a16207; }
-.callout.danger { background-color: #fef2f2; border-color: var(--brand-red); color: var(--brand-red-dark); }
+.callout.danger { background-color: var(--background-accent); border-color: var(--brand-red); color: var(--brand-red-dark); }
 
-/* --- ESTILOS DE FORMULÁRIO E BOTÕES GERAIS --- */
-.form-input, .form-textarea, .form-select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background-color: #f9fafb; }
-.form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--brand-red); box-shadow: 0 0 0 3px #fee2e2; }
-.button { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 700; color: white; cursor: pointer; transition: all 0.2s; }
-.button-red { background-color: var(--brand-red); }
-.button-red:hover { background-color: var(--brand-red-dark); transform: translateY(-2px); }
-.button-blue { background-color: var(--brand-blue); }
-.button-blue:hover { background-color: var(--brand-blue-dark); transform: translateY(-2px); }
-.button:disabled { background-color: #d1d5db; cursor: not-allowed; transform: none; }
-.loader-container { display: none; text-align: center; margin-top: 1.5rem; padding: 1rem; }
-.results-title { font-weight: 700; font-size: 1.125rem; color: var(--text-dark); }
-.results-box, .results-textarea { margin-top: 0.75rem; padding: 1rem; background-color: #fdfdfe; border: 1px solid var(--border-color); border-radius: 0.5rem; }
-.results-textarea { width: 100%; font-family: 'Courier New', Courier, monospace; }
 
-/* --- FERRAMENTAS --- */
-.view { display: none; width: 100%; }
-.view.active { display: block; animation: fadeIn 0.5s ease-out forwards; }
+/* --------------------------------------------------------------------------
+   PÁGINA DE FERRAMENTAS (ferramentas.html)
+---------------------------------------------------------------------------*/
+
+/* Usado para alternar a visibilidade das ferramentas */
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.5s; }
+
+/* Container para a interface de cada ferramenta */
 .tool-interface-container { width: 100%; max-width: 48rem; margin: 0 auto; text-align: left; }
-.view-title { font-size: 2.25rem; font-weight: 800; }
+.view-title { font-size: 2.25rem; font-weight: 700; }
 .view-subtitle { font-size: 1.125rem; color: var(--text-light); margin-top: 0.25rem; }
-.card { background-color: white; border-radius: 1rem; border: 1px solid var(--border-color); box-shadow: 0 4px 10px -1px rgb(0 0 0 / 0.05); }
+.card { background-color: var(--background-card); border-radius: 1rem; border: 1px solid var(--border-color); padding: 2rem; box-shadow: 0 4px 10px -1px rgb(0 0 0 / 0.05); }
 
-/* --- SIMULADOR DE CHAT --- */
-#chat-history { flex-grow: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background-color: #f9fafb; }
+/* Indicador de carregamento da IA */
+.loader-container { display: none; text-align: center; margin-top: 1.5rem; padding: 1rem; }
+
+/* Chat do Simulador de Atendimento */
+#chat-history { flex-grow: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background-color: var(--background-body); }
 .chat-bubble { padding: 0.75rem 1rem; border-radius: 1rem; max-width: 80%; word-wrap: break-word; line-height: 1.5; }
 .chat-bubble.attendant { background-color: var(--brand-red); color: white; align-self: flex-end; border-bottom-right-radius: 0.25rem; }
-.chat-bubble.customer { background-color: #e5e7eb; color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 0.25rem; }
+.chat-bubble.customer { background-color: var(--border-color); color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 0.25rem; }
+
