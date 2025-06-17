@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (!response.ok) throw new Error('Não foi possível carregar a base de dados.');
             const data = await response.json();
             activityDatabase = data.activities || [];
-            // Mapeia os artigos para incluir o nome da categoria, que será usado para a lógica do quiz
             allArticles = activityDatabase.flatMap(c => c.articles.map(a => ({...a, categoryName: c.category})));
             checkURLAndRender();
         } catch (err) {
@@ -172,10 +171,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 5. EVENT LISTENERS
     // =========================================================================
 
-    /**
-     * ATUALIZADO: Adiciona listeners aos cards. Agora verifica se o item
-     * clicado é um quiz e redireciona, ou renderiza como artigo se não for.
-     */
     function addCardListeners() {
         document.querySelectorAll('.kb-article-card').forEach(card => {
             card.addEventListener('click', (e) => {
@@ -184,10 +179,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const articleData = allArticles.find(a => a.id === articleId);
 
                 if (articleData && articleData.categoryName.toLowerCase().includes('quiz')) {
-                    // Se for um quiz, redireciona para a página quiz.html
                     window.location.href = `quiz.html?id=${articleId}`;
                 } else {
-                    // Se for um artigo normal, usa a lógica de navegação interna
                     window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
                     checkURLAndRender();
                 }
@@ -226,16 +219,30 @@ document.addEventListener('DOMContentLoaded', async function () {
     // =========================================================================
     // 6. INICIALIZAÇÃO E ROTEAMENTO
     // =========================================================================
-
+    
+    /**
+     * ATUALIZADO: Esta função agora verifica se o ID na URL é de um quiz
+     * antes de tentar renderizar um artigo.
+     */
     function checkURLAndRender() {
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = urlParams.get('id');
         
         if (articleId) {
+            const articleData = allArticles.find(a => a.id === articleId);
+
+            // Se o ID na URL for de um quiz, redireciona para a página correta.
+            if (articleData && articleData.categoryName.toLowerCase().includes('quiz')) {
+                window.location.href = `quiz.html?id=${articleId}`;
+                return; // Impede a execução do resto da função.
+            }
+
+            // Se for um artigo normal, esconde os elementos da página e renderiza.
             if(pageHeader) pageHeader.style.display = 'none';
             if(globalBackButton) globalBackButton.style.display = 'none';
             renderArticle(articleId);
         } else {
+            // Se não houver ID, mostra a lista de categorias.
             if(pageHeader) pageHeader.style.display = 'block';
             if(globalBackButton) globalBackButton.style.display = 'inline-flex';
             renderCategories();
