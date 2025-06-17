@@ -4,33 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hub de Atendimento | IRED</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome (Ícones) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <!-- Fontes do Google -->
+    
+    <!-- Fontes e Ícones -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
     <!-- CSS Customizado -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <main class="main-container">
+    <!-- Container principal da página inicial -->
+    <main class="page-container">
         <div class="hub-content">
+            
             <!-- Logo -->
             <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo da IRED" class="hub-logo" onerror="this.style.display='none'">
 
             <!-- Mensagem de Boas-Vindas -->
-            <h1 class="hub-title">Seja bem vindo ao SAC!</h1>
+            <h1 class="hub-title">Seja bem-vindo ao SAC!</h1>
             <p class="hub-subtitle">O que você precisa hoje?</p>
 
             <!-- Barra de Pesquisa Inteligente -->
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
                 <input type="text" id="universalSearch" placeholder="Busque por um problema, procedimento ou política..." class="search-input">
-                <!-- O container de resultados da busca será inserido aqui pelo script.js -->
+                <!-- O container de resultados da busca (#universal-search-results) será inserido aqui pelo script.js -->
             </div>
             
             <!-- Menu de Navegação Principal -->
@@ -48,6 +49,7 @@
                     <span>Artigos e Atividades</span>
                 </a>
             </nav>
+
         </div>
     </main>
 

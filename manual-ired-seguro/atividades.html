@@ -1,72 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Artigos e Atividades | IRED</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Folha de Estilo Principal -->
+    <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gray-50">
-    <a href="index.html" class="back-to-hub-button">
-        <i class="fa-solid fa-arrow-left fa-fw"></i>
+<body>
+
+    <!-- Botão de navegação para voltar à página inicial -->
+    <a href="index.html" class="back-button">
+        <i class="fa-solid fa-arrow-left"></i>
         <span>Voltar ao Início</span>
     </a>
 
-    <div id="kb-container" class="kb-container">
-        <main id="activities-main-content"></main>
-    </div>
-    
-    <template id="categories-template">
+    <!-- Container principal para o conteúdo da página -->
+    <main class="content-wrapper">
+        
+        <!-- Cabeçalho da página de Atividades -->
         <header class="kb-header">
             <h1 class="kb-title">📝 Artigos e Atividades</h1>
             <p class="kb-subtitle">Aprofunde seu conhecimento com guias detalhados, módulos de treinamento e testes práticos.</p>
-        </header>
-        <div id="categories-container" class="kb-main-content">
-        </div>
-    </template>
 
+            <!-- ATUALIZADO: Barra de busca adicionada para consistência -->
+            <div class="search-container" style="margin-top: 1.5rem; max-width: 28rem; margin-left: auto; margin-right: auto;">
+                <i class="search-icon fa-solid fa-search"></i>
+                <input id="activities-search-input" type="text" placeholder="Busque nas atividades..." class="search-input" />
+            </div>
+        </header>
+
+        <!-- Área onde o conteúdo dinâmico será injetado pelo JS -->
+        <div id="activities-main-content"></div>
+
+    </main>
+
+    <!-- Template para a visualização de um artigo único -->
     <template id="article-template">
         <div class="article-view">
-            <!-- UPDATE: Header do artigo agora inclui o botão do Assistente Técnico -->
             <div class="article-header">
-                <button class="article-back-button">
-                    <i class="fa-solid fa-chevron-left"></i> Voltar para a lista
+                <button class="back-button">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Voltar para a lista</span>
                 </button>
                 <button class="tech-assistant-button">
-                    <i class="fa-solid fa-brain mr-2"></i> Assistente Técnico
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Assistente Técnico</span>
                 </button>
             </div>
             <h2 class="article-title"></h2>
-            <div class="article-content prose max-w-none"></div>
+            <div class="article-content prose"></div>
         </div>
     </template>
 
-<!-- Modal Assistente Técnico -->
-  <div id="techAssistantModal" class="modal-overlay">
-    <div class="modal-content">
-        <button id="closeTechAssistantModalBtn" class="modal-close-btn">&times;</button>
-        <h2 class="modal-title"><i class="fa-solid fa-brain mr-2 text-red-600"></i>Assistente Técnico</h2>
-        <div class="my-4">
-            <h3 class="font-semibold text-gray-700">Tópico do Artigo:</h3>
-            <p id="tech-topic-content" class="mt-1 p-3 bg-gray-100 rounded-md"></p>
-        </div>
-        <div class="flex gap-4">
-             <button id="explainForMeBtn" class="button button-blue flex-1">Explique para mim</button>
-        </div>
-        <div id="tech-assistant-loader" class="loader-container" style="display: none;">
-             <i class="fa-solid fa-circle-notch fa-spin text-red-600 text-3xl"></i>
-             <p class="text-gray-600 mt-2">Aguardando resposta da IA...</p>
-        </div>
-        <div id="tech-assistant-results" class="hidden mt-6">
-            <h3 class="results-title"></h3>
-            <div id="tech-assistant-output" class="results-box prose max-w-none"></div>
+    <!-- Template para a lista de categorias e seus artigos -->
+    <template id="categories-template">
+        <div id="categories-container"></div>
+    </template>
+
+    <!-- Modal do Assistente Técnico (inicialmente oculto) -->
+    <div id="techAssistantModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeTechAssistantModalBtn" class="modal-close-btn">&times;</button>
+            <h2 class="modal-title">
+                <i class="fa-solid fa-brain"></i>
+                <span>Assistente Técnico</span>
+            </h2>
+            <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                <h3 style="font-weight: 700;">Tópico do Artigo:</h3>
+                <p id="tech-topic-content" style="margin-top: 0.5rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.5rem;"></p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                 <button id="explainForMeBtn" class="button button-blue" style="flex: 1;">Explique para mim</button>
+                 <button id="explainForCustomerBtn" class="button button-red" style="flex: 1;">Gerar fala para o cliente</button>
+            </div>
+            <div id="tech-assistant-loader" class="loader-container">
+                 <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-red); font-size: 1.875rem;"></i>
+                 <p style="margin-top: 0.5rem;">Aguardando resposta da IA...</p>
+            </div>
+            <div id="tech-assistant-results" style="display: none; margin-top: 1.5rem;">
+                <h3 class="results-title" style="font-weight: 700; font-size: 1.125rem;"></h3>
+                <div id="tech-assistant-output" class="prose"></div>
+            </div>
         </div>
     </div>
-  </div>
     
+    <!-- Script da página -->
     <script src="atividades.js"></script>
 </body>
 </html>
