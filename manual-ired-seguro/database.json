@@ -18,6 +18,41 @@
         { "id": "configuracao_ideal_canais", "title": "Configuração Ideal de Canais", "description": "Como configurar os canais Wi-Fi para obter o melhor desempenho.", "file": "configuracao_ideal_canais.md" },
         { "id": "qual_banda_dispositivo", "title": "Qual Banda Meu Dispositivo Suporta?", "description": "Como verificar se um dispositivo é compatível com redes 2.4GHz ou 5GHz.", "file": "qual_banda_dispositivo.md" }
       ]
+    },
+    {
+      "category": "Testes de Velocidade",
+      "articles": [
+        {
+          "id": "oque-e-teste-velocidade",
+          "title": "O que é um Teste de Velocidade?",
+          "description": "Entenda o que é medido em um teste de velocidade e por que ele é importante.",
+          "file": "oque-e-teste-velocidade.md"
+        },
+        {
+          "id": "como-fazer-teste",
+          "title": "Como Fazer um Teste de Velocidade Corretamente",
+          "description": "Passo a passo para realizar o teste de forma precisa, evitando interferências.",
+          "file": "como-fazer-teste.md"
+        },
+        {
+          "id": "entendendo-os-resultados",
+          "title": "Entendendo os Resultados do Teste",
+          "description": "Diferença entre download, upload, ping e jitter, e o que cada um representa.",
+          "file": "entendendo-os-resultados.md"
+        },
+        {
+          "id": "por-que-meu-teste-da-baixo",
+          "title": "Por Que Meu Teste de Velocidade Está Baixo?",
+          "description": "Fatores que afetam o resultado do teste e como identificá-los.",
+          "file": "por-que-meu-teste-da-baixo.md"
+        },
+        {
+          "id": "como-interpretar-meu-plano-vs-teste",
+          "title": "Como Interpretar Meu Plano vs. Teste de Velocidade",
+          "description": "Comparação entre a velocidade contratada e o resultado obtido.",
+          "file": "como-interpretar-meu-plano-vs-teste.md"
+        }
+      ]
     }
   ],
   "activities": [
