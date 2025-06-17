@@ -207,8 +207,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     closeTechAssistantModalBtn.addEventListener('click', () => techAssistantModal.classList.remove('visible'));
-    explainForMeBtn.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma técnica e detalhada"));
-    explainForCustomerBtn.addEventListener('click', () => handleTechAssistant("Gere uma fala simples e empática para explicar isso a um cliente leigo"));
+    explainForMeBtn.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma resumida e técnica"));
+    explainForCustomerBtn.addEventListener('click', () => handleTechAssistant("Gere uma fala simples e empática e também resumida para explicar isso a um cliente leigo"));
     
     techAssistantModal.addEventListener('click', (e) => {
         if (e.target === techAssistantModal) {

@@ -190,14 +190,21 @@ body {
 }
 .modal-overlay.visible { opacity: 1; visibility: visible; }
 .modal-content {
-    background-color: var(--background-card);
-    padding: 2rem; border-radius: 1rem;
-    width: 90%; max-width: 600px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    transform: scale(0.95) translateY(10px);
-    transition: transform 0.3s ease-out;
-    position: relative;
+  background-color: var(--background-card);
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.3s ease-out;
+  position: relative;
+
+  max-height: 80vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
+
 .modal-overlay.visible .modal-content { transform: scale(1) translateY(0); }
 .modal-close-btn {
     position: absolute; top: 0.75rem; right: 0.75rem;
