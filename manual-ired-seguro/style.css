@@ -314,3 +314,63 @@ body {
 .chat-bubble { padding: 0.75rem 1rem; border-radius: 1rem; max-width: 80%; word-wrap: break-word; line-height: 1.5; }
 .chat-bubble.attendant { background-color: var(--brand-red); color: white; align-self: flex-end; border-bottom-right-radius: 0.25rem; }
 .chat-bubble.customer { background-color: var(--border-color); color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 0.25rem; }
+
+/* --- NOVOS ESTILOS PARA O QUIZ (quiz.html) --- */
+.quiz-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.quiz-question-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+}
+.quiz-options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+@media (min-width: 768px) {
+    .quiz-options-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.quiz-option-button {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    text-align: left;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+.quiz-option-button:not(:disabled):hover {
+    border-color: var(--brand-red);
+    color: var(--brand-red);
+    transform: translateY(-2px);
+}
+.quiz-option-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+.quiz-option-button.correct {
+    background-color: var(--brand-green);
+    border-color: var(--brand-green);
+    color: white;
+    opacity: 1;
+}
+.quiz-option-button.incorrect {
+    background-color: var(--brand-red);
+    border-color: var(--brand-red);
+    color: white;
+    opacity: 1;
+}
+.quiz-feedback {
+    margin-top: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+.quiz-feedback.correct { color: var(--brand-green); }
+.quiz-feedback.incorrect { color: var(--brand-red); }
+

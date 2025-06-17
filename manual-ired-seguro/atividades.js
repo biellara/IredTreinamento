@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const mainContent = document.getElementById('activities-main-content');
     const articleTemplate = document.getElementById('article-template');
     const categoriesTemplate = document.getElementById('categories-template');
-    const searchInput = document.getElementById('activities-search-input'); // ID atualizado
+    const searchInput = document.getElementById('activities-search-input');
     const pageHeader = document.querySelector('.kb-header');
     const globalBackButton = document.querySelector('body > a.back-button');
 
@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             const response = await fetch('./database.json');
             if (!response.ok) throw new Error('Não foi possível carregar a base de dados.');
             const data = await response.json();
-            // ATUALIZADO: Carrega a seção 'activities' do JSON
             activityDatabase = data.activities || [];
-            allArticles = activityDatabase.flatMap(c => c.articles.map(a => ({...a, category: c.category})));
+            // Mapeia os artigos para incluir o nome da categoria, que será usado para a lógica do quiz
+            allArticles = activityDatabase.flatMap(c => c.articles.map(a => ({...a, categoryName: c.category})));
             checkURLAndRender();
         } catch (err) {
             mainContent.innerHTML = `<p><strong>Erro ao carregar dados:</strong> ${err.message}</p>`;
@@ -172,18 +172,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 5. EVENT LISTENERS
     // =========================================================================
 
+    /**
+     * ATUALIZADO: Adiciona listeners aos cards. Agora verifica se o item
+     * clicado é um quiz e redireciona, ou renderiza como artigo se não for.
+     */
     function addCardListeners() {
         document.querySelectorAll('.kb-article-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 e.preventDefault();
                 const articleId = card.dataset.id;
-                window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
-                checkURLAndRender();
+                const articleData = allArticles.find(a => a.id === articleId);
+
+                if (articleData && articleData.categoryName.toLowerCase().includes('quiz')) {
+                    // Se for um quiz, redireciona para a página quiz.html
+                    window.location.href = `quiz.html?id=${articleId}`;
+                } else {
+                    // Se for um artigo normal, usa a lógica de navegação interna
+                    window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
+                    checkURLAndRender();
+                }
             });
         });
     }
 
-    // Listener para a nova barra de busca
     searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase().trim();
         if (searchTerm.length < 2) {
