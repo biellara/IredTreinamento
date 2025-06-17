@@ -1,4 +1,3 @@
-# A Arquitetura de uma Rede PON
 
 **Descrição Curta:**  
 Conheça a estrutura da rede PON e descubra como entender rapidamente seu funcionamento para agilizar o atendimento e resolver problemas com mais segurança.
