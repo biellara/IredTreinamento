@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // --- Elementos do DOM ---
     const mainContent = document.getElementById('kb-main-content');
     const articleTemplate = document.getElementById('article-template');
+    const categoriesTemplate = document.getElementById('categories-template');
     const searchInput = document.getElementById('kb-search-input');
 
     // --- Elementos do Modal ---
@@ -47,18 +48,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             const data = await response.json();
             knowledgeBase = data.knowledgeBase || [];
             allArticles = knowledgeBase.flatMap(c => c.articles.map(a => ({...a, category: c.category})));
-            checkURLForArticle();
+            checkURLAndRender();
         } catch (err) {
-            mainContent.innerHTML = `<p class="text-red-500"><strong>Erro ao carregar dados:</strong> ${err.message}</p>`;
+            mainContent.innerHTML = `<p><strong>Erro ao carregar dados:</strong> ${err.message}</p>`;
         }
     }
 
     // --- Funções de Renderização ---
     function renderCategories(categories = knowledgeBase) {
-        const categoriesTemplate = document.getElementById('categories-template').content.cloneNode(true);
-        const categoriesContainer = categoriesTemplate.querySelector('#categories-container');
-        categoriesContainer.innerHTML = '';
-        mainContent.innerHTML = '';
+        const templateNode = categoriesTemplate.content.cloneNode(true);
+        const categoriesContainer = templateNode.querySelector('#categories-container');
+        categoriesContainer.innerHTML = ''; // Limpa o container
+        mainContent.innerHTML = ''; // Limpa o conteúdo principal
         
         categories.forEach(category => {
             if(category.articles.length > 0) {
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         });
 
-        mainContent.appendChild(categoriesTemplate);
+        mainContent.appendChild(templateNode);
         addCardListeners();
     }
 
@@ -78,8 +79,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             </a>`).join('');
 
         const section = document.createElement('section');
-        section.className = 'mb-12';
-        const iconHTML = category.icon ? `<i class="fa ${category.icon} mr-2 text-neutral-700"></i>` : '';
+        const iconHTML = category.icon ? `<i class="fa-solid ${category.icon}"></i>` : '';
         section.innerHTML = `
             <h2 class="kb-category-title">${iconHTML}${category.category}</h2>
             <div class="kb-category-grid">${articlesHTML}</div>`;
@@ -106,87 +106,87 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             mainContent.innerHTML = '';
             mainContent.appendChild(templateNode);
-            mainContent.querySelector('.article-back-button').addEventListener('click', () => history.back());
             
-            // UPDATE: Lógica do botão do assistente
+            mainContent.querySelector('.article-back-button').addEventListener('click', () => window.history.back());
+            
             const techButton = mainContent.querySelector('.tech-assistant-button');
             if (techButton) {
                 techButton.addEventListener('click', () => {
                     const topic = `${articleData.title}\n\n${articleData.description}`;
                     techTopicContent.textContent = topic;
-                    techAssistantResults.classList.add('hidden');
+                    techAssistantResults.style.display = 'none';
                     techAssistantLoader.style.display = 'none';
                     techAssistantModal.classList.add('visible');
                 });
             }
-
         } catch (error) {
             console.error('Erro ao renderizar o artigo:', error);
-            mainContent.innerHTML = `<p class="text-red-500"><strong>Erro:</strong> ${error.message}.</p>`;
+            mainContent.innerHTML = `<p><strong>Erro:</strong> ${error.message}.</p>`;
         }
     }
     
     // --- Lógica do Assistente Técnico ---
     async function handleTechAssistant(promptPrefix) {
         const topic = techTopicContent.textContent.trim();
+        if (!topic) return;
+
         const fullPrompt = `${promptPrefix}:\n${topic}`;
 
         techAssistantLoader.style.display = 'block';
-        techAssistantResults.classList.add('hidden');
+        techAssistantResults.style.display = 'none';
 
         try {
             const responseText = await callGeminiAPI(fullPrompt);
             techAssistantOutput.innerHTML = converter.makeHtml(responseText);
-            resultsTitle.textContent = promptPrefix.split(',')[0];
-            techAssistantResults.classList.remove('hidden');
+            if (resultsTitle) resultsTitle.textContent = promptPrefix.split(',')[0];
+            techAssistantResults.style.display = 'block';
         } catch (err) {
-            techAssistantOutput.innerHTML = `<p class="text-red-600 font-semibold">Erro: ${err.message}</p>`;
-            resultsTitle.textContent = "Erro";
-            techAssistantResults.classList.remove('hidden');
+            techAssistantOutput.innerHTML = `<p style="color: var(--brand-red);"><strong>Erro:</strong> ${err.message}</p>`;
+            if (resultsTitle) resultsTitle.textContent = "Erro";
+            techAssistantResults.style.display = 'block';
         } finally {
             techAssistantLoader.style.display = 'none';
         }
     }
 
-async function callGeminiAPI(prompt) {
-    const apiEndpoint = '/.netlify/functions/gemini';
-    try {
-        const response = await fetch(apiEndpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                history: [
-                    {
-                        role: "user",
-                        parts: [{ text: prompt }]
-                    }
-                ]
-            })
-        });
+    // UPDATE: Função atualizada para corresponder ao novo backend gemini.js
+    async function callGeminiAPI(prompt) {
+        const apiEndpoint = '/.netlify/functions/gemini';
+        try {
+            // O corpo da requisição agora envia um objeto `contents`
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
+            };
 
-        if (!response.ok) {
-            const errorBody = await response.text();
-            throw new Error(`A API retornou um erro: ${response.status} - ${errorBody}`);
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`A API retornou um erro: ${response.status} - ${errorBody}`);
+            }
+
+            const result = await response.json();
+            
+            // O backend agora retorna a resposta completa da API Gemini.
+            // O caminho para o texto é dentro de 'candidates'.
+            if (result?.candidates?.[0]?.content?.parts?.[0]?.text) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                console.error("Resposta inesperada da API:", result);
+                throw new Error("Formato de resposta da API inesperado.");
+            }
+        } catch (error) {
+            console.error("Erro ao chamar a API Gemini:", error);
+            throw error;
         }
-
-        const result = await response.json();
-        console.log("Resposta bruta da API Gemini:", result);
-
-        // Verifica o formato esperado
-        if (
-            result?.candidates?.[0]?.content?.parts?.[0]?.text
-        ) {
-            return result.candidates[0].content.parts[0].text;
-        } else {
-            // Tenta retornar algo genérico ou mostrar no console o conteúdo exato
-            throw new Error("Formato de resposta da API inesperado.");
-        }
-
-    } catch (error) {
-        console.error("Erro ao chamar a API Gemini:", error);
-        throw error;
     }
-}
 
     // --- Event Listeners ---
     function addCardListeners() {
@@ -195,14 +195,14 @@ async function callGeminiAPI(prompt) {
                 e.preventDefault();
                 const articleId = card.dataset.id;
                 window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
-                renderArticle(articleId);
+                checkURLAndRender();
             });
         });
     }
 
     searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        if (searchTerm.length < 3) {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        if (searchTerm.length < 2) {
             renderCategories();
             return;
         }
@@ -221,12 +221,15 @@ async function callGeminiAPI(prompt) {
     closeTechAssistantModalBtn.addEventListener('click', () => techAssistantModal.classList.remove('visible'));
     explainForMeBtn.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma técnica e detalhada"));
     explainForCustomerBtn.addEventListener('click', () => handleTechAssistant("Gere uma fala simples e empática para explicar isso a um cliente leigo"));
+    
     techAssistantModal.addEventListener('click', (e) => {
-        if (e.target === techAssistantModal) techAssistantModal.classList.remove('visible');
+        if (e.target === techAssistantModal) {
+            techAssistantModal.classList.remove('visible');
+        }
     });
 
-    // --- Controle de Navegação e URL ---
-    function checkURLForArticle() {
+    // --- Roteamento e Inicialização ---
+    function checkURLAndRender() {
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = urlParams.get('id');
         const header = document.querySelector('.kb-header');
@@ -241,9 +244,9 @@ async function callGeminiAPI(prompt) {
     }
     
     window.addEventListener('popstate', (event) => {
-        checkURLForArticle();
+        checkURLAndRender();
     });
 
-    // --- Inicialização ---
+    // --- Ponto de Entrada ---
     loadData();
 });

@@ -169,8 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Event Listeners do Modal (NOVO) ---
     closeTechAssistantModalBtn.addEventListener('click', () => techAssistantModal.classList.remove('visible'));
-    explainForMeBtn.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma técnica e detalhada"));
-    explainForCustomerBtn.addEventListener('click', () => handleTechAssistant("Gere uma fala simples e empática para explicar isso a um cliente leigo"));
+    explainForMeBtn.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma profissional e resumida"));
     techAssistantModal.addEventListener('click', (e) => {
         if (e.target === techAssistantModal) techAssistantModal.classList.remove('visible');
     });
