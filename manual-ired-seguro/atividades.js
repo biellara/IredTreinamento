@@ -219,7 +219,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // =========================================================================
     // 6. INICIALIZAÇÃO E ROTEAMENTO
     // =========================================================================
-    
     /**
      * ATUALIZADO: Esta função agora verifica se o ID na URL é de um quiz
      * antes de tentar renderizar um artigo.
