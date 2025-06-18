@@ -1,60 +1,37 @@
-// Local: netlify/functions/getContent.js
 const admin = require('firebase-admin');
 
-// Inicializa a app do Firebase Admin UMA VEZ
+console.log('🔍 INIT: FIREBASE_ADMIN_SDK:', process.env.FIREBASE_ADMIN_SDK?.slice(0, 50), '...');
+
 try {
   if (!admin.apps.length) {
-    // Obtém as credenciais a partir da variável de ambiente
     const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
+    console.log('✅ Parsed serviceAccount ok');
+    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    console.log('✅ Firebase Admin initialized');
   }
 } catch (error) {
-  console.error('Erro ao inicializar o Firebase Admin:', error);
+  console.error('❌ Initialization error:', error);
+  throw error; // força função a falhar com erro explícito
 }
 
 const db = admin.firestore();
 
 exports.handler = async function (event, context) {
-  // Apenas permite requisições GET
+  console.log('🔁 Handler invoked, httpMethod =', event.httpMethod);
   if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      body: 'Method Not Allowed',
-    };
+    return { statusCode: 405, body: 'Method Not Allowed' };
   }
-
   try {
-    // Busca todos os documentos da coleção 'content'
-    const contentRef = db.collection('content');
-    const snapshot = await contentRef.get();
-
-    if (snapshot.empty) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ message: 'Nenhum documento encontrado.' })
-      };
-    }
-
-    // Mapeia os documentos para um array de objetos
-    const allContent = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    // Retorna os dados como JSON
+    const snapshot = await db.collection('content').get();
+    console.log('📄 Retrieved', snapshot.size, 'documents');
+    const allContent = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(allContent)
     };
-
   } catch (error) {
-    console.error("Erro ao buscar dados do Firestore:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Falha ao buscar dados do banco de dados.' })
-    };
+    console.error('❌ Firestore read error:', error);
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
