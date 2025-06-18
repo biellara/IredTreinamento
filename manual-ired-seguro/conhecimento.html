@@ -13,6 +13,9 @@
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <!-- Folha de Estilo Principal -->
     <link rel="stylesheet" href="style.css" />
@@ -33,9 +36,9 @@
             <h1 class="kb-title">📚 Base de Conhecimento</h1>
             <p class="kb-subtitle">Encontre guias, procedimentos e informações técnicas para o seu atendimento.</p>
 
-            <div class="search-container">
+            <div class="search-container" style="margin-top: 1.5rem; max-width: 28rem; margin-left: auto; margin-right: auto;">
                 <i class="search-icon fa-solid fa-search"></i>
-                <input id="kb-search-input" type="text" placeholder="Busque em todos os artigos..." class="search-input" />
+                <input id="kb-search-input" type="text" placeholder="Busque nos artigos..." class="search-input" />
             </div>
         </header>
 
@@ -48,12 +51,11 @@
     <template id="article-template">
         <div class="article-view">
             <div class="article-header">
-                <!-- Este botão é controlado pelo JS para voltar à lista de categorias -->
-                <button class="article-back-button button">
+                <!-- CORREÇÃO: A classe foi alterada para 'back-button' para corresponder ao JS -->
+                <button class="back-button">
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>Voltar para a lista</span>
                 </button>
-                <!-- Botão para acionar o Modal do Assistente Técnico -->
                 <button class="tech-assistant-button">
                     <i class="fa-solid fa-brain"></i>
                     <span>Assistente Técnico</span>
@@ -91,7 +93,7 @@
             </div>
             <div id="tech-assistant-results" style="display: none; margin-top: 1.5rem;">
                 <h3 class="results-title" style="font-weight: 700; font-size: 1.125rem;"></h3>
-                <div id="tech-assistant-output" class="prose" style="margin-top: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;"></div>
+                <div id="tech-assistant-output" class="results-box prose"></div>
             </div>
         </div>
     </div>
