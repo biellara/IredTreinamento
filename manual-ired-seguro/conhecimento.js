@@ -1,39 +1,8 @@
 document.addEventListener('DOMContentLoaded', async function () {
     // =========================================================================
-    // 1. CONFIGURAÇÃO DO FIREBASE
+    // 1. SELEÇÃO DE ELEMENTOS DO DOM
     // =========================================================================
-    
-    // ATUALIZADO: Configuração do Firebase com as suas credenciais.
-    const firebaseConfig = {
-        apiKey: "AIzaSyDyo0ClqZCg8wq3YRq2bCLmpci5UqP2KwA",
-        authDomain: "treinamentosac-d3caf.firebaseapp.com",
-        projectId: "treinamentosac-d3caf",
-        storageBucket: "treinamentosac-d3caf.appspot.com",
-        messagingSenderId: "404713938104",
-        appId: "1:404713938104:web:96c0b9245150bef8ebe84d",
-        measurementId: "G-SY0RBD0E76"
-    };
-
-    // --- Inicialização do Firebase ---
-    // A declaração da variável mainContent foi movida para depois da inicialização
-    // para evitar erros caso a inicialização falhe.
-    let mainContent;
-    try {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-    } catch (e) {
-        mainContent = document.getElementById('kb-main-content');
-        console.error("Erro ao inicializar o Firebase. Verifique a sua 'firebaseConfig'.", e);
-        if(mainContent) mainContent.innerHTML = "<p><strong>Erro:</strong> Não foi possível conectar à base de dados. Verifique a consola para mais detalhes.</p>";
-        return;
-    }
-    const db = firebase.firestore();
-
-    // =========================================================================
-    // 2. SELEÇÃO DE ELEMENTOS DO DOM
-    // =========================================================================
-    mainContent = document.getElementById('kb-main-content');
+    const mainContent = document.getElementById('kb-main-content');
     const articleTemplate = document.getElementById('article-template');
     const categoriesTemplate = document.getElementById('categories-template');
     const searchInput = document.getElementById('kb-search-input');
@@ -41,31 +10,41 @@ document.addEventListener('DOMContentLoaded', async function () {
     const globalBackButton = document.querySelector('body > a.back-button');
     
     // --- Elementos do Modal ---
-    // A lógica do modal pode ser adicionada aqui quando necessária.
+    // A lógica do modal permanece, pois é controlada no cliente.
 
     // =========================================================================
-    // 3. ESTADO DA APLICAÇÃO
+    // 2. ESTADO DA APLICAÇÃO
     // =========================================================================
     let knowledgeBase = [];
     let allArticles = [];
 
     // =========================================================================
-    // 4. LÓGICA PRINCIPAL
+    // 3. LÓGICA PRINCIPAL
     // =========================================================================
 
+    /**
+     * ATUALIZADO: Carrega os dados de forma segura através da função Netlify,
+     * sem expor qualquer configuração do Firebase.
+     */
     async function loadData() {
         try {
-            const contentCollection = db.collection('content');
-            const snapshot = await contentCollection.where('type', '==', 'knowledgeBase').get();
+            // Chama a nossa nova função segura no Netlify.
+            const response = await fetch('/.netlify/functions/getContent');
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar conteúdo do servidor: ${response.statusText}`);
+            }
+            
+            const allContent = await response.json();
 
-            if (snapshot.empty) {
-                console.log('Nenhum documento da Base de Conhecimento encontrado.');
+            // Filtra o conteúdo para obter apenas os itens da "Base de Conhecimento".
+            allArticles = allContent.filter(doc => doc.type === 'knowledgeBase');
+
+            if (allArticles.length === 0) {
                 mainContent.innerHTML = "<p>Nenhum conteúdo encontrado na base de conhecimento.</p>";
                 return;
             }
-
-            allArticles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             
+            // Reconstrói a estrutura de categorias aninhadas que as funções de renderização esperam.
             knowledgeBase = allArticles.reduce((acc, article) => {
                 let category = acc.find(c => c.category === article.category);
                 if (!category) {
@@ -76,10 +55,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return acc;
             }, []);
 
+            // Inicia a renderização da página.
             checkURLAndRender();
 
         } catch (err) {
-            console.error("Erro ao buscar dados do Firestore:", err);
+            console.error("Erro ao carregar dados:", err);
             mainContent.innerHTML = `<p><strong>Erro ao carregar dados:</strong> ${err.message}</p>`;
         }
     }
@@ -121,6 +101,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         try {
+            // A busca do arquivo .md permanece a mesma, pois o conteúdo textual não está no DB.
             const response = await fetch(`./articles/${articleData.file}`);
             if (!response.ok) throw new Error(`Arquivo '${articleData.file}' não encontrado.`);
             const markdownContent = await response.text();
@@ -157,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     
     // =========================================================================
-    // 5. Funções de Event Listeners e Roteamento
+    // 4. Funções de Event Listeners e Roteamento
     // =========================================================================
     
     function addCardListeners() {
