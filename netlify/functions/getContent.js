@@ -1,19 +1,21 @@
 const admin = require('firebase-admin');
+const path = require('path');
 
 console.log('🔍 INIT: FIREBASE_ADMIN_SDK:', process.env.FIREBASE_ADMIN_SDK?.slice(0, 50), '...');
 
 try {
   if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
-    console.log('✅ Parsed serviceAccount ok');
+    const serviceAccountPath = path.resolve(__dirname, process.env.FIREBASE_ADMIN_SDK);
+    const serviceAccount = require(serviceAccountPath);
+    console.log('✅ Loaded serviceAccount from file');
     admin.initializeApp({
-      credential: admin.credential.cert(process.env.FIREBASE_ADMIN_SDK)
+      credential: admin.credential.cert(serviceAccount)
     });
     console.log('✅ Firebase Admin initialized');
   }
 } catch (error) {
   console.error('❌ Initialization error:', error);
-  throw error; // força função a falhar com erro explícito
+  throw error;
 }
 
 const db = admin.firestore();
