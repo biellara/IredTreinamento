@@ -1,16 +1,23 @@
 const admin = require('firebase-admin');
-const path = require('path');
 
 console.log('🔍 INIT: FIREBASE_ADMIN_SDK:', process.env.FIREBASE_ADMIN_SDK?.slice(0, 50), '...');
 
 try {
   if (!admin.apps.length) {
-    const serviceAccountPath = path.resolve(__dirname, process.env.FIREBASE_ADMIN_SDK);
-    const serviceAccount = require(serviceAccountPath);
-    console.log('✅ Loaded serviceAccount from file');
+    // Parse JSON da variável de ambiente
+    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
+
+    // Corrigir a chave privada: transformar as sequências literais '\n' em quebras de linha reais
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
+
+    console.log('✅ Parsed serviceAccount ok');
+    
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
+    
     console.log('✅ Firebase Admin initialized');
   }
 } catch (error) {
