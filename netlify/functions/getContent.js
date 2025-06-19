@@ -11,7 +11,7 @@ try {
   }
 } catch (error) {
   console.error('❌ Initialization error:', error);
-  throw error; // força função a falhar com erro explícit
+  throw error; // força função a falhar com erro explícito
 }
 
 const db = admin.firestore();
