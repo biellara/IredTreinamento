@@ -6,7 +6,9 @@ try {
   if (!admin.apps.length) {
     const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
     console.log('✅ Parsed serviceAccount ok');
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    admin.initializeApp({
+      credential: admin.credential.cert(process.env.FIREBASE_ADMIN_SDK)
+    });
     console.log('✅ Firebase Admin initialized');
   }
 } catch (error) {
