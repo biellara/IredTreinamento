@@ -4,7 +4,11 @@ console.log('🔍 INIT: FIREBASE_ADMIN_SDK:', process.env.FIREBASE_ADMIN_SDK?.sl
 
 try {
   if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
+    // Corrige as quebras de linha escapadas \\n para \n no JSON da variável de ambiente
+    const rawServiceAccount = process.env.FIREBASE_ADMIN_SDK;
+    const fixedServiceAccount = rawServiceAccount.replace(/\\n/g, '\n');
+    const serviceAccount = JSON.parse(fixedServiceAccount);
+
     console.log('✅ Parsed serviceAccount ok');
     admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
     console.log('✅ Firebase Admin initialized');
