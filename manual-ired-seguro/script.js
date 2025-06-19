@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    
+
     const searchInput = document.getElementById('universalSearch');
     const searchContainer = document.querySelector('.search-container');
-    
-    // VERIFICAÇÃO: Apenas executa o código de busca se os elementos existirem
+
     if (searchInput && searchContainer) {
         let allArticles = [];
         const resultsContainer = document.createElement('div');
@@ -12,16 +11,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         async function loadDatabase() {
             try {
-                const response = await fetch('./database.json');
-                if (!response.ok) throw new Error('database.json não encontrado.');
-                const db = await response.json();
-                
-                const kbArticles = db.knowledgeBase.flatMap(cat => 
-                    cat.articles.map(art => ({ ...art, category: `Base de Conhecimento / ${cat.category}`, url: 'conhecimento.html' }))
-                );
-                const activityArticles = db.activities.flatMap(cat => 
-                    cat.articles.map(art => ({ ...art, category: `Artigos e Atividades / ${cat.category}`, url: 'atividades.html' }))
-                );
+                // Buscar do Firebase via Serverless, não mais do arquivo local
+                const response = await fetch('/.netlify/functions/getContent');
+                if (!response.ok) throw new Error('Erro ao buscar dados do banco Firebase.');
+                const data = await response.json();
+
+                // Filtrar e mapear os dados para a busca
+                const kbArticles = data
+                    .filter(doc => doc.type === 'knowledgeBase')
+                    .map(art => ({
+                        ...art,
+                        category: `Base de Conhecimento / ${art.category}`,
+                        url: 'conhecimento.html'
+                    }));
+
+                const activityArticles = data
+                    .filter(doc => doc.type === 'activity')
+                    .map(art => ({
+                        ...art,
+                        category: `Artigos e Atividades / ${art.category}`,
+                        url: 'atividades.html'
+                    }));
+
                 allArticles = [...kbArticles, ...activityArticles];
             } catch (error) {
                 console.error("Erro ao carregar o banco de dados da busca:", error);
@@ -31,15 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function performSearch() {
             const searchTerm = searchInput.value.toLowerCase().trim();
-            resultsContainer.innerHTML = ''; 
+            resultsContainer.innerHTML = '';
 
             if (searchTerm.length < 3) {
                 resultsContainer.style.display = 'none';
                 return;
             }
 
-            const filteredResults = allArticles.filter(item => 
-                item.title.toLowerCase().includes(searchTerm) || 
+            const filteredResults = allArticles.filter(item =>
+                item.title.toLowerCase().includes(searchTerm) ||
                 item.description.toLowerCase().includes(searchTerm)
             );
 
@@ -67,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         loadDatabase();
         searchInput.addEventListener('input', performSearch);
-        
+
         document.addEventListener('click', function(event) {
             if (!searchContainer.contains(event.target)) {
                 resultsContainer.style.display = 'none';
