@@ -11,12 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         async function loadDatabase() {
             try {
-                // Buscar do Firebase via Serverless, não mais do arquivo local
-                const response = await fetch('/.netlify/functions/getContent');
+                const response = await fetch('/api/getContent');
                 if (!response.ok) throw new Error('Erro ao buscar dados do banco Firebase.');
                 const data = await response.json();
 
-                // Filtrar e mapear os dados para a busca
                 const kbArticles = data
                     .filter(doc => doc.type === 'knowledgeBase')
                     .map(art => ({
