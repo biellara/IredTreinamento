@@ -40,46 +40,25 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   async function loadData() {
     try {
-      // Agora SEMPRE buscamos do Firebase via Serverless
-      const response = await fetch('/.netlify/functions/getContent');
+      const response = await fetch('/api/getContent');
       if (!response.ok) throw new Error('Erro ao buscar dados do banco.');
-
       const data = await response.json();
 
-      if (isAtividades) {
-        // Filtra apenas documentos tipo 'activity'
-        const filtered = data.filter(doc => doc.type === 'activity');
-        if (filtered.length === 0) throw new Error('Nenhuma atividade encontrada.');
+      const isActivity = doc => doc.type === (isAtividades ? 'activity' : 'knowledgeBase');
+      const filtered = data.filter(isActivity);
+      if (filtered.length === 0) throw new Error(isAtividades ? 'Nenhuma atividade encontrada.' : 'Nenhum artigo encontrado.');
 
-        allArticles = filtered;
+      allArticles = filtered;
 
-        knowledgeData = filtered.reduce((acc, article) => {
-          let category = acc.find(c => c.category === article.category);
-          if (!category) {
-            category = { category: article.category, articles: [] };
-            acc.push(category);
-          }
-          category.articles.push(article);
-          return acc;
-        }, []);
-
-      } else {
-        // Página conhecimento: filtra 'knowledgeBase'
-        const filtered = data.filter(doc => doc.type === 'knowledgeBase');
-        if (filtered.length === 0) throw new Error('Nenhum artigo encontrado.');
-
-        allArticles = filtered;
-
-        knowledgeData = filtered.reduce((acc, article) => {
-          let category = acc.find(c => c.category === article.category);
-          if (!category) {
-            category = { category: article.category, articles: [] };
-            acc.push(category);
-          }
-          category.articles.push(article);
-          return acc;
-        }, []);
-      }
+      knowledgeData = filtered.reduce((acc, article) => {
+        let category = acc.find(c => c.category === article.category);
+        if (!category) {
+          category = { category: article.category, articles: [] };
+          acc.push(category);
+        }
+        category.articles.push(article);
+        return acc;
+      }, []);
 
       checkURLAndRender();
 
@@ -126,7 +105,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     try {
-      // Busca arquivo markdown local (mantém esta lógica)
       const response = await fetch(`./articles/${articleData.file}`);
       if (!response.ok) throw new Error(`Arquivo '${articleData.file}' não encontrado.`);
       const markdownContent = await response.text();
@@ -243,7 +221,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   async function callGeminiAPI(prompt) {
-    const apiEndpoint = '/.netlify/functions/gemini';
+    const apiEndpoint = '/api/gemini';
     try {
       const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
       const response = await fetch(apiEndpoint, {

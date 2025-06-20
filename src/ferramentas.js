@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    
     // --- Elementos do DOM ---
     const toolSelectionView = document.getElementById('view-tool-selection');
     const toolInterfaceView = document.getElementById('view-tool-interface');
@@ -8,41 +7,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const homeButton = document.getElementById('home-button');
     const converter = new showdown.Converter({ strikethrough: true, tables: true });
 
-    // O objeto `toolTemplates` foi removido, pois o HTML agora está no arquivo .html
-
-    // --- Funções de Controle da UI ---
     function showToolSelection() {
         backToToolsButton.style.display = 'none';
         homeButton.style.display = 'inline-flex';
         toolInterfaceView.classList.remove('active');
         toolSelectionView.classList.add('active');
-        toolInterfaceView.innerHTML = ''; // Limpa a interface da ferramenta
+        toolInterfaceView.innerHTML = '';
     }
 
-    /**
-     * ATUALIZADO: Esta função agora clona o conteúdo de um <template> do HTML
-     * em vez de usar uma string JavaScript.
-     */
     function showTool(targetId) {
         const template = document.getElementById(`template-${targetId}`);
         if (!template) {
             console.error(`Template para a ferramenta "${targetId}" não foi encontrado no HTML.`);
             return;
         }
-        
+
         const clone = template.content.cloneNode(true);
 
         toolSelectionView.classList.remove('active');
-        toolInterfaceView.innerHTML = ''; // Limpa a view antes de adicionar o novo conteúdo
+        toolInterfaceView.innerHTML = '';
         toolInterfaceView.appendChild(clone);
         toolInterfaceView.classList.add('active');
-        
+
         homeButton.style.display = 'none';
         backToToolsButton.style.display = 'inline-flex';
         activateToolListeners(targetId);
     }
-    
-    // --- Listeners de Navegação ---
+
     toolCards.forEach(card => {
         card.addEventListener('click', function(event) {
             event.preventDefault();
@@ -56,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showToolSelection();
     });
 
-    // --- Lógica Específica de Cada Ferramenta ---
     function activateToolListeners(toolId) {
         if (toolId === 'diagnostico') setupDiagnostico();
         if (toolId === 'simulador') setupSimulador();
@@ -82,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const scriptPrompt = `Com base no problema "${problemDescription.value}", crie uma única frase de abertura empática para o atendente usar.`;
                 const script = await callGeminiAPI(scriptPrompt);
                 document.getElementById('script-output').innerHTML = converter.makeHtml(script);
-                
+
                 aiResults.style.display = 'block';
             } catch (error) {
                 document.getElementById('diagnosis-output').innerHTML = `<strong>Erro ao contactar a IA:</strong> ${error.message}`;
@@ -109,8 +99,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const restartSimBtn = document.getElementById('restartSimBtn');
             const simFeedbackView = document.getElementById('sim-feedback-view');
             let conversationHistory = [];
-            const scenarios = { 'lentidao-frustrado': "Cliente frustrado com lentidão.", 'wifi-nao-funciona-leigo': "Cliente leigo com Wi-Fi que não funciona no quarto.", 'quedas-constantes-irritado': "Cliente irritado com quedas constantes.", 'velocidade-baixa-cabo': "Cliente com velocidade baixa no cabo."};
-            
+            const scenarios = {
+                'lentidao-frustrado': "Cliente frustrado com lentidão.",
+                'wifi-nao-funciona-leigo': "Cliente leigo com Wi-Fi que não funciona no quarto.",
+                'quedas-constantes-irritado': "Cliente irritado com quedas constantes.",
+                'velocidade-baixa-cabo': "Cliente com velocidade baixa no cabo."
+            };
+
             function appendMessage(text, sender) {
                 const bubble = document.createElement('div');
                 bubble.classList.add('chat-bubble', sender);
@@ -133,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     simLoader.style.display = 'none';
                 }
             }
-            
+
             async function sendMessage() {
                 const messageText = chatInput.value.trim();
                 if (!messageText) return;
@@ -146,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     conversationHistory.push({ role: 'model', parts: [{ text: customerResponse }] });
                     appendMessage(customerResponse, 'customer');
                 } finally {
-                     simLoader.style.display = 'none';
+                    simLoader.style.display = 'none';
                 }
             }
 
@@ -162,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     simLoader.style.display = 'none';
                 }
             }
-            
+
             start();
             sendChatBtn.addEventListener('click', sendMessage);
             chatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
@@ -208,9 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Função de API Padrão ---
     async function callGeminiAPI(promptOrHistory) {
-        const apiEndpoint = '/.netlify/functions/gemini';
+        const apiEndpoint = '/api/gemini';
         const contents = Array.isArray(promptOrHistory) ? promptOrHistory : [{ role: "user", parts: [{ text: promptOrHistory }] }];
 
         try {
@@ -233,4 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
             throw error;
         }
     }
+
+    showToolSelection();
 });

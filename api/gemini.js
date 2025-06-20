@@ -1,18 +1,15 @@
 const fetch = require('node-fetch');
 
-exports.handler = async function (event, context) {
+module.exports = async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'API key não configurada.' })
-    };
+    return res.status(500).json({ error: 'API key não configurada.' });
   }
 
   let contents;
   try {
-    const bodyData = JSON.parse(event.body);
+    const bodyData = req.body;
     const history = Array.isArray(bodyData.history) ? bodyData.history : [];
     const newContents = Array.isArray(bodyData.contents) ? bodyData.contents : [];
 
@@ -21,12 +18,8 @@ exports.handler = async function (event, context) {
     if (!Array.isArray(contents) || contents.length === 0) {
       throw new Error("Formato inválido de conteúdo. Esperado um array não vazio.");
     }
-
   } catch (parseError) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Corpo da requisição inválido.', detalhe: parseError.message })
-    };
+    return res.status(400).json({ error: 'Corpo da requisição inválido.', detalhe: parseError.message });
   }
 
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -39,15 +32,8 @@ exports.handler = async function (event, context) {
     });
 
     const data = await response.json();
-    return {
-      statusCode: 200,
-      body: JSON.stringify(data)
-    };
-
+    return res.status(200).json(data);
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
+    return res.status(500).json({ error: err.message });
   }
 };
