@@ -1,0 +1,50 @@
+{
+  "quizzes": [
+    {
+      "id": "quiz-leds-onu",
+      "title": "Quiz: LEDs da ONU",
+      "questions": [
+        {
+          "question": "O que indica uma luz LOS acesa e vermelha na ONU?",
+          "options": [
+            "Que a ONU está sem energia.",
+            "Que há uma perda total de sinal óptico.",
+            "Que a rede Wi-Fi está desativada.",
+            "Que a ONU está a autenticar na rede."
+          ],
+          "answer": 1
+        },
+        {
+          "question": "Qual é o estado NORMAL da luz PON (Passive Optical Network)?",
+          "options": [
+            "Verde piscando",
+            "Vermelho fixo",
+            "Verde fixo",
+            "Apagado"
+          ],
+          "answer": 2
+        },
+        {
+          "question": "Um cliente liga e diz que a luz LAN está apagada. Qual é a causa mais provável?",
+          "options": [
+            "A fibra óptica rompeu na rua.",
+            "Há uma falha massiva na região.",
+            "A senha do Wi-Fi está incorreta.",
+            "Não há nenhum cabo de rede conectado à ONU ou o dispositivo conectado está desligado."
+          ],
+          "answer": 3
+        },
+        {
+          "question": "Se a luz POWER da ONU estiver apagada, qual é o primeiro passo a ser orientado ao cliente?",
+          "options": [
+            "Agendar uma visita técnica imediatamente.",
+            "Pedir para o cliente desconectar o cabo de fibra.",
+            "Verificar se a fonte de alimentação está bem conectada na tomada e na ONU.",
+            "Alterar o canal do Wi-Fi."
+          ],
+          "answer": 2
+        }
+      ]
+    }
+  ]
+}
