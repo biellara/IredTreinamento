@@ -1,7 +1,5 @@
 node_modules
 .env
-# Local Netlify folder
 .netlify
-netlify/functions/serviceAccountKey.json
 .vercel
 firebase-import/serviceAccountKey.json
