@@ -1,0 +1,51 @@
+{
+  "quizzes": [
+    {
+      "id": "diferenca-cabos-rede",
+      "title": "Quiz: Diferença entre Cabos de Rede",
+      "description": "Conheça os tipos mais comuns de cabos de rede RJ45, suas capacidades de velocidade e como o cabo usado pode impactar a qualidade da conexão do cliente.",
+      "questions": [
+        {
+          "question": "Qual cabo suporta velocidades de até 100 Mbps e é considerado obsoleto para planos atuais?",
+          "options": [
+            "CAT5e",
+            "CAT5",
+            "CAT6",
+            "CAT7"
+          ],
+          "answer": "CAT5"
+        },
+        {
+          "question": "Qual cabo é recomendado como mínimo para planos de 200 Mbps ou superiores?",
+          "options": [
+            "CAT3",
+            "CAT5",
+            "CAT5e",
+            "CAT6"
+          ],
+          "answer": "CAT5e"
+        },
+        {
+          "question": "Qual é a principal vantagem do cabo CAT5e em relação ao CAT5?",
+          "options": [
+            "Suporta até 10 Gbps",
+            "Reduz interferências (crosstalk)",
+            "É mais barato",
+            "Tem conectores diferentes"
+          ],
+          "answer": "Reduz interferências (crosstalk)"
+        },
+        {
+          "question": "Se um cliente usa cabo CAT5 em um plano de 500 Mbps, o que pode acontecer?",
+          "options": [
+            "A velocidade será limitada pelo cabo a até 100 Mbps",
+            "A velocidade será maior que o contratado",
+            "O cabo não terá impacto na velocidade",
+            "A conexão vai parar de funcionar"
+          ],
+          "answer": "A velocidade será limitada pelo cabo a até 100 Mbps"
+        }
+      ]
+    }
+  ]
+}
