@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const articleId = card.dataset.id;
         const articleData = allArticles.find(a => a.id === articleId);
 
-        if (isAtividades && articleData?.categoryName?.toLowerCase().includes('quiz')) {
+        // Corrigir a verificação para quizzes: usar 'category' em vez de 'categoryName' (ajuste conforme seu banco)
+        if (isAtividades && articleData?.category?.toLowerCase().includes('quiz')) {
           window.location.href = `quiz.html?id=${articleId}`;
         } else {
           window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
@@ -174,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (articleId) {
       const articleData = allArticles.find(a => a.id === articleId);
-      if (isAtividades && articleData?.categoryName?.toLowerCase().includes('quiz')) {
+      if (isAtividades && articleData?.category?.toLowerCase().includes('quiz')) {
         window.location.href = `quiz.html?id=${articleId}`;
         return;
       }

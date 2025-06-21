@@ -1,66 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Interativo | IRED</title>
-    
-    <!-- Fontes e Ícones -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <!-- CSS Customizado -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Interativo | IRED</title>
+
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- CSS Customizado -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <a href="atividades.html" class="back-button">
-        <i class="fa-solid fa-arrow-left"></i>
-        <span>Voltar para Atividades</span>
-    </a>
+  <a href="atividades.html" class="back-button">
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Voltar para Atividades</span>
+  </a>
 
-    <main class="page-container">
-        <div id="quiz-container" class="hub-content">
-            
-            <!-- Tela de Carregamento -->
-            <div id="quiz-loading" class="view active">
-                <h1 class="hub-title">A carregar Quiz...</h1>
-                <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-red); font-size: 2.25rem; margin-top: 1rem;"></i>
-            </div>
+  <main class="page-container">
+    <div id="quiz-container" class="hub-content">
+      <!-- Tela de Carregamento -->
+      <div id="quiz-loading" class="view active">
+        <h1 class="hub-title">A carregar Quiz...</h1>
+        <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-red); font-size: 2.25rem; margin-top: 1rem;"></i>
+      </div>
 
-            <!-- Tela do Quiz -->
-            <div id="quiz-main-view" class="view">
-                <header class="quiz-header">
-                    <h1 id="quiz-title" class="hub-title"></h1>
-                    <p id="quiz-progress" class="hub-subtitle"></p>
-                </header>
-                <div id="quiz-card" class="card" style="text-align: left;">
-                    <h2 id="quiz-question" class="quiz-question-title"></h2>
-                    <div id="quiz-options-area" class="quiz-options-grid">
-                        <!-- As opções de resposta serão injetadas aqui pelo JS -->
-                    </div>
-                    <div id="quiz-feedback-area" class="quiz-feedback"></div>
-                </div>
-                <button id="quiz-next-button" class="button button-red" style="display: none; margin-top: 1.5rem;">Próxima Pergunta</button>
-            </div>
-
-            <!-- Tela de Resultados -->
-            <div id="quiz-results-view" class="view">
-                <header>
-                    <h1 class="hub-title">Quiz Finalizado!</h1>
-                </header>
-                <div class="card" style="margin-top: 2rem;">
-                    <h2 style="font-size: 1.5rem; font-weight: 700;">Seu Resultado:</h2>
-                    <p id="quiz-score"></p>
-                    <p id="quiz-feedback-text" style="font-size: 1.125rem; color: var(--text-light);"></p>
-                    <button id="quiz-restart-button" class="button button-blue" style="margin-top: 2rem;">Tentar Novamente</button>
-                </div>
-            </div>
-
+      <!-- Tela do Quiz -->
+      <div id="quiz-main-view" class="view">
+        <header class="quiz-header">
+          <h1 id="quiz-title" class="hub-title"></h1>
+          <p id="quiz-progress" class="hub-subtitle"></p>
+        </header>
+        <div id="quiz-card" class="card" style="text-align: left;">
+          <h2 id="quiz-question" class="quiz-question-title"></h2>
+          <div id="quiz-options-area" class="quiz-options-grid">
+            <!-- JS irá injetar as opções -->
+          </div>
+          <div id="quiz-feedback-area" class="quiz-feedback"></div>
         </div>
-    </main>
+        <button id="quiz-next-button" class="button button-red" style="display: none; margin-top: 1.5rem;">Próxima Pergunta</button>
+      </div>
 
-    <script src="quiz.js"></script>
+      <!-- Tela de Resultados -->
+      <div id="quiz-results-view" class="view">
+        <header>
+          <h1 class="hub-title">Quiz Finalizado!</h1>
+        </header>
+        <div class="card" style="margin-top: 2rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700;">Seu Resultado:</h2>
+          <p id="quiz-score"></p>
+          <p id="quiz-feedback-text" style="font-size: 1.125rem; color: var(--text-light);"></p>
+          <button id="quiz-restart-button" class="button button-blue" style="margin-top: 2rem;">Tentar Novamente</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toda lógica está contida em quiz.js -->
+  <script type="module" src="quiz.js"></script>
 </body>
 </html>
