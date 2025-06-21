@@ -4,3 +4,4 @@ node_modules
 .netlify
 netlify/functions/serviceAccountKey.json
 .vercel
+firebase-import/serviceAccountKey.json
