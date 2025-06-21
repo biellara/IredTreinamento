@@ -1,16 +1,32 @@
-document.addEventListener('DOMContentLoaded', function() {
+// quiz.js atualizado para consumir dados diretamente do Firebase Realtime Database
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_AUTH_DOMAIN",
+  databaseURL: "https://SEU_DATABASE.firebaseio.com",
+  projectId: "SEU_PROJECT_ID",
+  storageBucket: "SEU_BUCKET",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+document.addEventListener('DOMContentLoaded', async function () {
     let allQuizzes = [];
     let currentQuiz = null;
     let currentQuestionIndex = 0;
     let score = 0;
 
-    // --- Elementos do DOM ---
     const quizContainer = document.getElementById('quiz-container');
     const loadingView = document.getElementById('quiz-loading');
     const mainView = document.getElementById('quiz-main-view');
     const resultsView = document.getElementById('quiz-results-view');
-    
+
     const quizTitleEl = document.getElementById('quiz-title');
     const quizProgressEl = document.getElementById('quiz-progress');
     const quizQuestionEl = document.getElementById('quiz-question');
@@ -19,18 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextButton = document.getElementById('quiz-next-button');
     const restartButton = document.getElementById('quiz-restart-button');
 
-    // --- Fun��es do Quiz ---
-
     async function loadQuizData() {
         try {
-            const response = await fetch('/api/getContent');
-            if (!response.ok) throw new Error('Falha ao carregar o banco de dados.');
-            const db = await response.json();
-            allQuizzes = db.filter(item => item.type === 'quiz');
-            
+            const dbRef = ref(database);
+            const snapshot = await get(child(dbRef, `quizzes`));
+            if (!snapshot.exists()) throw new Error("Nenhum dado encontrado no Firebase.");
+
+            const data = snapshot.val();
+            allQuizzes = Object.values(data);
+
             const urlParams = new URLSearchParams(window.location.search);
             const quizId = urlParams.get('id');
-            
+
             if (quizId) {
                 currentQuiz = allQuizzes.find(q => q.id === quizId);
                 if (currentQuiz) {
@@ -134,10 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
         quizContainer.innerHTML = `<h1 class="hub-title text-red-600">Erro</h1><p class="hub-subtitle">${message}</p>`;
     }
 
-    // --- Event Listeners ---
     nextButton.addEventListener('click', showNextQuestion);
     restartButton.addEventListener('click', startQuiz);
 
-    // --- Inicialização ---
     loadQuizData();
 });
