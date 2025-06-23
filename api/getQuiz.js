@@ -11,24 +11,16 @@ if (!admin.apps.length) {
   });
 }
 
-const db = admin.firestore();
+const { getQuizFromFirestore } = require('../lib/firestore-quiz');
 
 module.exports = async (req, res) => {
   const { id } = req.query;
-
-  if (!id) {
-    return res.status(400).json({ error: 'ID do quiz não informado.' });
-  }
+  if (!id) return res.status(400).json({ error: 'ID do quiz não informado.' });
 
   try {
-    const snapshot = await db.collection('quizzes').where('id', '==', id).get();
-
-    if (snapshot.empty) {
-      return res.status(404).json({ error: 'Quiz não encontrado.' });
-    }
-
-    const quizDoc = snapshot.docs[0].data();
-    return res.status(200).json(quizDoc);
+    const quiz = await getQuizFromFirestore(id);
+    if (!quiz) return res.status(404).json({ error: 'Quiz não encontrado.' });
+    return res.status(200).json(quiz);
   } catch (error) {
     console.error('Erro ao obter quiz:', error);
     return res.status(500).json({ error: 'Erro ao obter quiz.' });

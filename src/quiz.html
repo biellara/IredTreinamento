@@ -22,9 +22,10 @@
 
   <main class="page-container">
     <div id="quiz-container" class="hub-content">
+      
       <!-- Tela de Carregamento -->
       <div id="quiz-loading" class="view active">
-        <h1 class="hub-title">A carregar Quiz...</h1>
+        <h1 class="hub-title">Carregando Quiz...</h1>
         <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-red); font-size: 2.25rem; margin-top: 1rem;"></i>
       </div>
 
@@ -34,14 +35,22 @@
           <h1 id="quiz-title" class="hub-title"></h1>
           <p id="quiz-progress" class="hub-subtitle"></p>
         </header>
+
         <div id="quiz-card" class="card" style="text-align: left;">
           <h2 id="quiz-question" class="quiz-question-title"></h2>
+
           <div id="quiz-options-area" class="quiz-options-grid">
-            <!-- JS irá injetar as opções -->
+            <!-- Opções de resposta serão injetadas aqui -->
           </div>
-          <div id="quiz-feedback-area" class="quiz-feedback"></div>
+
+          <div id="quiz-feedback-area" class="quiz-feedback" style="margin-top: 1rem; display: none;">
+            <p id="quiz-feedback-message"></p>
+          </div>
+
+          <button id="quiz-next-button" class="button button-red" style="display: none; margin-top: 2rem;">
+            Próxima Pergunta
+          </button>
         </div>
-        <button id="quiz-next-button" class="button button-red" style="display: none; margin-top: 1.5rem;">Próxima Pergunta</button>
       </div>
 
       <!-- Tela de Resultados -->
@@ -56,10 +65,11 @@
           <button id="quiz-restart-button" class="button button-blue" style="margin-top: 2rem;">Tentar Novamente</button>
         </div>
       </div>
+
     </div>
   </main>
 
-  <!-- Toda lógica está contida em quiz.js -->
+  <!-- Script principal -->
   <script type="module" src="quiz.js"></script>
 </body>
 </html>
