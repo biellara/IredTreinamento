@@ -38,35 +38,58 @@ document.addEventListener('DOMContentLoaded', async function () {
     strikethrough: true, tables: true
   });
 
-  async function loadData() {
-    try {
-      const response = await fetch('/api/getContent');
-      if (!response.ok) throw new Error('Erro ao buscar dados do banco.');
-      const data = await response.json();
+async function loadData() {
+  try {
+    // Carrega sempre o conteúdo principal
+    const contentResponse = await fetch('/api/getContent');
+    if (!contentResponse.ok) throw new Error('Erro ao buscar dados principais.');
+    const contentData = await contentResponse.json();
 
-      const isActivity = doc => doc.type === (isAtividades ? 'activity' : 'knowledgeBase');
-      const filtered = data.filter(isActivity);
-      if (filtered.length === 0) throw new Error(isAtividades ? 'Nenhuma atividade encontrada.' : 'Nenhum artigo encontrado.');
+    let combined = [...contentData];
 
-      allArticles = filtered;
+    // Apenas na página de atividades, incluir quizzes
+    if (isAtividades) {
+      const quizzesResponse = await fetch('/api/getQuizzes');
+      if (!quizzesResponse.ok) throw new Error('Erro ao buscar quizzes.');
+      const quizzesData = await quizzesResponse.json();
 
-      knowledgeData = filtered.reduce((acc, article) => {
-        let category = acc.find(c => c.category === article.category);
-        if (!category) {
-          category = { category: article.category, articles: [] };
-          acc.push(category);
-        }
-        category.articles.push(article);
-        return acc;
-      }, []);
+      const quizzesFormatted = quizzesData.map(q => ({
+        ...q,
+        type: 'quiz',
+        description: q.description || 'Quiz de treinamento.',
+        category: q.category || 'Quizzes'
+      }));
 
-      checkURLAndRender();
-
-    } catch (err) {
-      console.error(err);
-      mainContent.innerHTML = `<p><strong>Erro:</strong> ${err.message}</p>`;
+      combined = [...combined, ...quizzesFormatted];
     }
+
+    const isActivity = doc => doc.type === (isAtividades ? 'activity' : 'knowledgeBase') || (isAtividades && doc.type === 'quiz');
+    const filtered = combined.filter(isActivity);
+
+    if (filtered.length === 0) {
+      throw new Error(isAtividades ? 'Nenhuma atividade encontrada.' : 'Nenhum artigo encontrado.');
+    }
+
+    allArticles = filtered;
+
+    knowledgeData = filtered.reduce((acc, article) => {
+      let category = acc.find(c => c.category === article.category);
+      if (!category) {
+        category = { category: article.category, articles: [] };
+        acc.push(category);
+      }
+      category.articles.push(article);
+      return acc;
+    }, []);
+
+    checkURLAndRender();
+
+  } catch (err) {
+    console.error(err);
+    mainContent.innerHTML = `<p><strong>Erro:</strong> ${err.message}</p>`;
   }
+}
+
 
   function renderCategories(categories = knowledgeData) {
     const templateNode = categoriesTemplate.content.cloneNode(true);
@@ -158,8 +181,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const articleId = card.dataset.id;
         const articleData = allArticles.find(a => a.id === articleId);
 
-        // Corrigir a verificação para quizzes: usar 'category' em vez de 'categoryName' (ajuste conforme seu banco)
-        if (isAtividades && articleData?.category?.toLowerCase().includes('quiz')) {
+        if (isAtividades && articleData?.type === 'quiz') {
           window.location.href = `quiz.html?id=${articleId}`;
         } else {
           window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
@@ -175,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (articleId) {
       const articleData = allArticles.find(a => a.id === articleId);
-      if (isAtividades && articleData?.category?.toLowerCase().includes('quiz')) {
+      if (isAtividades && articleData?.type === 'quiz') {
         window.location.href = `quiz.html?id=${articleId}`;
         return;
       }

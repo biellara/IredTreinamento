@@ -10,6 +10,7 @@ const quizProgressEl = document.getElementById('quiz-progress');
 const quizQuestionEl = document.getElementById('quiz-question');
 const quizOptionsAreaEl = document.getElementById('quiz-options-area');
 const quizFeedbackEl = document.getElementById('quiz-feedback-area');
+const quizFeedbackMessage = document.getElementById('quiz-feedback-message');
 const nextButton = document.getElementById('quiz-next-button');
 const restartButton = document.getElementById('quiz-restart-button');
 
@@ -24,7 +25,7 @@ async function loadQuizData() {
 
     if (!quizId) return showError('Nenhum ID de quiz foi fornecido.');
 
-    const response = await fetch(`/api/getQuiz?id=${quizId}`);
+    const response = await fetch(`/api/getQuiz?id=${quizId}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Erro ao buscar quiz da API');
 
     const data = await response.json();
@@ -53,7 +54,8 @@ function startQuiz() {
 
 function displayQuestion() {
   nextButton.style.display = 'none';
-  quizFeedbackEl.textContent = '';
+  quizFeedbackEl.style.display = 'none';
+  quizFeedbackMessage.textContent = '';
 
   const questionData = currentQuiz.questions[currentQuestionIndex];
 
@@ -66,6 +68,7 @@ function displayQuestion() {
     const button = document.createElement('button');
     button.className = 'quiz-option-button';
     button.textContent = option;
+    button.disabled = false;
     button.addEventListener('click', () => handleAnswer(index, button));
     quizOptionsAreaEl.appendChild(button);
   });
@@ -73,28 +76,30 @@ function displayQuestion() {
 
 function handleAnswer(selectedIndex, selectedButton) {
   const questionData = currentQuiz.questions[currentQuestionIndex];
-  const correctIndex = questionData.answer;
+  const correctAnswerText = questionData.answer; // aqui é texto, não índice
+
+  // Descobre índice correto buscando a opção que bate com o texto da resposta
+  const correctIndex = questionData.options.findIndex(opt => opt === correctAnswerText);
 
   document.querySelectorAll('.quiz-option-button').forEach((btn, idx) => {
     btn.disabled = true;
-    if (idx === correctIndex) {
-      btn.classList.add('correct');
-    }
+    if (idx === correctIndex) btn.classList.add('correct');
   });
 
   if (selectedIndex === correctIndex) {
     score++;
     selectedButton.classList.add('correct');
-    quizFeedbackEl.textContent = 'Resposta Correta!';
+    quizFeedbackMessage.textContent = 'Resposta Correta!';
     quizFeedbackEl.className = 'quiz-feedback correct';
   } else {
     selectedButton.classList.add('incorrect');
     quizOptionsAreaEl.childNodes[correctIndex].classList.add('correct');
-    quizFeedbackEl.textContent = 'Resposta Incorreta.';
+    quizFeedbackMessage.textContent = 'Resposta Incorreta.';
     quizFeedbackEl.className = 'quiz-feedback incorrect';
   }
 
-  nextButton.style.display = 'block';
+  quizFeedbackEl.style.display = 'block';
+  nextButton.style.display = 'inline-block';
 }
 
 function showNextQuestion() {
