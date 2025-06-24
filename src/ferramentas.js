@@ -65,11 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
             aiResults.style.display = 'none';
             analyzeBtn.disabled = true;
             try {
-                const diagnosisPrompt = `Como especialista de suporte IRED, analise o seguinte problema e forneça uma "Causa Provável" e uma "Ação Imediata" (1-2 passos curtos). Formato: **Causa Provável:** [texto]. **Ação Imediata:** [texto]. Problema: "${problemDescription.value}"`;
+                const diagnosisPrompt = `Como especialista de suporte IRED, analise o problema a seguir e forneça uma resposta com os tópicos "Hipótese Principal (Causa Provável):", "Perguntas de Diagnóstico (2-3 perguntas):" e "Ação Imediata (Plano de Resolução Rápida):". Problema: "${problemDescription.value}"`;
                 const diagnosis = await callGeminiAPI(diagnosisPrompt);
                 document.getElementById('diagnosis-output').innerHTML = converter.makeHtml(diagnosis);
 
-                const scriptPrompt = `Com base no problema "${problemDescription.value}", crie uma única frase de abertura empática para o atendente usar.`;
+                const scriptPrompt = `Com base no problema "${problemDescription.value}", crie uma frase empática para o atendente usar.`;
                 const script = await callGeminiAPI(scriptPrompt);
                 document.getElementById('script-output').innerHTML = converter.makeHtml(script);
 
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             async function end() {
                 simLoader.style.display = 'block';
-                const feedbackPrompt = `Pare a simulação. Agora você é um coach de atendimento. Analise o diálogo a seguir e forneça um feedback construtivo sobre o desempenho do ATENDENTE, avaliando empatia, clareza e técnica. Dê pontos a melhorar.\n\nDiálogo: ${JSON.stringify(conversationHistory.slice(1))}`;
+                const feedbackPrompt = `Assuma o papel de um Analista de Qualidade (QA). Avalie o diálogo a seguir sob a ótica da satisfação do cliente. Forneça um feedback estruturado, atribuindo uma nota de 0 a 10 para cada um dos seguintes pilares do atendimento. Justifique cada nota e aponte melhorias.\n\nPilares de Análise:\n1.  **Empatia e Cordialidade:** O atendente demonstrou interesse genuíno e uma comunicação amigável?\n2.  **Clareza e Eficiência:** A solução foi comunicada de forma clara e o atendimento foi ágil?\n3.  **Resolução do Problema:** O atendente identificou e resolveu a necessidade central do cliente?\n4.  **Técnica e Conhecimento:** O atendente demonstrou domínio dos procedimentos e da informação?\n\nDiálogo para Análise:\n${JSON.stringify(conversationHistory.slice(1))}`;
                 try {
                     const feedback = await callGeminiAPI(feedbackPrompt);
                     feedbackResults.innerHTML = converter.makeHtml(feedback);
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reportLoader.style.display = 'block';
             reportResults.style.display = 'none';
             generateReportBtn.disabled = true;
-            const prompt = `Converta este resumo informal em um relatório técnico formal para um sistema de tickets, com as seções "Relato do Cliente:", "Procedimentos Realizados:" e "Conclusão:". Use termos técnicos apropriados.\n\nResumo: "${reportSummary.value}"`;
+            const prompt = `Formate o seguinte resumo para um ticket, usando as seções 'Relato do Cliente', 'Procedimentos Realizados' e 'Conclusão'. Resumo: '${reportSummary.value}'`;
             try {
                 const formalReport = await callGeminiAPI(prompt);
                 reportOutput.value = formalReport.replace(/<br\s*\/?>/gi, '\n');
