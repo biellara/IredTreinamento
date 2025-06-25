@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     .where('email', '==', email).get();
 
   if (snapshot.empty)
-    return res.status(401).json({ error: 'Usuário não encontrado.' });
+    return res.status(401).json({ error: 'Usuário ou não encontrado.' });
 
   const userDoc = snapshot.docs[0];
   const user = userDoc.data();
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch)
-    return res.status(401).json({ error: 'Senha incorreta.' });
+    return res.status(401).json({ error: 'Usuário ou senha incorreta.' });
 
   const token = jwt.sign({ id: userId, email: user.email, username: user.username }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
