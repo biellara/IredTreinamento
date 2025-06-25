@@ -183,7 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
             reportLoader.style.display = 'block';
             reportResults.style.display = 'none';
             generateReportBtn.disabled = true;
+<<<<<<< HEAD
             const prompt = `Formate o seguinte resumo para um ticket, usando as seções 'Relato do Cliente', 'Procedimentos Realizados' e 'Conclusão'. Resumo: "${reportSummary.value}"`;
+=======
+            const prompt = `Formate o seguinte resumo para um ticket, usando as seções 'Relato do Cliente', 'Procedimentos Realizados' e 'Conclusão'. Resumo: '${reportSummary.value}'`;
+>>>>>>> dev
             try {
                 const formalReport = await callGeminiAPI(prompt);
                 reportOutput.value = formalReport.replace(/<br\s*\/?>/gi, '\n');
