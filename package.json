@@ -1,9 +1,11 @@
 {
   "name": "hub-atendimento-ired",
   "version": "1.0.0",
+  "private": true,
   "main": "script.js",
   "description": "Funções de backend para o Hub de Atendimento",
   "scripts": {
+    "start": "node script.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
