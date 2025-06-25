@@ -1,4 +1,4 @@
-const db = require('../../firebase');
+const db = require('../firebase');
 const verifyToken = require('../middleware/verifyToken');
 
 module.exports = async (req, res) => {
