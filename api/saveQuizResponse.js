@@ -1,5 +1,5 @@
 const db = require('../firebase');
-const verifyToken = require('../middleware/verifyToken');
+const verifyToken = require('./middleware/verifyToken');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
