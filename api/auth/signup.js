@@ -1,20 +1,28 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('../../firebase'); // seu firebase.js configurado
+const db = require('../../firebase');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+
+  let body;
+  try {
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  } catch (e) {
+    return res.status(400).json({ error: 'JSON inválido' });
   }
 
-  const { username, email, password } = req.body;
-
+  const { username, email, password } = body;
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Preencha todos os campos.' });
   }
 
   try {
-    // Verificar se o usuário já existe
     const usersRef = db.collection('users');
     const snapshot = await usersRef.where('email', '==', email).get();
 
@@ -23,7 +31,6 @@ module.exports = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = {
       username,
       email,
