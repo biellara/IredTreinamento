@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+console.log('FIREBASE_ADMIN_SDK:', process.env.FIREBASE_ADMIN_SDK);
 
 if (!admin.apps.length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
@@ -10,3 +11,4 @@ if (!admin.apps.length) {
     projectId: serviceAccount.project_id,
   });
 }
+module.exports = admin;
