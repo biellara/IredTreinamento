@@ -1,18 +1,18 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res) => {
+module.exports = function verifyToken(req) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { error: 'Token não fornecido', status: 401 };
+    throw new Error('Token não fornecido');
   }
 
   const token = authHeader.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { decoded };
+    return decoded;
   } catch (err) {
-    return { error: 'Token inválido', status: 403 };
+    throw new Error('Token inválido');
   }
 };

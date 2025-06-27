@@ -18,7 +18,10 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
+  <script src="auth.js"></script>
+    <script>
+    protectPage(); // Redireciona para login.html se não tiver token
+    </script>
   <!-- Botão de Voltar -->
   <a href="index.html" class="back-button">
     <i class="fa-solid fa-arrow-left"></i>

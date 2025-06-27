@@ -1,72 +1,89 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hub de Atendimento | IRED</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hub de Atendimento | IRED</title>
 
-    <!-- Fontes e Ícones -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
-        rel="stylesheet"
-    />
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    />
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
 
-    <!-- CSS Customizado -->
-    <link rel="stylesheet" href="style.css" />
+  <!-- CSS Customizado -->
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .top-right {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      left: auto;
+    }
+  </style>
 </head>
 <body>
-    <!-- Container principal da página inicial -->
-    <main class="page-container">
-        <div class="hub-content">
-            <!-- Logo -->
-            <img
-                src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png"
-                alt="Logo da IRED"
-                class="hub-logo"
-                onerror="this.style.display='none'"
-            />
+  <script src="auth.js"></script>
+  <script>
+    protectPage(); // Redireciona para login.html se não tiver token
+  </script>
 
-            <!-- Mensagem de Boas-Vindas -->
-            <h1 class="hub-title">Seja bem-vindo ao SAC!</h1>
-            <p class="hub-subtitle">O que você precisa hoje?</p>
+  <!-- Botão de logout no canto superior direito -->
+  <button onclick="logout()" class="back-button top-right">
+    <i class="fa-solid fa-right-from-bracket"></i>
+    <span>Sair</span>
+  </button>
 
-            <!-- Barra de Pesquisa Inteligente -->
-            <div class="search-container" style="max-width: 28rem; margin-left: auto; margin-right: auto;">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input
-                    type="text"
-                    id="universalSearch"
-                    placeholder="Busque por um problema, procedimento ou política..."
-                    class="search-input"
-                />
-                <!-- Container para resultados será criado dinamicamente pelo script.js -->
-            </div>
+  <!-- Container principal da página inicial -->
+  <main class="page-container">
+    <div class="hub-content">
+      <!-- Logo -->
+      <img
+        src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png"
+        alt="Logo da IRED"
+        class="hub-logo"
+        onerror="this.style.display='none'"
+      />
 
-            <!-- Menu de Navegação Principal -->
-            <nav class="hub-nav">
-                <a href="ferramentas.html" class="hub-button">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Ferramentas de IA</span>
-                </a>
-                <a href="conhecimento.html" class="hub-button">
-                    <i class="fa-solid fa-book-open"></i>
-                    <span>Base de Conhecimento</span>
-                </a>
-                <a href="atividades.html" class="hub-button">
-                    <i class="fa-solid fa-pencil-alt"></i>
-                    <span>Artigos e Atividades</span>
-                </a>
-            </nav>
-        </div>
-    </main>
+      <!-- Mensagem de Boas-Vindas -->
+      <h1 class="hub-title">Seja bem-vindo ao SAC!</h1>
+      <p class="hub-subtitle">O que você precisa hoje?</p>
 
-    <!-- Script para a funcionalidade da página, como a busca -->
-    <script src="script.js"></script>
+      <!-- Barra de Pesquisa Inteligente -->
+      <div class="search-container" style="max-width: 28rem; margin-left: auto; margin-right: auto;">
+        <i class="fa-solid fa-search search-icon"></i>
+        <input
+          type="text"
+          id="universalSearch"
+          placeholder="Busque por um problema, procedimento ou política..."
+          class="search-input"
+        />
+      </div>
+
+      <!-- Menu de Navegação Principal -->
+      <nav class="hub-nav">
+        <a href="ferramentas.html" class="hub-button">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Ferramentas de IA</span>
+        </a>
+        <a href="conhecimento.html" class="hub-button">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Base de Conhecimento</span>
+        </a>
+        <a href="atividades.html" class="hub-button">
+          <i class="fa-solid fa-pencil-alt"></i>
+          <span>Artigos e Atividades</span>
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
