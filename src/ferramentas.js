@@ -84,91 +84,186 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function setupSimulador() {
-        const simSetupView = document.getElementById('sim-setup-view');
-        const startSimBtn = document.getElementById('startSimBtn');
+/**
+ * Configura toda a lógica e os event listeners para o simulador de chat.
+ * Esta função deve ser chamada uma vez quando a página é carregada.
+ */
+function setupSimulador() {
+    // --- Seleção de Elementos do DOM ---
+    const simSetupView = document.getElementById('sim-setup-view');
+    const startSimBtn = document.getElementById('startSimBtn');
+    const simChatView = document.getElementById('sim-chat-view');
+    const chatHistoryEl = document.getElementById('chat-history');
+    const chatInput = document.getElementById('chat-input');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const endSimBtn = document.getElementById('endSimBtn');
+    const simLoader = document.getElementById('sim-loader');
+    const feedbackResults = document.getElementById('feedback-results');
+    const restartSimBtn = document.getElementById('restartSimBtn');
+    const simFeedbackView = document.getElementById('sim-feedback-view');
+    const chatForm = document.getElementById('chat-form');
 
-        startSimBtn.addEventListener('click', () => {
-            const simChatView = document.getElementById('sim-chat-view');
-            const chatHistoryEl = document.getElementById('chat-history');
-            const chatInput = document.getElementById('chat-input');
-            const sendChatBtn = document.getElementById('sendChatBtn');
-            const endSimBtn = document.getElementById('endSimBtn');
-            const simLoader = document.getElementById('sim-loader');
-            const feedbackResults = document.getElementById('feedback-results');
-            const restartSimBtn = document.getElementById('restartSimBtn');
-            const simFeedbackView = document.getElementById('sim-feedback-view');
-            let conversationHistory = [];
-            const scenarios = {
-                'lentidao-frustrado': "Cliente frustrado com lentidão.",
-                'wifi-nao-funciona-leigo': "Cliente leigo com Wi-Fi que não funciona no quarto.",
-                'quedas-constantes-irritado': "Cliente irritado com quedas constantes.",
-                'velocidade-baixa-cabo': "Cliente com velocidade baixa no cabo.",
-                'problemas-com-dvr': "Cliente com problemas no DVR"
-            };
+    // --- Estado da Simulação ---
+    let conversationHistory = [];
+    let isSimulating = false;
 
-            function appendMessage(text, sender) {
-                const bubble = document.createElement('div');
-                bubble.classList.add('chat-bubble', sender);
-                bubble.innerHTML = converter.makeHtml(text);
-                chatHistoryEl.appendChild(bubble);
-                chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
-            }
+    const scenarios = {
+        'lentidao-frustrado': "Cliente frustrado com lentidão.",
+        'wifi-nao-funciona-leigo': "Cliente leigo com Wi-Fi que não funciona no quarto.",
+        'quedas-constantes-irritado': "Cliente irritado com quedas constantes.",
+        'velocidade-baixa-cabo': "Cliente com velocidade baixa no cabo.",
+        'problemas-com-dvr': "Cliente com problemas no DVR"
+    };
 
-            async function start() {
-                simSetupView.style.display = 'none';
-                simChatView.style.display = 'flex';
-                simLoader.style.display = 'block';
-                const systemPrompt = `Vamos simular um atendimento. Você é o CLIENTE. Eu serei o ATENDENTE. Siga o perfil: ${scenarios[document.getElementById('scenarioSelect').value]}. Comece com sua primeira reclamação.`;
-                try {
-                    const firstResponse = await callGeminiAPI(systemPrompt);
-                    conversationHistory.push({ role: 'user', parts: [{ text: systemPrompt }] });
-                    conversationHistory.push({ role: 'model', parts: [{ text: firstResponse }] });
-                    appendMessage(firstResponse, 'customer');
-                } finally {
-                    simLoader.style.display = 'none';
-                }
-            }
+    // --- Funções Auxiliares ---
 
-            async function sendMessage() {
-                const messageText = chatInput.value.trim();
-                if (!messageText) return;
-                appendMessage(messageText, 'attendant');
-                conversationHistory.push({ role: 'user', parts: [{ text: messageText }] });
-                chatInput.value = '';
-                simLoader.style.display = 'block';
-                try {
-                    const customerResponse = await callGeminiAPI(conversationHistory);
-                    conversationHistory.push({ role: 'model', parts: [{ text: customerResponse }] });
-                    appendMessage(customerResponse, 'customer');
-                } finally {
-                    simLoader.style.display = 'none';
-                }
-            }
+    function appendMessage(text, sender) {
+        const bubble = document.createElement('div');
+        bubble.classList.add('chat-bubble', sender);
+        bubble.innerHTML = typeof converter !== 'undefined' ? converter.makeHtml(text) : text;
+        chatHistoryEl.appendChild(bubble);
+        chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+    }
 
-            async function end() {
-                simLoader.style.display = 'block';
-                const feedbackPrompt = `Assuma o papel de um Analista de Qualidade (QA). Avalie o diálogo a seguir sob a ótica da satisfação do cliente. Forneça um feedback estruturado, atribuindo uma nota de 0 a 10 para cada um dos seguintes pilares do atendimento. Justifique cada nota e aponte melhorias.\n\nPilares de Análise:\n1.  **Empatia e Cordialidade:** O atendente demonstrou interesse genuíno e uma comunicação amigável?\n2.  **Clareza e Eficiência:** A solução foi comunicada de forma clara e o atendimento foi ágil?\n3.  **Resolução do Problema:** O atendente identificou e resolveu a necessidade central do cliente?\n4.  **Técnica e Conhecimento:** O atendente demonstrou domínio dos procedimentos e da informação?\n\nDiálogo para Análise:\n${JSON.stringify(conversationHistory.slice(1))}`;
-                try {
-                    const feedback = await callGeminiAPI(feedbackPrompt);
-                    feedbackResults.innerHTML = converter.makeHtml(feedback);
-                    simChatView.style.display = 'none';
-                    simFeedbackView.style.display = 'block';
-                } finally {
-                    simLoader.style.display = 'none';
-                }
-            }
+    function showError(message) {
+        console.error(message);
+        // RECOMENDAÇÃO: Substitua o alert por um elemento de UI não-bloqueante.
+    }
 
-            start();
-            sendChatBtn.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') sendMessage(); });
-            endSimBtn.addEventListener('click', end);
-            restartSimBtn.addEventListener('click', () => {
-                simFeedbackView.style.display = 'none';
-                simSetupView.style.display = 'block';
+    // --- Funções Principais da Simulação ---
+
+    async function startSimulation() {
+        if (isSimulating) return;
+        isSimulating = true;
+
+        chatHistoryEl.innerHTML = '';
+        feedbackResults.innerHTML = '';
+        conversationHistory = [];
+
+        simSetupView.style.display = 'none';
+        simChatView.style.display = 'flex';
+        simLoader.style.display = 'block';
+        
+        const scenarioValue = document.getElementById('scenarioSelect').value;
+        
+        // ATUALIZADO: O prompt foi reescrito para ser mais direto e imperativo,
+        // forçando o modelo a manter o personagem de forma mais consistente.
+        const systemPrompt = `**INSTRUÇÕES DE PERSONA (VOCÊ DEVE SEGUIR ISSO EM TODAS AS RESPOSTAS):**
+- Você é o CLIENTE em uma simulação de atendimento.
+- Seu perfil é: "${scenarios[scenarioValue]}".
+- Você deve manter esse personagem durante toda a conversa. Não saia do personagem.
+- Eu serei o ATENDENTE.
+
+Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente descrito.`;
+
+        try {
+            // ATUALIZADO: A primeira chamada à API agora envia um histórico de conversa,
+            // tornando-a consistente com as chamadas subsequentes.
+            const historyForFirstCall = [{ role: 'user', parts: [{ text: systemPrompt }] }];
+            const firstResponse = await callGeminiAPI(historyForFirstCall);
+            
+            conversationHistory.push({ role: 'user', parts: [{ text: systemPrompt }] });
+            conversationHistory.push({ role: 'model', parts: [{ text: firstResponse }] });
+            appendMessage(firstResponse, 'customer');
+        } catch (error) {
+            showError('Erro ao iniciar a simulação. Tente novamente.');
+            restartSimulation();
+        } finally {
+            simLoader.style.display = 'none';
+            isSimulating = false;
+        }
+    }
+
+    async function sendMessage() {
+        if (isSimulating) return;
+        const messageText = chatInput.value.trim();
+        if (!messageText) return;
+
+        isSimulating = true;
+        appendMessage(messageText, 'attendant');
+        conversationHistory.push({ role: 'user', parts: [{ text: messageText }] });
+        chatInput.value = '';
+        simLoader.style.display = 'block';
+
+        try {
+            // A chamada aqui permanece a mesma, enviando o histórico completo.
+            const customerResponse = await callGeminiAPI(conversationHistory);
+            conversationHistory.push({ role: 'model', parts: [{ text: customerResponse }] });
+            appendMessage(customerResponse, 'customer');
+        } catch (error) {
+            showError('Erro na comunicação com o cliente-robô. Tente novamente.');
+        } finally {
+            simLoader.style.display = 'none';
+            isSimulating = false;
+        }
+    }
+
+    async function endSimulation() {
+        if (isSimulating) return;
+        isSimulating = true;
+        simLoader.style.display = 'block';
+
+        const feedbackPrompt = `Assuma o papel de um Analista de Qualidade (QA). Avalie o diálogo a seguir sob a ótica da satisfação do cliente. Forneça um feedback estruturado, atribuindo uma nota de 0 a 10 para cada um dos seguintes pilares do atendimento. Justifique cada nota e aponte melhorias.\n\nPilares de Análise:\n1.  **Empatia e Cordialidade:** O atendente demonstrou interesse genuíno e uma comunicação amigável?\n2.  **Clareza e Eficiência:** A solução foi comunicada de forma clara e o atendimento foi ágil?\n3.  **Resolução do Problema:** O atendente identificou e resolveu a necessidade central do cliente?\n4.  **Técnica e Conhecimento:** O atendente demonstrou domínio dos procedimentos e da informação?\n\nDiálogo para Análise:\n${JSON.stringify(conversationHistory.slice(1))}`;
+
+        try {
+            const feedbackText = await callGeminiAPI(feedbackPrompt);
+            feedbackResults.innerHTML = typeof converter !== 'undefined' ? converter.makeHtml(feedbackText) : feedbackText;
+
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Usuário não autenticado.');
+
+            const scenario = document.getElementById('scenarioSelect').value;
+
+            const response = await fetch('/api/tools/simulador', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    scenario,
+                    chatHistory: conversationHistory,
+                    feedback: feedbackText,
+                }),
             });
+
+            if (!response.ok) {
+                throw new Error(`Erro ao salvar simulação: ${response.statusText}`);
+            }
+
+            simChatView.style.display = 'none';
+            simFeedbackView.style.display = 'block';
+
+        } catch (error) {
+            showError('Houve um problema ao finalizar a simulação. Tente novamente.');
+        } finally {
+            simLoader.style.display = 'none';
+            isSimulating = false;
+        }
+    }
+
+    function restartSimulation() {
+        simFeedbackView.style.display = 'none';
+        simChatView.style.display = 'none';
+        simSetupView.style.display = 'block';
+        isSimulating = false;
+    }
+
+    // --- Adiciona os Event Listeners ---
+    startSimBtn.addEventListener('click', startSimulation);
+    sendChatBtn.addEventListener('click', sendMessage);
+    endSimBtn.addEventListener('click', endSimulation);
+    restartSimBtn.addEventListener('click', restartSimulation);
+
+    if (chatForm) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendMessage();
         });
     }
+}
+
+
 
     function setupRelatorio() {
         const generateReportBtn = document.getElementById('generateReportBtn');

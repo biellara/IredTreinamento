@@ -1,21 +1,32 @@
-// server.js (Versão Reestruturada para Testes)
+// server.js (Versão Corrigida)
 
-// A biblioteca 'dotenv' não é mais necessária para as credenciais do Firebase
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-// Seus módulos de autenticação continuam funcionando normalmente
-// pois eles importam a instância já configurada de 'firebase.js'
+// --- Middlewares ---
+// É importante que eles venham antes das rotas.
+app.use(cors()); // Permite requisições de outras origens (seu frontend)
+app.use(express.json()); // Permite que o Express entenda o corpo JSON das requisições
+
+// --- Importação das Rotas ---
+// Rotas de Autenticação
 const signup = require('./auth/signup');
 const login = require('./auth/login');
 
+// CORREÇÃO: Importa a nova rota para salvar a simulação
+const saveSimulation = require('./tools/simulador');
+
+
+// --- Definição das Rotas ---
+// Rotas de Autenticação
 app.post('/api/auth/signup', signup);
 app.post('/api/auth/login', login);
 
-// A variável PORT ainda pode vir do .env se você quiser, ou pode fixar um valor
+// CORREÇÃO: Adiciona a rota que estava faltando para o simulador
+app.post('/api/tools/simulador', saveSimulation);
+
+
+// --- Inicialização do Servidor ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

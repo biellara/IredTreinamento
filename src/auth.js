@@ -55,8 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// src/js/auth.js
-
 // Verifica se o usuário está autenticado
 function isAuthenticated() {
   const token = localStorage.getItem('token');
