@@ -2,10 +2,11 @@
   "name": "hub-atendimento-ired",
   "version": "1.0.0",
   "private": true,
-  "main": "script.js",
   "description": "Funções de backend para o Hub de Atendimento",
+  "main": "server.js",
   "scripts": {
-    "start": "node script.js",
+    "dev": "node server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +20,7 @@
     "firebase": "^11.9.1",
     "firebase-admin": "^12.7.0",
     "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "serverless-http": "^3.2.0"
   }
 }

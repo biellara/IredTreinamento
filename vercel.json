@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.js",
+      "src": "api/index.js",
       "use": "@vercel/node",
       "config": {
         "runtime": "nodejs18.x"
@@ -16,7 +16,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1.js"
+      "dest": "/api/index.js"
     },
     {
       "handle": "filesystem"
