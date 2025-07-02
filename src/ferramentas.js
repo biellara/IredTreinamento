@@ -209,7 +209,7 @@ Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente 
 
             const scenario = document.getElementById('scenarioSelect').value;
 
-            const response = await fetch('/api/tools/simulador', {
+            const response = await fetch('/api/getSimulations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

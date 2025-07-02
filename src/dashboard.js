@@ -32,7 +32,9 @@ $(document).ready(function() {
                 return;
             }
 
-            const response = await fetch('/api/getSimulationsFiltered', {
+            // AJUSTE: A URL da API foi atualizada para a rota unificada e o parâmetro 'view=admin' foi adicionado
+            // para buscar todas as simulações, não apenas as do usuário logado.
+            const response = await fetch('/api/getSimulations?view=admin', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -69,10 +71,9 @@ $(document).ready(function() {
                         }
                     },
                     { 
-                        data: 'user.username', 
+                        data: 'username', // Alterado para buscar diretamente o campo 'username'
                         title: 'Usuário', 
-                        defaultContent: 'Não informado',
-                        render: (data, type, row) => row.user?.username || row.username || 'Não informado'
+                        defaultContent: 'Não informado'
                     },
                     { data: 'scenario', title: 'Cenário', defaultContent: 'Não informado' },
                     {
@@ -95,7 +96,7 @@ $(document).ready(function() {
     function populateUserFilter(simulations) {
         const userFilter = $('#userFilter');
         userFilter.append('<option value="">Todos os usuários</option>');
-        const users = [...new Set(simulations.map(s => s.user?.username || s.username).filter(Boolean))];
+        const users = [...new Set(simulations.map(s => s.username).filter(Boolean))];
         users.sort().forEach(user => userFilter.append(`<option value="${user}">${user}</option>`));
     }
 
@@ -133,7 +134,7 @@ $(document).ready(function() {
             if (simulation) {
                 let contentHtml = '';
                 
-                const username = simulation.user?.username || simulation.username || 'Não informado';
+                const username = simulation.username || 'Não informado';
                 const scenario = simulation.scenario || '-';
                 const date = simulation.createdAt?.seconds ? new Date(simulation.createdAt.seconds * 1000) : new Date(simulation.createdAt);
                 
@@ -214,7 +215,7 @@ $(document).ready(function() {
         const date = simulation.createdAt?.seconds ? new Date(simulation.createdAt.seconds * 1000) : new Date(simulation.createdAt);
         doc.text(`Data: ${date.toLocaleString('pt-BR')}`, 10, y);
         y += 5;
-        doc.text(`Usuário: ${simulation.user?.username || simulation.username || 'N/A'}`, 10, y);
+        doc.text(`Usuário: ${simulation.username || 'N/A'}`, 10, y);
         y += 10;
 
         // Adiciona Feedback do Analista ao PDF

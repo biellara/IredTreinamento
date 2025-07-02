@@ -2,7 +2,6 @@
 
 const express = require('express');
 const cors = require('cors');
-const serverless = require('serverless-http'); // 📦 Para rodar como Lambda
 
 const app = express();
 
