@@ -49,7 +49,7 @@ async function loadData() {
 
     // Apenas na página de atividades, incluir quizzes
     if (isAtividades) {
-      const quizzesResponse = await fetch('/api/getQuizzes');
+      const quizzesResponse = await fetch('/api/getQuiz');
       if (!quizzesResponse.ok) throw new Error('Erro ao buscar quizzes.');
       const quizzesData = await quizzesResponse.json();
 
