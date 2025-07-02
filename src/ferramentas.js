@@ -146,8 +146,6 @@ function setupSimulador() {
         
         const scenarioValue = document.getElementById('scenarioSelect').value;
         
-        // ATUALIZADO: O prompt foi reescrito para ser mais direto e imperativo,
-        // forçando o modelo a manter o personagem de forma mais consistente.
         const systemPrompt = `**INSTRUÇÕES DE PERSONA (VOCÊ DEVE SEGUIR ISSO EM TODAS AS RESPOSTAS):**
 - Você é o CLIENTE em uma simulação de atendimento.
 - Seu perfil é: "${scenarios[scenarioValue]}".
@@ -157,8 +155,6 @@ function setupSimulador() {
 Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente descrito.`;
 
         try {
-            // ATUALIZADO: A primeira chamada à API agora envia um histórico de conversa,
-            // tornando-a consistente com as chamadas subsequentes.
             const historyForFirstCall = [{ role: 'user', parts: [{ text: systemPrompt }] }];
             const firstResponse = await callGeminiAPI(historyForFirstCall);
             
@@ -186,7 +182,6 @@ Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente 
         simLoader.style.display = 'block';
 
         try {
-            // A chamada aqui permanece a mesma, enviando o histórico completo.
             const customerResponse = await callGeminiAPI(conversationHistory);
             conversationHistory.push({ role: 'model', parts: [{ text: customerResponse }] });
             appendMessage(customerResponse, 'customer');
@@ -249,21 +244,36 @@ Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente 
         isSimulating = false;
     }
 
-    // --- Adiciona os Event Listeners ---
+    // --- Adiciona os Event Listeners (SEÇÃO ATUALIZADA) ---
     startSimBtn.addEventListener('click', startSimulation);
     sendChatBtn.addEventListener('click', sendMessage);
     endSimBtn.addEventListener('click', endSimulation);
     restartSimBtn.addEventListener('click', restartSimulation);
 
+    // O listener de 'submit' é mantido como uma garantia para outros métodos de envio
+    // (ex: botão 'Go' em teclados de celular), mas a lógica principal do Enter será tratada abaixo.
     if (chatForm) {
         chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            sendMessage();
+            e.preventDefault(); // Previne o recarregamento da página.
+            sendMessage();      // Garante que a submissão do formulário envie a mensagem.
+        });
+    }
+
+    // ATUALIZAÇÃO: Adicionado um listener para a tecla 'Enter' diretamente no campo de input.
+    // Esta é uma abordagem mais robusta para controlar o comportamento da tecla.
+    if (chatInput) {
+        chatInput.addEventListener('keydown', (e) => {
+            // Verifica se a tecla pressionada é 'Enter' E a tecla 'Shift' NÃO está pressionada.
+            if (e.key === 'Enter' && !e.shiftKey) {
+                // Previne o comportamento padrão do Enter (que é submeter o formulário ou criar nova linha).
+                e.preventDefault();
+                
+                // Chama a função para enviar a mensagem.
+                sendMessage();
+            }
         });
     }
 }
-
-
 
     function setupRelatorio() {
         const generateReportBtn = document.getElementById('generateReportBtn');

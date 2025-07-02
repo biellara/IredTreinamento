@@ -125,17 +125,17 @@
     </template>
 
     <template id="template-simulador">
-        <div class="tool-interface-container">
-            <!-- Visão de Configuração da Simulação -->
-            <section id="sim-setup-view">
-                 <form>
+    <div class="tool-interface-container">
+        <!-- Visão de Configuração da Simulação -->
+        <section id="sim-setup-view">
+                <form>
                     <header>
                         <h2 class="view-title">💬 Simulador de Atendimento</h2>
                         <p class="view-subtitle">Escolha um cenário e pratique suas habilidades de comunicação.</p>
                     </header>
                     <div class="card" style="margin-top: 2rem;">
                         <div>
-                           <label
+                            <label
                                 for="scenarioSelect"
                                 style="font-weight: 700; display: block; margin-bottom: 0.5rem;"
                                 >Selecione um cenário:</label
@@ -157,56 +157,58 @@
                             Iniciar Simulação
                         </button>
                     </div>
-                 </form>
-            </section>
-            <!-- Visão do Chat da Simulação -->
-            <section
-                id="sim-chat-view"
-                style="display: none; flex-direction: column; height: calc(100vh - 10rem);"
+                </form>
+        </section>
+        <!-- Visão do Chat da Simulação -->
+        <section
+            id="sim-chat-view"
+            style="display: none; flex-direction: column; height: calc(100vh - 10rem);"
+        >
+            <h2 class="view-title">Simulação em Andamento...</h2>
+            <div
+                style="flex: 1; display: flex; flex-direction: column; margin-top: 2rem; overflow: hidden;"
             >
-                <h2 class="view-title">Simulação em Andamento...</h2>
-                <div
-                    style="flex: 1; display: flex; flex-direction: column; margin-top: 2rem; overflow: hidden;"
-                >
-                    <div id="chat-history"><!-- Conteúdo do chat --></div>
-                    <div id="sim-loader" class="loader-container">
-                        <p>Cliente-robô está digitando...</p>
-                    </div>
-                    <!-- O chat em si é um formulário de envio de mensagens -->
-                    <form style="margin-top: auto; display: flex; gap: 0.5rem;">
-                        <input
-                            type="text"
-                            id="chat-input"
-                            class="form-input"
-                            placeholder="Digite sua resposta..."
-                            style="flex-grow: 1;"
-                        />
-                        <button type="button" id="sendChatBtn" class="button button-blue">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </form>
+                <div id="chat-history"><!-- Conteúdo do chat --></div>
+                <div id="sim-loader" class="loader-container">
+                    <p>Cliente-robô está digitando...</p>
                 </div>
-                <button
-                    type="button"
-                    id="endSimBtn"
-                    class="button button-red"
-                    style="margin-top: 1rem; width: 100%;"
-                >
-                    Finalizar e Pedir Feedback
-                </button>
-            </section>
-            <!-- Visão de Feedback da Simulação -->
-            <section id="sim-feedback-view" style="display: none;">
-                <h2 class="view-title">⭐ Avaliação do Atendimento</h2>
-                <div class="card" style="margin-top: 2rem;">
-                    <div id="feedback-results" class="results-box prose"></div>
-                    <button type="button" id="restartSimBtn" class="button button-blue" style="margin-top: 1.5rem; width: 100%;">
-                        Iniciar Nova Simulação
+                <!-- O chat em si é um formulário de envio de mensagens -->
+                <!-- ATUALIZAÇÃO: Adicionado o id="chat-form" para que o JavaScript funcione corretamente. -->
+                <form id="chat-form" style="margin-top: auto; display: flex; gap: 0.5rem;">
+                    <input
+                        type="text"
+                        id="chat-input"
+                        class="form-input"
+                        placeholder="Digite sua resposta..."
+                        style="flex-grow: 1;"
+                    />
+                    <button type="button" id="sendChatBtn" class="button button-blue">
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
-                </div>
-            </section>
-        </div>
-    </template>
+                </form>
+            </div>
+            <button
+                type="button"
+                id="endSimBtn"
+                class="button button-red"
+                style="margin-top: 1rem; width: 100%;"
+            >
+                Finalizar e Pedir Feedback
+            </button>
+        </section>
+        <!-- Visão de Feedback da Simulação -->
+        <section id="sim-feedback-view" style="display: none;">
+            <h2 class="view-title">⭐ Avaliação do Atendimento</h2>
+            <div class="card" style="margin-top: 2rem;">
+                <div id="feedback-results" class="results-box prose"></div>
+                <button type="button" id="restartSimBtn" class="button button-blue" style="margin-top: 1.5rem; width: 100%;">
+                    Iniciar Nova Simulação
+                </button>
+            </div>
+        </section>
+    </div>
+</template>
+
 
     <template id="template-relatorio">
         <form class="tool-interface-container">
