@@ -209,28 +209,35 @@ Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente 
 
             const scenario = document.getElementById('scenarioSelect').value;
 
-            const response = await fetch('/api/getSimulations', {
-                method: 'POST',
+            // CORREÇÃO: O URL foi alterado para o endpoint unificado correto, que lida com POST.
+            // Assumindo que o seu ficheiro de API unificado se chama 'simulations.js'.
+            const url = '/api/getSimulations';
+            const method = 'POST';
+            const bodyPayload = {
+                scenario,
+                chatHistory: conversationHistory,
+                feedback: feedbackText,
+            };
+            
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    scenario,
-                    chatHistory: conversationHistory,
-                    feedback: feedbackText,
-                }),
+                body: JSON.stringify(bodyPayload),
             });
 
             if (!response.ok) {
-                throw new Error(`Erro ao salvar simulação: ${response.statusText}`);
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Erro ao salvar simulação: ${response.statusText}`);
             }
 
             simChatView.style.display = 'none';
             simFeedbackView.style.display = 'block';
 
         } catch (error) {
-            showError('Houve um problema ao finalizar a simulação. Tente novamente.');
+            showError(error.message || 'Houve um problema ao finalizar a simulação. Tente novamente.');
         } finally {
             simLoader.style.display = 'none';
             isSimulating = false;
@@ -244,36 +251,29 @@ Agora, inicie a conversa com a sua primeira reclamação, agindo como o cliente 
         isSimulating = false;
     }
 
-    // --- Adiciona os Event Listeners (SEÇÃO ATUALIZADA) ---
+    // --- Adiciona os Event Listeners ---
     startSimBtn.addEventListener('click', startSimulation);
     sendChatBtn.addEventListener('click', sendMessage);
     endSimBtn.addEventListener('click', endSimulation);
     restartSimBtn.addEventListener('click', restartSimulation);
 
-    // O listener de 'submit' é mantido como uma garantia para outros métodos de envio
-    // (ex: botão 'Go' em teclados de celular), mas a lógica principal do Enter será tratada abaixo.
     if (chatForm) {
         chatForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Previne o recarregamento da página.
-            sendMessage();      // Garante que a submissão do formulário envie a mensagem.
+            e.preventDefault();
+            sendMessage();
         });
     }
 
-    // ATUALIZAÇÃO: Adicionado um listener para a tecla 'Enter' diretamente no campo de input.
-    // Esta é uma abordagem mais robusta para controlar o comportamento da tecla.
     if (chatInput) {
         chatInput.addEventListener('keydown', (e) => {
-            // Verifica se a tecla pressionada é 'Enter' E a tecla 'Shift' NÃO está pressionada.
             if (e.key === 'Enter' && !e.shiftKey) {
-                // Previne o comportamento padrão do Enter (que é submeter o formulário ou criar nova linha).
                 e.preventDefault();
-                
-                // Chama a função para enviar a mensagem.
                 sendMessage();
             }
         });
     }
 }
+
 
     function setupRelatorio() {
         const generateReportBtn = document.getElementById('generateReportBtn');
