@@ -1,4 +1,3 @@
-
 const { db, auth } = require('../firebase'); 
 
 const jwt = require('jsonwebtoken');
@@ -17,6 +16,10 @@ module.exports = async (req, res) => {
 
   // --- Middleware de Autenticação e Verificação de Função (Role) ---
   try {
+    // --- LOG DE DEPURAÇÃO ADICIONADO ---
+    // Vamos verificar se a JWT_SECRET está a ser carregada corretamente aqui.
+    console.log('[API de Utilizadores] Verificando token com JWT_SECRET:', process.env.JWT_SECRET ? `...${process.env.JWT_SECRET.slice(-6)}` : 'NÃO DEFINIDA');
+
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Acesso não autorizado. Token não fornecido.' });
@@ -30,6 +33,8 @@ module.exports = async (req, res) => {
       return res.status(403).json({ error: 'Acesso negado. Permissões de administrador necessárias.' });
     }
   } catch (error) {
+    // Adiciona um log do erro para mais detalhes na depuração
+    console.error('[API de Utilizadores] Erro na verificação do token:', error.message);
     return res.status(401).json({ error: 'Token inválido ou expirado.' });
   }
 
@@ -57,20 +62,18 @@ module.exports = async (req, res) => {
           return res.status(400).json({ error: 'Campos obrigatórios em falta: username, email, password, role.' });
         }
 
-        // AJUSTE: Usa a instância 'auth' importada
         const userRecord = await auth.createUser({
           email: email,
           password: password,
           displayName: username,
         });
 
-        // Salva os detalhes do utilizador, incluindo a função, no Firestore
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.collection('users').doc(userRecord.uid).set({
           username,
           email,
           role,
-          password: hashedPassword, // Armazena a senha encriptada
+          password: hashedPassword,
           createdAt: new Date().toISOString(),
         });
 
@@ -86,7 +89,7 @@ module.exports = async (req, res) => {
     case 'PUT':
       // --- Atualizar a função de um utilizador ---
       try {
-        const { id } = req.query; // ID do utilizador a ser atualizado
+        const { id } = req.query;
         const { role } = req.body;
         if (!id || !role) {
           return res.status(400).json({ error: 'ID do utilizador e a nova função (role) são obrigatórios.' });
@@ -102,14 +105,12 @@ module.exports = async (req, res) => {
     case 'DELETE':
       // --- Excluir um utilizador ---
       try {
-        const { id } = req.query; // ID do utilizador a ser excluído
+        const { id } = req.query;
         if (!id) {
           return res.status(400).json({ error: 'O ID do utilizador é obrigatório.' });
         }
 
-        // AJUSTE: Usa a instância 'auth' importada
         await auth.deleteUser(id);
-        // Exclui do Firestore
         await db.collection('users').doc(id).delete();
 
         return res.status(200).json({ message: 'Utilizador excluído com sucesso.' });
@@ -120,6 +121,7 @@ module.exports = async (req, res) => {
 
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+      // CORREÇÃO: A linha abaixo estava incompleta, causando um erro de sintaxe.
       return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };

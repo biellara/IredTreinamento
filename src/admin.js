@@ -98,7 +98,7 @@ $(document).ready(function() {
                 $('#stats-total-users').text(users.length);
             }
 
-            const simsResponse = await secureFetch('/api/simulations?view=admin');
+            const simsResponse = await secureFetch('/api/getSimulations?view=admin');
             if (simsResponse.ok) {
                 const { simulations } = await simsResponse.json();
                 $('#stats-total-simulations').text(simulations.length);
