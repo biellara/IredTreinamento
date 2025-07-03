@@ -10,11 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // --- Importa rotas ---
-const signup = require('./api/auth/signup');
 const login = require('./api/auth/login');
 const saveSimulation = require('./api/tools/simulador');
 
-app.post('/api/auth/signup', signup);
 app.post('/api/auth/login', login);
 app.post('/api/tools/simulador', saveSimulation);
 
