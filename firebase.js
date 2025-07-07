@@ -2,51 +2,27 @@
 
 const admin = require('firebase-admin');
 
-let db, auth;
-
-// Função para inicializar o Firebase de forma segura
-function initializeFirebase() {
+// Verifica se a aplicação já foi inicializada para evitar duplicação.
+// Este é o padrão recomendado для ambientes serverless (como a Vercel).
+if (!admin.apps.length) {
   try {
-    if (!process.env.FIREBASE_ADMIN_SDK) {
-        throw new Error("A variável de ambiente FIREBASE_ADMIN_SDK não está definida.");
-    }
-    
+    console.log("Inicializando o Firebase Admin SDK...");
     const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
-    
-    if (!serviceAccount.project_id) {
-        throw new Error("O 'project_id' não foi encontrado no JSON da conta de serviço (FIREBASE_ADMIN_SDK).");
-    }
 
     serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
     
-    console.log(`✅ Tentando inicializar Firebase para o projeto: ${serviceAccount.project_id}`);
-    
-    // Inicializa a aplicação
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      projectId: serviceAccount.project_id, 
+      projectId: serviceAccount.project_id,
     });
-
+    console.log("✅ Firebase Admin SDK inicializado com sucesso.");
   } catch (error) {
-    // Se o erro for que a app já existe, ignoramos, pois é o comportamento esperado.
-    if (error.code !== 'app/duplicate-app') {
-        console.error('****************************************************');
-        console.error('❌ FALHA CRÍTICA AO INICIALIZAR O FIREBASE ADMIN SDK:');
-        console.error(error.message);
-        console.error('****************************************************');
-    }
+    console.error('❌ FALHA CRÍTICA AO INICIALIZAR O FIREBASE ADMIN SDK:', error);
   }
 }
 
-// Garante que a inicialização ocorra apenas uma vez.
-if (!admin.apps.length) {
-  initializeFirebase();
-}
-
-// Obtém as instâncias dos serviços a partir da app padrão
-// Esta abordagem é mais segura em ambientes serverless
-const app = admin.app();
-db = app.firestore();
-auth = app.auth();
+// Exporta as instâncias dos serviços a partir da app padrão já inicializada.
+const db = admin.firestore();
+const auth = admin.auth();
 
 module.exports = { db, auth, admin };

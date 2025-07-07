@@ -2,6 +2,7 @@ $(document).ready(function() {
     let usersTable;
     let userIdToDelete = null;
     let usersLoaded = false;
+    let simulationsLoaded = false;
     let simulationsChart;
 
     // --- Função Wrapper para Fetch Seguro ---
@@ -12,11 +13,7 @@ $(document).ready(function() {
             return Promise.reject(new Error('Token não encontrado'));
         }
 
-        const defaultHeaders = {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        };
-
+        const defaultHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
         const config = { ...options, headers: { ...defaultHeaders, ...options.headers } };
         const response = await fetch(url, config);
 
@@ -26,8 +23,9 @@ $(document).ready(function() {
             try {
                 const errorJson = await response.json();
                 if (errorJson.error) serverError = `Erro de Autenticação: ${errorJson.error}`;
-            } catch (e) {}
-            alert(serverError);
+            } catch (e) { /* Ignora falha no parse do JSON */ }
+            // NOTA: 'alert' é bloqueante. Considere usar um modal não-bloqueante para uma melhor UX.
+            alert(serverError); 
             window.location.href = '/login.html';
             return Promise.reject(new Error(serverError));
         }
@@ -42,7 +40,6 @@ $(document).ready(function() {
             return;
         }
         
-        // Decodifica o token para obter o nome do utilizador
         try {
             const decodedToken = jwt_decode(token);
             $('#username-display').text(decodedToken.username || 'Utilizador');
@@ -82,9 +79,38 @@ $(document).ready(function() {
             await loadUsers();
             usersLoaded = true;
         }
+        
+        if (viewName === 'simulations' && !simulationsLoaded) {
+            await loadSimulationsDashboard();
+            simulationsLoaded = true;
+        }
     }
 
     // --- Funções de Carregamento de Dados ---
+
+    async function loadSimulationsDashboard() {
+        try {
+            const response = await fetch('dashboard.html');
+            if (!response.ok) throw new Error('Não foi possível carregar o dashboard de simulações.');
+            
+            const html = await response.text();
+            $('#view-simulations').html(html);
+
+            // Carrega o script do dashboard e, no callback, chama sua função de setup.
+            $.getScript('dashboard.js', function() {
+                if (typeof setupSimulationsDashboard === 'function') {
+                    setupSimulationsDashboard();
+                } else {
+                    console.error("ERRO CRÍTICO: A função 'setupSimulationsDashboard' não foi encontrada em dashboard.js. O dashboard não será inicializado.");
+                }
+            });
+
+        } catch (error) {
+            console.error("Erro ao carregar dashboard de simulações:", error);
+            $('#view-simulations').html('<p class="text-red-500">Ocorreu um erro ao carregar esta secção.</p>');
+        }
+    }
+
     async function loadDashboardStats() {
         try {
             const [usersResponse, simsResponse] = await Promise.all([
@@ -103,7 +129,7 @@ $(document).ready(function() {
                 renderSimulationsChart(simulations);
             }
             
-            $('#stats-total-quizzes').text('0'); // Placeholder
+            $('#stats-total-quizzes').text('0');
 
         } catch (error) {
             if (error.message && !error.message.includes('Token')) {
@@ -113,6 +139,13 @@ $(document).ready(function() {
     }
 
     async function loadUsers() {
+        // AJUSTE CRÍTICO: Verifica se a biblioteca DataTables está carregada ANTES de usá-la.
+        if (typeof $.fn.DataTable !== 'function') {
+            console.error("ERRO: DataTables não está carregado. Verifique a ordem dos scripts no seu ficheiro HTML. jQuery deve vir antes de DataTables, e ambos antes de admin.js.");
+            alert("Erro de configuração: A tabela de utilizadores não pode ser carregada.");
+            return;
+        }
+
         try {
             const response = await secureFetch('/api/users');
             if (response.status === 403) {
@@ -143,7 +176,10 @@ $(document).ready(function() {
                         `
                     }
                 ],
-                language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-PT.json' }
+                language: {
+                    // Objeto de tradução para o DataTables
+                    "sEmptyTable": "Nenhum registro encontrado", "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros", "sInfoEmpty": "Mostrando 0 até 0 de 0 registros", "sInfoFiltered": "(Filtrados de _MAX_ registros)", "sInfoPostFix": "", "sInfoThousands": ".", "sLengthMenu": "_MENU_ resultados por página", "sLoadingRecords": "Carregando...", "sProcessing": "Processando...", "sZeroRecords": "Nenhum registro encontrado", "sSearch": "Pesquisar", "oPaginate": { "sNext": "Próximo", "sPrevious": "Anterior", "sFirst": "Primeiro", "sLast": "Último" }, "oAria": { "sSortAscending": ": Ordenar colunas de forma ascendente", "sSortDescending": ": Ordenar colunas de forma descendente" }
+                }
             });
         } catch (error) {
             if (error.message && !error.message.includes('Token')) {
@@ -154,10 +190,16 @@ $(document).ready(function() {
     }
     
     function renderSimulationsChart(simulations) {
+        if (typeof Chart === 'undefined') {
+            console.error("ERRO: Chart.js não está carregado. O gráfico não será renderizado.");
+            return;
+        }
         const ctx = document.getElementById('simulationsChart').getContext('2d');
         
         const simulationsByDay = simulations.reduce((acc, sim) => {
-            const date = new Date(sim.createdAt).toLocaleDateString('pt-PT');
+            // Garante que createdAt existe antes de tentar criar uma data
+            if (!sim.createdAt) return acc;
+            const date = new Date(sim.createdAt.seconds ? sim.createdAt.seconds * 1000 : sim.createdAt).toLocaleDateString('pt-PT');
             acc[date] = (acc[date] || 0) + 1;
             return acc;
         }, {});
@@ -176,7 +218,7 @@ $(document).ready(function() {
                 datasets: [{
                     label: 'Nº de Simulações',
                     data: data,
-                    borderColor: 'var(--brand-red)',
+                    borderColor: 'rgba(213, 43, 30, 1)', // Cor sólida para a linha
                     backgroundColor: 'rgba(213, 43, 30, 0.2)',
                     fill: true,
                     tension: 0.3
@@ -278,3 +320,12 @@ $(document).ready(function() {
     // Inicia a página
     setupAdminPage();
 });
+
+// AJUSTE: Funções explicitamente anexadas ao 'window' para serem globais de forma segura.
+// Isto permite que o script 'dashboard.js' as chame sem problemas.
+window.openSimulationModal = function() {
+    $('#simulationModal').addClass('active');
+}
+window.closeSimulationModal = function() {
+    $('#simulationModal').removeClass('active');
+}

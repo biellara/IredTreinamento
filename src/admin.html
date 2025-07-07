@@ -14,6 +14,9 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
+    <!-- Flatpickr CSS (para o seletor de datas) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <!-- Folha de Estilos Personalizada -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -34,6 +37,11 @@
                     <i class="fas fa-users fa-fw"></i>
                     <span>Gestão de Colaboradores</span>
                 </a>
+                <!-- NOVO LINK ADICIONADO -->
+                <a href="#simulations" class="sidebar-link">
+                    <i class="fas fa-tasks fa-fw"></i>
+                    <span>Dashboard Simulações</span>
+                </a>
                 <a href="#quizzes" class="sidebar-link">
                     <i class="fas fa-question-circle fa-fw"></i>
                     <span>Adicionar Quiz</span>
@@ -51,7 +59,6 @@
 
         <!-- Conteúdo Principal -->
         <main class="main-content">
-            <!-- Cabeçalho do Conteúdo Principal -->
             <header class="main-header">
                 <h1 id="view-title" class="text-2xl font-bold text-gray-800">Dashboard</h1>
                 <div class="user-menu">
@@ -60,7 +67,7 @@
                 </div>
             </header>
 
-            <!-- View: Dashboard -->
+            <!-- View: Dashboard Principal -->
             <section id="view-dashboard" class="view active">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div class="stat-card">
@@ -98,15 +105,18 @@
                         <h2 class="text-xl font-semibold text-gray-700">Lista de Colaboradores</h2>
                         <button id="addUserBtn" class="btn btn-primary">
                             <i class="fas fa-plus mr-2"></i>
-                            <span> Adicionar Colaborador</span>
+                            <span>Adicionar Colaborador</span>
                         </button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table id="usersTable" class="w-full">
-                            <!-- Cabeçalho e corpo preenchidos pelo DataTables -->
-                        </table>
+                        <table id="usersTable" class="w-full"></table>
                     </div>
                 </div>
+            </section>
+
+            <!-- NOVO CONTENTOR PARA O DASHBOARD DE SIMULAÇÕES -->
+            <section id="view-simulations" class="view hidden">
+                <!-- O conteúdo de dashboard.html será carregado aqui pelo JavaScript -->
             </section>
 
             <!-- Outras views (placeholders) -->
@@ -116,7 +126,7 @@
         </main>
     </div>
 
-    <!-- Modais -->
+    <!-- Modais (para Gestão de Colaboradores) -->
     <div id="userModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle" class="modal-title">Adicionar Novo Colaborador</h3>
@@ -145,7 +155,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" id="cancelBtn" class="btn btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Salvar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
         </div>
@@ -161,12 +171,32 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal para Detalhes da Simulação (será usado pelo dashboard.js) -->
+    <div id="simulationModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div id="modal-header" class="flex justify-between items-center mb-4">
+                <h3 class="modal-title">Detalhes da Simulação</h3>
+                <button onclick="closeSimulationModal()" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="modal-body" class="prose max-w-none"></div>
+            <div id="modal-export-buttons" class="modal-actions"></div>
+        </div>
+    </div>
+
 
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <script src="admin.js"></script> 
-</body>
+
+    </body>
+</html>
 </html>

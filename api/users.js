@@ -1,5 +1,6 @@
-const { db, auth } = require('../firebase'); 
+// Ficheiro: /api/users.js
 
+const { db, auth } = require('../firebase'); 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -16,10 +17,6 @@ module.exports = async (req, res) => {
 
   // --- Middleware de Autenticação e Verificação de Função (Role) ---
   try {
-    // --- LOG DE DEPURAÇÃO ADICIONADO ---
-    // Vamos verificar se a JWT_SECRET está a ser carregada corretamente aqui.
-    console.log('[API de Utilizadores] Verificando token com JWT_SECRET:', process.env.JWT_SECRET ? `...${process.env.JWT_SECRET.slice(-6)}` : 'NÃO DEFINIDA');
-
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Acesso não autorizado. Token não fornecido.' });
@@ -27,13 +24,11 @@ module.exports = async (req, res) => {
     const token = authHeader.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Busca o utilizador no Firestore para verificar a sua função
     const userDoc = await db.collection('users').doc(decodedToken.id).get();
     if (!userDoc.exists || userDoc.data().role !== 'admin') {
       return res.status(403).json({ error: 'Acesso negado. Permissões de administrador necessárias.' });
     }
   } catch (error) {
-    // Adiciona um log do erro para mais detalhes na depuração
     console.error('[API de Utilizadores] Erro na verificação do token:', error.message);
     return res.status(401).json({ error: 'Token inválido ou expirado.' });
   }
@@ -41,11 +36,10 @@ module.exports = async (req, res) => {
   // --- Roteamento baseado no Método HTTP ---
   switch (req.method) {
     case 'GET':
-      // --- Listar todos os utilizadores ---
       try {
         const usersSnapshot = await db.collection('users').get();
         const users = usersSnapshot.docs.map(doc => {
-          const { password, ...userData } = doc.data(); // Exclui a senha do retorno
+          const { password, ...userData } = doc.data();
           return { id: doc.id, ...userData };
         });
         return res.status(200).json(users);
@@ -55,7 +49,6 @@ module.exports = async (req, res) => {
       }
 
     case 'POST':
-      // --- Criar um novo utilizador ---
       try {
         const { username, email, password, role } = req.body;
         if (!username || !email || !password || !role) {
@@ -87,23 +80,54 @@ module.exports = async (req, res) => {
       }
 
     case 'PUT':
-      // --- Atualizar a função de um utilizador ---
+      // --- LÓGICA DE ATUALIZAÇÃO CORRIGIDA E MAIS ROBUSTA ---
       try {
-        const { id } = req.query;
-        const { role } = req.body;
-        if (!id || !role) {
-          return res.status(400).json({ error: 'ID do utilizador e a nova função (role) são obrigatórios.' });
+        const { id } = req.query; // ID do utilizador a ser atualizado
+        const { username, role } = req.body; // Obtém o username e a role do corpo da requisição
+
+        if (!id) {
+          return res.status(400).json({ error: 'O ID do utilizador é obrigatório.' });
         }
 
-        await db.collection('users').doc(id).update({ role });
-        return res.status(200).json({ message: 'Função do utilizador atualizada com sucesso.' });
+        // Cria um objeto para armazenar os campos que serão atualizados no Firestore
+        const fieldsToUpdateInFirestore = {};
+        if (username) fieldsToUpdateInFirestore.username = username;
+        if (role) fieldsToUpdateInFirestore.role = role;
+
+        if (Object.keys(fieldsToUpdateInFirestore).length === 0) {
+          return res.status(400).json({ error: 'Nenhum dado para atualizar foi fornecido (username ou role).' });
+        }
+
+        // Tenta atualizar o Firebase Authentication primeiro, se houver um username
+        if (username) {
+          try {
+            await auth.updateUser(id, { displayName: username });
+          } catch (authError) {
+            // Se o utilizador não for encontrado na Autenticação, regista um aviso mas continua para atualizar o Firestore.
+            // Isto lida com casos de inconsistência de dados.
+            if (authError.code === 'auth/user-not-found') {
+              console.warn(`AVISO: O utilizador com ID ${id} foi encontrado no Firestore, mas não no Firebase Authentication. O displayName não será atualizado na autenticação.`);
+            } else {
+              // Se for outro erro de autenticação, lança-o para ser tratado pelo catch principal.
+              throw authError;
+            }
+          }
+        }
+
+        // Atualiza os campos no Firestore
+        await db.collection('users').doc(id).update(fieldsToUpdateInFirestore);
+
+        return res.status(200).json({ message: 'Utilizador atualizado com sucesso.' });
       } catch (error) {
         console.error("Erro ao atualizar utilizador:", error);
+        // Retorna a mensagem de erro específica do Firebase se disponível
+        if (error.code) {
+             return res.status(500).json({ error: `Erro do Firebase: ${error.message}` });
+        }
         return res.status(500).json({ error: 'Erro interno ao atualizar utilizador.' });
       }
 
     case 'DELETE':
-      // --- Excluir um utilizador ---
       try {
         const { id } = req.query;
         if (!id) {
@@ -121,7 +145,6 @@ module.exports = async (req, res) => {
 
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
-      // CORREÇÃO: A linha abaixo estava incompleta, causando um erro de sintaxe.
       return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
