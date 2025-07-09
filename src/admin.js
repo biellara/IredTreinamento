@@ -24,7 +24,6 @@ $(document).ready(function() {
                 const errorJson = await response.json();
                 if (errorJson.error) serverError = `Erro de Autenticação: ${errorJson.error}`;
             } catch (e) { /* Ignora falha no parse do JSON */ }
-            // NOTA: 'alert' é bloqueante. Considere usar um modal não-bloqueante para uma melhor UX.
             alert(serverError); 
             window.location.href = '/login.html';
             return Promise.reject(new Error(serverError));
@@ -94,9 +93,8 @@ $(document).ready(function() {
             if (!response.ok) throw new Error('Não foi possível carregar o dashboard de simulações.');
             
             const html = await response.text();
-            $('#view-simulations').html(html);
+            $('#simulations-dashboard-content').html(html);
 
-            // Carrega o script do dashboard e, no callback, chama sua função de setup.
             $.getScript('dashboard.js', function() {
                 if (typeof setupSimulationsDashboard === 'function') {
                     setupSimulationsDashboard();
@@ -139,10 +137,8 @@ $(document).ready(function() {
     }
 
     async function loadUsers() {
-        // AJUSTE CRÍTICO: Verifica se a biblioteca DataTables está carregada ANTES de usá-la.
         if (typeof $.fn.DataTable !== 'function') {
-            console.error("ERRO: DataTables não está carregado. Verifique a ordem dos scripts no seu ficheiro HTML. jQuery deve vir antes de DataTables, e ambos antes de admin.js.");
-            alert("Erro de configuração: A tabela de utilizadores não pode ser carregada.");
+            console.error("ERRO: DataTables não está carregado.");
             return;
         }
 
@@ -171,13 +167,12 @@ $(document).ready(function() {
                     {
                         data: 'id', title: 'Ações', orderable: false,
                         render: (data) => `
-                            <button class="edit-btn text-blue-600 hover:text-blue-800 p-1" data-id="${data}" title="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="delete-btn text-red-600 hover:text-red-800 p-1" data-id="${data}" title="Excluir"><i class="fas fa-trash"></i></button>
+                            <button class="edit-btn" data-id="${data}" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" data-id="${data}" title="Excluir"><i class="fas fa-trash"></i></button>
                         `
                     }
                 ],
                 language: {
-                    // Objeto de tradução para o DataTables
                     "sEmptyTable": "Nenhum registro encontrado", "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros", "sInfoEmpty": "Mostrando 0 até 0 de 0 registros", "sInfoFiltered": "(Filtrados de _MAX_ registros)", "sInfoPostFix": "", "sInfoThousands": ".", "sLengthMenu": "_MENU_ resultados por página", "sLoadingRecords": "Carregando...", "sProcessing": "Processando...", "sZeroRecords": "Nenhum registro encontrado", "sSearch": "Pesquisar", "oPaginate": { "sNext": "Próximo", "sPrevious": "Anterior", "sFirst": "Primeiro", "sLast": "Último" }, "oAria": { "sSortAscending": ": Ordenar colunas de forma ascendente", "sSortDescending": ": Ordenar colunas de forma descendente" }
                 }
             });
@@ -191,13 +186,12 @@ $(document).ready(function() {
     
     function renderSimulationsChart(simulations) {
         if (typeof Chart === 'undefined') {
-            console.error("ERRO: Chart.js não está carregado. O gráfico não será renderizado.");
+            console.error("ERRO: Chart.js não está carregado.");
             return;
         }
         const ctx = document.getElementById('simulationsChart').getContext('2d');
         
         const simulationsByDay = simulations.reduce((acc, sim) => {
-            // Garante que createdAt existe antes de tentar criar uma data
             if (!sim.createdAt) return acc;
             const date = new Date(sim.createdAt.seconds ? sim.createdAt.seconds * 1000 : sim.createdAt).toLocaleDateString('pt-PT');
             acc[date] = (acc[date] || 0) + 1;
@@ -218,7 +212,7 @@ $(document).ready(function() {
                 datasets: [{
                     label: 'Nº de Simulações',
                     data: data,
-                    borderColor: 'rgba(213, 43, 30, 1)', // Cor sólida para a linha
+                    borderColor: 'var(--brand-red)',
                     backgroundColor: 'rgba(213, 43, 30, 0.2)',
                     fill: true,
                     tension: 0.3
@@ -321,11 +315,18 @@ $(document).ready(function() {
     setupAdminPage();
 });
 
-// AJUSTE: Funções explicitamente anexadas ao 'window' para serem globais de forma segura.
-// Isto permite que o script 'dashboard.js' as chame sem problemas.
+// --- Funções Globais para Modais ---
+// CORREÇÃO: Adicionadas as funções que faltavam para o modal de histórico.
+// Estas funções agora estão disponíveis globalmente para serem chamadas por dashboard.js.
 window.openSimulationModal = function() {
     $('#simulationModal').addClass('active');
 }
 window.closeSimulationModal = function() {
     $('#simulationModal').removeClass('active');
+}
+window.openHistoryModal = function() {
+    $('#historyModal').addClass('active');
+}
+window.closeHistoryModal = function() {
+    $('#historyModal').removeClass('active');
 }

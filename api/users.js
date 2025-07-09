@@ -1,5 +1,3 @@
-// Ficheiro: /api/users.js
-
 const { db, auth } = require('../firebase'); 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -80,38 +78,39 @@ module.exports = async (req, res) => {
       }
 
     case 'PUT':
-      // --- LÓGICA DE ATUALIZAÇÃO CORRIGIDA E MAIS ROBUSTA ---
+      // --- LÓGICA DE ATUALIZAÇÃO CORRIGIDA PARA INCLUIR SENHA ---
       try {
-        const { id } = req.query; // ID do utilizador a ser atualizado
-        const { username, role } = req.body; // Obtém o username e a role do corpo da requisição
+        const { id } = req.query;
+        const { username, role, password } = req.body; // Obtém também a senha
 
         if (!id) {
           return res.status(400).json({ error: 'O ID do utilizador é obrigatório.' });
         }
 
-        // Cria um objeto para armazenar os campos que serão atualizados no Firestore
         const fieldsToUpdateInFirestore = {};
-        if (username) fieldsToUpdateInFirestore.username = username;
-        if (role) fieldsToUpdateInFirestore.role = role;
+        const fieldsToUpdateInAuth = {};
 
-        if (Object.keys(fieldsToUpdateInFirestore).length === 0) {
-          return res.status(400).json({ error: 'Nenhum dado para atualizar foi fornecido (username ou role).' });
+        if (username) {
+            fieldsToUpdateInFirestore.username = username;
+            fieldsToUpdateInAuth.displayName = username;
+        }
+        if (role) {
+            fieldsToUpdateInFirestore.role = role;
+        }
+        // Se uma nova senha foi fornecida, encripta-a
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            fieldsToUpdateInFirestore.password = hashedPassword;
+            fieldsToUpdateInAuth.password = password; // Para a Auth, envia a senha em texto plano
         }
 
-        // Tenta atualizar o Firebase Authentication primeiro, se houver um username
-        if (username) {
-          try {
-            await auth.updateUser(id, { displayName: username });
-          } catch (authError) {
-            // Se o utilizador não for encontrado na Autenticação, regista um aviso mas continua para atualizar o Firestore.
-            // Isto lida com casos de inconsistência de dados.
-            if (authError.code === 'auth/user-not-found') {
-              console.warn(`AVISO: O utilizador com ID ${id} foi encontrado no Firestore, mas não no Firebase Authentication. O displayName não será atualizado na autenticação.`);
-            } else {
-              // Se for outro erro de autenticação, lança-o para ser tratado pelo catch principal.
-              throw authError;
-            }
-          }
+        if (Object.keys(fieldsToUpdateInFirestore).length === 0) {
+          return res.status(400).json({ error: 'Nenhum dado para atualizar foi fornecido.' });
+        }
+
+        // Atualiza o Firebase Authentication se houver campos para isso
+        if (Object.keys(fieldsToUpdateInAuth).length > 0) {
+            await auth.updateUser(id, fieldsToUpdateInAuth);
         }
 
         // Atualiza os campos no Firestore
@@ -120,7 +119,6 @@ module.exports = async (req, res) => {
         return res.status(200).json({ message: 'Utilizador atualizado com sucesso.' });
       } catch (error) {
         console.error("Erro ao atualizar utilizador:", error);
-        // Retorna a mensagem de erro específica do Firebase se disponível
         if (error.code) {
              return res.status(500).json({ error: `Erro do Firebase: ${error.message}` });
         }
