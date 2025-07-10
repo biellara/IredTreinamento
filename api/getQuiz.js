@@ -79,28 +79,53 @@ module.exports = async (req, res) => {
         }
       } 
       // --- Criar um novo quiz (apenas admin) ---
-      else {
-        if (userRole !== 'admin') {
-          return res.status(403).json({ error: 'Acesso negado. Permissões de administrador necessárias.' });
-        }
-        try {
-          const { title, description, questions } = req.body;
-          if (!title || !Array.isArray(questions) || questions.length === 0) {
-            return res.status(400).json({ error: 'Título e pelo menos uma pergunta são obrigatórios.' });
-          }
-          const newQuiz = {
-            title,
-            description: description || '',
-            questions,
-            createdAt: new Date().toISOString(),
-          };
-          const docRef = await db.collection('quizzes').add(newQuiz);
-          return res.status(201).json({ id: docRef.id, ...newQuiz });
-        } catch (error) {
-          console.error("Erro ao criar quiz:", error);
-          return res.status(500).json({ error: 'Erro interno ao criar quiz.' });
-        }
+else {
+  if (userRole !== 'admin') {
+    return res.status(403).json({ error: 'Acesso negado. Permissões de administrador necessárias.' });
+  }
+
+  try {
+    const { title, description, questions } = req.body;
+
+    if (!title || !Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: 'Título e pelo menos uma pergunta são obrigatórios.' });
+    }
+
+    // Normaliza as perguntas
+    const normalizedQuestions = questions.map((q, index) => {
+      if (
+        typeof q.question !== 'string' ||
+        typeof q.answer !== 'string' ||
+        !Array.isArray(q.options) ||
+        q.options.length < 2
+      ) {
+        throw new Error(`Pergunta inválida na posição ${index + 1}`);
       }
+
+      return {
+        question: q.question.trim(),
+        answer: q.answer.trim(),
+        options: q.options.map(opt => String(opt).trim())
+      };
+    });
+
+    const newQuiz = {
+      title: title.trim(),
+      description: description?.trim() || '',
+      questions: normalizedQuestions,
+      createdAt: new Date().toISOString()
+    };
+
+    const docRef = await db.collection('quizzes').add(newQuiz);
+
+    return res.status(201).json({ id: docRef.id, ...newQuiz });
+
+  } catch (error) {
+    console.error("Erro ao criar quiz:", error);
+    return res.status(500).json({ error: 'Erro interno ao criar quiz.' });
+  }
+}
+
 
     // --- ATUALIZAR UM QUIZ (apenas admin) ---
     case 'PUT':

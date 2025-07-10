@@ -20,12 +20,27 @@ let score = 0;
 
 async function loadQuizData() {
   try {
+    const token = localStorage.getItem('token');
+    if (!token) return showError('Você precisa estar logado para acessar este quiz.');
+
     const urlParams = new URLSearchParams(window.location.search);
     const quizId = urlParams.get('id');
 
     if (!quizId) return showError('Nenhum ID de quiz foi fornecido.');
 
-    const response = await fetch(`/api/getQuiz?id=${quizId}`, { cache: 'no-store' });
+    const response = await fetch(`/api/getQuiz?id=${quizId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store'
+    });
+
+    if (response.status === 401) {
+      return showError('Token inválido ou expirado. Faça login novamente.');
+    }
+
     if (!response.ok) throw new Error('Erro ao buscar quiz da API');
 
     const data = await response.json();
@@ -42,6 +57,7 @@ async function loadQuizData() {
     showError('Erro ao carregar o quiz.');
   }
 }
+
 
 function startQuiz() {
   currentQuestionIndex = 0;

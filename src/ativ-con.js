@@ -47,24 +47,47 @@ async function loadData() {
 
     let combined = [...contentData];
 
-    // Apenas na página de atividades, incluir quizzes
     if (isAtividades) {
-      const quizzesResponse = await fetch('/api/getQuiz');
-      if (!quizzesResponse.ok) throw new Error('Erro ao buscar quizzes.');
-      const quizzesData = await quizzesResponse.json();
+  const token = localStorage.getItem('token');
 
-      const quizzesFormatted = quizzesData.map(q => ({
-        ...q,
-        type: 'quiz',
-        description: q.description || 'Quiz de treinamento.',
-        category: q.category || 'Quizzes'
-      }));
+    console.log('Todos os dados combinados:', combined);
 
-      combined = [...combined, ...quizzesFormatted];
+  if (!token) {
+    console.error('Token não encontrado. Usuário não autenticado.');
+    throw new Error('Usuário não autenticado. Token ausente.');
+  }
+
+  const quizzesResponse = await fetch('/api/getQuiz', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     }
+  });
+
+  if (quizzesResponse.status === 401) {
+    throw new Error('Token inválido ou expirado. Faça login novamente.');
+  }
+
+  if (!quizzesResponse.ok) {
+    throw new Error('Erro ao buscar quizzes.');
+  }
+
+  const quizzesData = await quizzesResponse.json();
+
+  const quizzesFormatted = quizzesData.map(q => ({
+    ...q,
+    type: 'quiz',
+    description: q.description || 'Quiz de treinamento.',
+    category: q.category || 'Quizzes'
+  }));
+
+  combined = [...combined, ...quizzesFormatted];
+}
 
     const isActivity = doc => doc.type === (isAtividades ? 'activity' : 'knowledgeBase') || (isAtividades && doc.type === 'quiz');
     const filtered = combined.filter(isActivity);
+    console.log('Filtrados:', filtered);
 
     if (filtered.length === 0) {
       throw new Error(isAtividades ? 'Nenhuma atividade encontrada.' : 'Nenhum artigo encontrado.');
@@ -89,7 +112,6 @@ async function loadData() {
     mainContent.innerHTML = `<p><strong>Erro:</strong> ${err.message}</p>`;
   }
 }
-
 
   function renderCategories(categories = knowledgeData) {
     const templateNode = categoriesTemplate.content.cloneNode(true);
