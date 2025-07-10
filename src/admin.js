@@ -3,10 +3,11 @@ $(document).ready(function() {
     let userIdToDelete = null;
     let usersLoaded = false;
     let simulationsLoaded = false;
+    let quizzesLoaded = false; // Flag para a nova secção
     let simulationsChart;
 
     // --- Função Wrapper para Fetch Seguro ---
-    async function secureFetch(url, options = {}) {
+    window.secureFetch = async function(url, options = {}) {
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.href = '/login.html';
@@ -83,6 +84,11 @@ $(document).ready(function() {
             await loadSimulationsDashboard();
             simulationsLoaded = true;
         }
+
+        if (viewName === 'quizzes' && !quizzesLoaded) {
+            await loadQuizzesManagement();
+            quizzesLoaded = true;
+        }
     }
 
     // --- Funções de Carregamento de Dados ---
@@ -108,12 +114,24 @@ $(document).ready(function() {
             $('#view-simulations').html('<p class="text-red-500">Ocorreu um erro ao carregar esta secção.</p>');
         }
     }
+    
+    // CORREÇÃO: A função agora carrega 'criarQuiz.js'
+    async function loadQuizzesManagement() {
+        $.getScript('criarQuiz.js', function() {
+            if (typeof setupQuizzesManagement === 'function') {
+                setupQuizzesManagement();
+            } else {
+                console.error("ERRO CRÍTICO: A função 'setupQuizzesManagement' não foi encontrada em criarQuiz.js.");
+            }
+        });
+    }
 
     async function loadDashboardStats() {
         try {
-            const [usersResponse, simsResponse] = await Promise.all([
+            const [usersResponse, simsResponse, quizzesResponse] = await Promise.all([
                 secureFetch('/api/users'),
-                secureFetch('/api/getSimulations?view=admin')
+                secureFetch('/api/getSimulations?view=admin'),
+                secureFetch('/api/getQuiz')
             ]);
 
             if (usersResponse.ok) {
@@ -127,7 +145,10 @@ $(document).ready(function() {
                 renderSimulationsChart(simulations);
             }
             
-            $('#stats-total-quizzes').text('0');
+            if (quizzesResponse.ok) {
+                const quizzes = await quizzesResponse.json();
+                $('#stats-total-quizzes').text(quizzes.length);
+            }
 
         } catch (error) {
             if (error.message && !error.message.includes('Token')) {
@@ -316,8 +337,6 @@ $(document).ready(function() {
 });
 
 // --- Funções Globais para Modais ---
-// CORREÇÃO: Adicionadas as funções que faltavam para o modal de histórico.
-// Estas funções agora estão disponíveis globalmente para serem chamadas por dashboard.js.
 window.openSimulationModal = function() {
     $('#simulationModal').addClass('active');
 }

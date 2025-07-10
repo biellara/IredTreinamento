@@ -1,213 +1,180 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo | Ired Internet</title>
-    
-    <!-- Fontes e Ícones -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Bibliotecas CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo | Ired Internet</title>
 
-    <!-- Folha de Estilos Personalizada -->
-    <link rel="stylesheet" href="admin.css">
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Bibliotecas CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+  <!-- Folha de Estilos Personalizada -->
+  <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="Logo Ired" class="logo" />
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="sidebar-link active"><i class="fas fa-tachometer-alt fa-fw"></i><span>Dashboard</span></a>
+        <a href="#users" class="sidebar-link"><i class="fas fa-users fa-fw"></i><span>Colaboradores</span></a>
+        <a href="#simulations" class="sidebar-link"><i class="fas fa-tasks fa-fw"></i><span>Simulações</span></a>
+        <a href="#quizzes" class="sidebar-link"><i class="fas fa-question-circle fa-fw"></i><span>Quizzes</span></a>
+        <a href="#articles" class="sidebar-link"><i class="fas fa-newspaper fa-fw"></i><span>Artigos</span></a>
+        <a href="#knowledge" class="sidebar-link"><i class="fas fa-book fa-fw"></i><span>Base de Conhecimento</span></a>
+      </nav>
+    </aside>
 
-    <div class="dashboard-container">
-        <!-- Sidebar (Menu de Navegação) -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png" alt="[Imagem do Logo da Ired Internet]" class="logo">
-            </div>
-            <nav class="sidebar-nav">
-                <a href="#dashboard" class="sidebar-link active">
-                    <i class="fas fa-tachometer-alt fa-fw"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#users" class="sidebar-link">
-                    <i class="fas fa-users fa-fw"></i>
-                    <span>Colaboradores</span>
-                </a>
-                <a href="#simulations" class="sidebar-link">
-                    <i class="fas fa-tasks fa-fw"></i>
-                    <span>Simulações</span>
-                </a>
-                <a href="#quizzes" class="sidebar-link">
-                    <i class="fas fa-question-circle fa-fw"></i>
-                    <span>Quizzes</span>
-                </a>
-                <a href="#articles" class="sidebar-link">
-                    <i class="fas fa-newspaper fa-fw"></i>
-                    <span>Artigos</span>
-                </a>
-                <a href="#knowledge" class="sidebar-link">
-                    <i class="fas fa-book fa-fw"></i>
-                    <span>Base de Conhecimento</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- Conteúdo Principal -->
-        <main class="main-content">
-            <header class="main-header">
-                <h1 id="view-title" class="view-title">Dashboard</h1>
-                <div class="user-menu">
-                    <span id="username-display" class="username"></span>
-                    <i class="fas fa-user-circle"></i>
-                </div>
-            </header>
-
-            <!-- View: Dashboard Principal -->
-            <section id="view-dashboard" class="view active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-users card-icon"></i>
-                        <div>
-                            <h2 class="card-title">Total de Colaboradores</h2>
-                            <p id="stats-total-users" class="card-stat">0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-chart-line card-icon"></i>
-                        <div>
-                            <h2 class="card-title">Total de Simulações</h2>
-                            <p id="stats-total-simulations" class="card-stat">0</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-file-alt card-icon"></i>
-                        <div>
-                            <h2 class="card-title">Total de Quizzes</h2>
-                            <p id="stats-total-quizzes" class="card-stat">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-card">
-                    <h2 class="content-card-title">Simulações por Período</h2>
-                    <div class="chart-container">
-                        <canvas id="simulationsChart"></canvas>
-                    </div>
-                </div>
-            </section>
-
-            <!-- View: Gestão de Colaboradores -->
-            <section id="view-users" class="view hidden">
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h2 class="content-card-title">Lista de Colaboradores</h2>
-                        <button id="addUserBtn" class="btn btn-primary">
-                            <i class="fas fa-plus mr-2"></i>
-                            <span>Adicionar Colaborador</span>
-                        </button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table id="usersTable" class="w-full"></table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- View: Dashboard de Simulações -->
-            <section id="view-simulations" class="view hidden">
-                <div class="content-card" style="padding: 0; background: transparent; border: none;">
-                    <div id="simulations-dashboard-content" class="w-full">
-                    <!-- O conteúdo de dashboard.html será carregado aqui -->
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- Outras views (placeholders) -->
-            <section id="view-quizzes" class="view hidden"><h1 class="text-2xl">Gestão de Quizzes (em desenvolvimento)</h1></section>
-            <section id="view-articles" class="view hidden"><h1 class="text-2xl">Gestão de Artigos (em desenvolvimento)</h1></section>
-            <section id="view-knowledge" class="view hidden"><h1 class="text-2xl">Gestão da Base de Conhecimento (em desenvolvimento)</h1></section>
-        </main>
-    </div>
-
-    <!-- Modais -->
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modalTitle" class="modal-title">Adicionar Novo Colaborador</h3>
-            <form id="userForm">
-                <input type="hidden" id="userId">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-input">
-                    <small id="passwordHelp" class="form-help-text">Deixe em branco para não alterar ao editar.</small>
-                </div>
-                <div class="form-group">
-                    <label for="role">Função (Role)</label>
-                    <select id="role" name="role" class="form-input" required>
-                        <option value="user">Colaborador</option>
-                        <option value="supervisor">Supervisor</option>
-                        <option value="admin">Administrador</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </div>
-            </form>
+    <!-- Conteúdo -->
+    <main class="main-content">
+      <header class="main-header">
+        <h1 id="view-title" class="view-title">Dashboard</h1>
+        <div class="user-menu">
+          <span id="username-display" class="username"></span>
+          <i class="fas fa-user-circle"></i>
         </div>
-    </div>
+      </header>
 
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-title">Confirmar Exclusão</h3>
-            <p>Tem a certeza de que deseja excluir este utilizador? Esta ação não pode ser revertida.</p>
-            <div class="modal-actions">
-                <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Cancelar</button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Excluir</button>
-            </div>
+      <!-- Views -->
+      <section id="view-dashboard" class="view active">
+        <div class="stats-grid">
+          <div class="stat-card"><i class="fas fa-users card-icon"></i><div><h2 class="card-title">Total de Colaboradores</h2><p id="stats-total-users" class="card-stat">0</p></div></div>
+          <div class="stat-card"><i class="fas fa-chart-line card-icon"></i><div><h2 class="card-title">Total de Simulações</h2><p id="stats-total-simulations" class="card-stat">0</p></div></div>
+          <div class="stat-card"><i class="fas fa-file-alt card-icon"></i><div><h2 class="card-title">Total de Quizzes</h2><p id="stats-total-quizzes" class="card-stat">0</p></div></div>
         </div>
-    </div>
-    
-    <!-- AJUSTE: O modal de simulação agora tem um corpo com a classe de rolagem -->
-    <div id="simulationModal" class="modal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <h3 class="modal-title">Feedback do Analista</h3>
-                <button onclick="closeSimulationModal()" class="modal-close-btn">&times;</button>
-            </div>
-            <div id="modal-body-feedback" class="modal-scrollable-content"></div>
-            <div id="modal-export-buttons" class="modal-actions"></div>
+        <div class="content-card">
+          <h2 class="content-card-title">Simulações por Período</h2>
+          <div class="chart-container"><canvas id="simulationsChart"></canvas></div>
         </div>
-    </div>
+      </section>
 
-    <!-- AJUSTE: O modal de histórico agora tem um corpo com a classe de rolagem -->
-    <div id="historyModal" class="modal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <h3 class="modal-title">Histórico da Conversa</h3>
-                <button onclick="closeHistoryModal()" class="modal-close-btn">&times;</button>
-            </div>
-            <div id="modal-body-history" class="modal-scrollable-content"></div>
-            <div id="modal-export-history-buttons" class="modal-actions"></div>
+      <section id="view-users" class="view hidden">
+        <div class="content-card">
+          <div class="content-card-header">
+            <h2 class="content-card-title">Lista de Colaboradores</h2>
+            <button id="addUserBtn" class="button-minimal"><i class="fas fa-plus mr-2"></i>Adicionar Colaborador</button>
+          </div>
+          <div class="table-wrapper"><table id="usersTable" class="w-full"></table></div>
         </div>
+      </section>
+
+      <section id="view-simulations" class="view hidden">
+        <div class="content-card" style="padding: 0; background: transparent; border: none;">
+          <div id="simulations-dashboard-content" class="w-full"></div>
+        </div>
+      </section>
+
+      <section id="view-quizzes" class="view hidden">
+        <div class="content-card">
+          <div class="content-card-header">
+            <h2 class="content-card-title">Quizzes Criados</h2>
+            <button id="addQuizBtn" class="button-minimal"><i class="fas fa-plus mr-2"></i>Criar Novo Quiz</button>
+          </div>
+          <div class="table-wrapper"><table id="quizzesTable" class="w-full"></table></div>
+        </div>
+      </section>
+
+      <section id="view-articles" class="view hidden"><h1 class="text-2xl">Gestão de Artigos (em desenvolvimento)</h1></section>
+      <section id="view-knowledge" class="view hidden"><h1 class="text-2xl">Gestão da Base de Conhecimento (em desenvolvimento)</h1></section>
+    </main>
+  </div>
+
+  <!-- Modais -->
+  <div id="userModal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Adicionar Novo Colaborador</h3>
+        <button class="modal-close-btn" onclick="$('#userModal').removeClass('active')">&times;</button>
+      </div>
+      <form id="userForm" class="modal-scrollable-content">
+        <input type="hidden" id="userId" />
+        <div class="form-group"><label for="username">Username</label><input type="text" id="username" name="username" class="form-input" required /></div>
+        <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" class="form-input" required /></div>
+        <div class="form-group"><label for="password">Password</label><input type="password" id="password" name="password" class="form-input" /><small id="passwordHelp" class="form-help-text">Deixe em branco para não alterar ao editar.</small></div>
+        <div class="form-group"><label for="role">Função (Role)</label><select id="role" name="role" class="form-input" required><option value="user">Colaborador</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select></div>
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="button-minimal">Cancelar</button>
+          <button type="submit" class="button-minimal">Salvar</button>
+        </div>
+      </form>
     </div>
+  </div>
 
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirmar Exclusão</h3>
+        <button class="modal-close-btn" onclick="$('#deleteModal').removeClass('active')">&times;</button>
+      </div>
+      <div class="modal-scrollable-content">
+        <p>Tem a certeza de que deseja excluir este utilizador? Esta ação não pode ser revertida.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cancelDeleteBtn" class="button-minimal">Cancelar</button>
+        <button type="button" id="confirmDeleteBtn" class="button-minimal">Excluir</button>
+      </div>
+    </div>
+  </div>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="admin.js"></script> 
+  <div id="simulationModal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Feedback do Analista</h3>
+        <button class="modal-close-btn" onclick="closeSimulationModal()">&times;</button>
+      </div>
+      <div id="modal-body-feedback" class="modal-scrollable-content"></div>
+      <div id="modal-export-buttons" class="modal-actions"></div>
+    </div>
+  </div>
+
+  <div id="historyModal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Histórico da Conversa</h3>
+        <button class="modal-close-btn" onclick="closeHistoryModal()">&times;</button>
+      </div>
+      <div id="modal-body-history" class="modal-scrollable-content"></div>
+      <div id="modal-export-history-buttons" class="modal-actions"></div>
+    </div>
+  </div>
+
+  <div id="quizModal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 id="quizModalTitle" class="modal-title">Adicionar Novo Quiz</h3>
+        <button onclick="$('#quizModal').removeClass('active')" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="quizForm" class="modal-scrollable-content">
+        <input type="hidden" id="quizId" />
+        <div class="form-group"><label for="quizTitle">Título</label><input type="text" id="quizTitle" class="form-input" required /></div>
+        <div class="form-group"><label for="quizDescription">Descrição</label><textarea id="quizDescription" class="form-input" rows="3"></textarea></div>
+        <div id="questions-container"></div>
+        <div class="modal-actions">
+          <button type="button" id="addQuestionBtn" class="button-minimal">Adicionar Pergunta</button>
+          <button type="button" id="cancelQuizBtn" class="button-minimal">Cancelar</button>
+          <button type="submit" class="button-minimal">Salvar Quiz</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
