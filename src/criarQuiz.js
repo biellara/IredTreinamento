@@ -1,23 +1,20 @@
+
 function setupQuizzesManagement() {
     let quizzesTable;
 
-    // --- Template para uma nova pergunta ---
     const questionTemplate = (questionIndex) => `
         <div class="question-block" data-index="${questionIndex}">
             <div class="form-group">
                 <label>Texto da Pergunta ${questionIndex + 1}</label>
                 <input type="text" class="form-input question-text" required>
             </div>
-            <div class="options-container ml-4">
-                <!-- As opções serão adicionadas aqui -->
-            </div>
+            <div class="options-container ml-4"></div>
             <button type="button" class="btn btn-secondary btn-sm add-option-btn mt-2">Adicionar Opção</button>
             <button type="button" class="btn btn-danger btn-sm remove-question-btn mt-2">Remover Pergunta</button>
             <hr class="my-4">
         </div>
     `;
 
-    // --- Template para uma nova opção ---
     const optionTemplate = (questionIndex, optionIndex) => `
         <div class="option-block flex items-center gap-2 mb-2">
             <input type="radio" name="correctAnswer_${questionIndex}" value="${optionIndex}" class="correct-answer-radio" required>
@@ -26,13 +23,12 @@ function setupQuizzesManagement() {
         </div>
     `;
 
-    // --- Funções Principais ---
     async function loadQuizzes() {
         try {
             const response = await secureFetch('/api/getQuiz');
             if (!response.ok) throw new Error('Falha ao carregar quizzes.');
             const quizzes = await response.json();
-            
+
             if ($.fn.DataTable.isDataTable('#quizzesTable')) {
                 $('#quizzesTable').DataTable().destroy();
             }
@@ -43,7 +39,7 @@ function setupQuizzesManagement() {
                 columns: [
                     { data: 'title', title: 'Título' },
                     { data: 'description', title: 'Descrição', defaultContent: '-' },
-                    { 
+                    {
                         data: 'questions', title: 'Nº de Perguntas',
                         render: (data) => data ? data.length : 0
                     },
@@ -55,7 +51,7 @@ function setupQuizzesManagement() {
                         `
                     }
                 ],
-                language: { /* ... objeto de tradução ... */ }
+                language: {}
             });
         } catch (error) {
             console.error("Erro ao carregar quizzes:", error);
@@ -67,15 +63,15 @@ function setupQuizzesManagement() {
         $('#quizId').val('');
         $('#questions-container').empty();
 
-        if (quiz) { // Modo de Edição
+        if (quiz) {
             $('#quizModalTitle').text('Editar Quiz');
             $('#quizId').val(quiz.id);
             $('#quizTitle').val(quiz.title);
             $('#quizDescription').val(quiz.description);
             quiz.questions.forEach((q, qIndex) => addQuestionField(qIndex, q));
-        } else { // Modo de Criação
+        } else {
             $('#quizModalTitle').text('Adicionar Novo Quiz');
-            addQuestionField(0); // Adiciona a primeira pergunta por defeito
+            addQuestionField(0);
         }
         $('#quizModal').addClass('active');
     }
@@ -84,14 +80,17 @@ function setupQuizzesManagement() {
         const questionsContainer = $('#questions-container');
         questionsContainer.append(questionTemplate(index));
         const newQuestionBlock = questionsContainer.find(`.question-block[data-index="${index}"]`);
-        
-        if (data) { // Preenche os dados se estiver a editar
-            newQuestionBlock.find('.question-text').val(data.text);
+
+        if (data) {
+            newQuestionBlock.find('.question-text').val(data.question || data.text);
             data.options.forEach((opt, oIndex) => {
                 addOptionField(newQuestionBlock.find('.options-container'), index, oIndex, opt);
             });
-            newQuestionBlock.find(`input[name="correctAnswer_${index}"][value="${data.options.indexOf(data.correctAnswer)}"]`).prop('checked', true);
-        } else { // Adiciona 2 opções por defeito para uma nova pergunta
+            const correctIndex = data.options.indexOf(data.answer || data.correctAnswer);
+            if (correctIndex !== -1) {
+                newQuestionBlock.find(`input[name="correctAnswer_${index}"][value="${correctIndex}"]`).prop('checked', true);
+            }
+        } else {
             addOptionField(newQuestionBlock.find('.options-container'), index, 0);
             addOptionField(newQuestionBlock.find('.options-container'), index, 1);
         }
@@ -107,25 +106,53 @@ function setupQuizzesManagement() {
     async function handleFormSubmit(e) {
         e.preventDefault();
         const quizId = $('#quizId').val();
-        
+
         const quizData = {
             title: $('#quizTitle').val(),
             description: $('#quizDescription').val(),
             questions: []
         };
 
-        $('#questions-container .question-block').each(function() {
-            const qIndex = $(this).data('index');
-            const questionText = $(this).find('.question-text').val();
+        let valid = true;
+        let firstInvalid = null;
+
+        $('#questions-container .question-block').each(function () {
+            const questionBlock = $(this);
+            questionBlock.removeClass('border border-red-500');
+            const qIndex = questionBlock.data('index');
+            const questionText = questionBlock.find('.question-text').val().trim();
             const options = [];
-            $(this).find('.option-text').each(function() {
-                options.push($(this).val());
+            questionBlock.find('.option-text').each(function () {
+                const opt = $(this).val().trim();
+                if (opt) options.push(opt);
             });
-            const correctOptionIndex = $(this).find(`input[name="correctAnswer_${qIndex}"]:checked`).val();
+            const correctOptionIndex = questionBlock.find(`input[name="correctAnswer_${qIndex}"]:checked`).val();
             const correctAnswer = options[correctOptionIndex];
 
-            quizData.questions.push({ text: questionText, options, correctAnswer });
+            if (!questionText || options.length < 2 || !correctAnswer) {
+                valid = false;
+                questionBlock.addClass('border border-red-500 p-2 rounded');
+                if (!firstInvalid) {
+                    firstInvalid = questionBlock;
+                }
+                return;
+            }
+
+            quizData.questions.push({
+                question: questionText,
+                answer: correctAnswer,
+                options: options
+            });
         });
+
+        if (!valid) {
+            alert("Verifique se todas as perguntas têm texto, pelo menos 2 opções e uma resposta correta selecionada.");
+            if (firstInvalid) {
+                $('html, body').animate({ scrollTop: firstInvalid.offset().top - 100 }, 300);
+                firstInvalid.find('input, textarea').first().focus();
+            }
+            return;
+        }
 
         const url = quizId ? `/api/getQuiz?id=${quizId}` : '/api/getQuiz';
         const method = quizId ? 'PUT' : 'POST';
@@ -140,32 +167,59 @@ function setupQuizzesManagement() {
         }
     }
 
-    // --- Event Handlers ---
+    // Eventos principais
     $('#addQuizBtn').on('click', () => openQuizModal());
     $('#cancelQuizBtn').on('click', () => $('#quizModal').removeClass('active'));
     $('#quizForm').on('submit', handleFormSubmit);
 
-    // Eventos para botões dinâmicos
-    $('#questions-container').on('click', '.add-option-btn', function() {
+    $('#questions-container').on('click', '.add-option-btn', function () {
         const questionBlock = $(this).closest('.question-block');
         const qIndex = questionBlock.data('index');
         const oIndex = questionBlock.find('.option-block').length;
         addOptionField(questionBlock.find('.options-container'), qIndex, oIndex);
     });
 
-    $('#addQuestionBtn').on('click', function() {
+    $('#addQuestionBtn').on('click', function () {
         const qIndex = $('#questions-container').find('.question-block').length;
         addQuestionField(qIndex);
     });
 
-    $('#questions-container').on('click', '.remove-question-btn', function() {
+    $('#questions-container').on('click', '.remove-question-btn', function () {
         $(this).closest('.question-block').remove();
     });
-    
-    $('#questions-container').on('click', '.remove-option-btn', function() {
+
+    $('#questions-container').on('click', '.remove-option-btn', function () {
         $(this).closest('.option-block').remove();
     });
 
-    // Inicializa a secção
+    // --- Ações dos botões de edição e exclusão ---
+    $('#quizzesTable').on('click', '.edit-quiz-btn', async function () {
+        const quizId = $(this).data('id');
+        try {
+            const response = await secureFetch(`/api/getQuiz?id=${quizId}`);
+            if (!response.ok) throw new Error('Erro ao buscar dados do quiz.');
+            const quiz = await response.json();
+            openQuizModal(quiz);
+        } catch (err) {
+            alert('Não foi possível carregar o quiz para edição.');
+            console.error(err);
+        }
+    });
+
+    $('#quizzesTable').on('click', '.delete-quiz-btn', async function () {
+        const quizId = $(this).data('id');
+        const confirmDelete = confirm('Deseja realmente excluir este quiz? Esta ação não pode ser desfeita.');
+        if (!confirmDelete) return;
+
+        try {
+            const response = await secureFetch(`/api/getQuiz?id=${quizId}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Erro ao excluir quiz.');
+            await loadQuizzes();
+        } catch (err) {
+            alert('Não foi possível excluir o quiz.');
+            console.error(err);
+        }
+    });
+
     loadQuizzes();
-}
+} 
