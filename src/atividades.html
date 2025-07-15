@@ -3,96 +3,191 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Artigos e Atividades | IRED</title>
+  <title>Central de Atividades | IRED</title>
 
-  <!-- Fontes e Ícones -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Fontes e ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    protectPage(); // Redireciona para login se não autenticado
+  </script>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 2rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--brand-red, #b91c1c);
+    }
+
+    .cards-grid {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .card-option {
+      flex: 1;
+      max-width: 300px;
+      border: 2px solid #ddd;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .card-option:hover {
+      transform: scale(1.03);
+      border-color: var(--brand-red, #b91c1c);
+    }
+
+    .card-option i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--brand-red, #b91c1c);
+    }
+
+    /* Modal base */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-close-btn {
+      float: right;
+      font-size: 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .item-list {
+      margin-top: 1rem;
+    }
+
+    .item-entry {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .item-entry:hover {
+      background-color: #f9f9f9;
+    }
+
+    .item-entry span.new {
+      color: green;
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Botão do assistente */
+    .tech-assistant-fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #b91c1c;
+      color: #fff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 999;
+    }
+  </style>
 </head>
 <body>
-  <script src="auth.js"></script>
-    <script>
-    protectPage(); // Redireciona para login.html se não tiver token
-    </script>
-  <!-- Botão de Voltar -->
-  <a href="index.html" class="back-button">
-    <i class="fa-solid fa-arrow-left"></i>
-    <span>Voltar ao Início</span>
-  </a>
 
-  <!-- Conteúdo principal -->
-  <main class="content-wrapper">
-    <header class="kb-header">
-      <h1 class="kb-title">📝 Artigos e Atividades</h1>
-      <p class="kb-subtitle">Aprofunde seu conhecimento com guias, treinamentos e quizzes interativos.</p>
-      <div class="search-container" style="margin-top: 1.5rem; max-width: 28rem; margin-left: auto; margin-right: auto;">
-        <i class="search-icon fa-solid fa-search"></i>
-        <input id="activities-search-input" type="text" placeholder="Busque nas atividades..." class="search-input" />
-      </div>
-    </header>
+  <h1 class="section-title">Central de Atividades</h1>
 
-    <div id="activities-main-content"></div>
-  </main>
-
-  <!-- Template para artigo ou quiz -->
-  <template id="article-template">
-    <div class="article-view">
-      <div class="article-header">
-        <button class="back-button">
-          <i class="fa-solid fa-chevron-left"></i>
-          <span>Voltar para a lista</span>
-        </button>
-        <button class="tech-assistant-button">
-          <i class="fa-solid fa-brain"></i>
-          <span>Assistente Técnico</span>
-        </button>
-      </div>
-      <h2 class="article-title"></h2>
-      <div class="article-content prose"></div>
+  <div class="cards-grid">
+    <div class="card-option" onclick="openModal('activity')">
+      <i class="fa-solid fa-microscope"></i>
+      <h3>Artigos</h3>
+      <p>Conteúdos aprofundados com explicações técnicas detalhadas.</p>
     </div>
-  </template>
 
-  <!-- Template para categorias -->
-  <template id="categories-template">
-    <div id="categories-container"></div>
-  </template>
+    <div class="card-option" onclick="openModal('knowledgeBase')">
+      <i class="fa-solid fa-book"></i>
+      <h3>Base de Conhecimento</h3>
+      <p>Dicas rápidas, procedimentos e instruções práticas.</p>
+    </div>
 
-  <!-- Modal Assistente Técnico -->
-  <div id="techAssistantModal" class="modal-overlay">
-    <div class="modal-content">
-      <button id="closeTechAssistantModalBtn" class="modal-close-btn">&times;</button>
-      <h2 class="modal-title">
-        <i class="fa-solid fa-brain"></i>
-        <span>Assistente Técnico</span>
-      </h2>
-      <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
-        <h3 style="font-weight: 700;">Tópico do Artigo:</h3>
-        <p id="tech-topic-content" style="margin-top: 0.5rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.5rem;"></p>
-      </div>
-      <div style="display: flex; gap: 1rem;">
-        <button id="explainForMeBtn" class="button button-blue" style="flex: 1;">Explique para mim</button>
-        <button id="explainForCustomerBtn" class="button button-red" style="flex: 1;">Fala para o cliente</button>
-      </div>
-      <div id="tech-assistant-loader" class="loader-container">
-        <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-red); font-size: 1.875rem;"></i>
-        <p style="margin-top: 0.5rem;">Aguardando resposta da IA...</p>
-      </div>
-      <div id="tech-assistant-results" style="display: none; margin-top: 1.5rem;">
-        <h3 class="results-title" style="font-weight: 700; font-size: 1.125rem;"></h3>
-        <div id="tech-assistant-output" class="prose"></div>
-      </div>
+    <div class="card-option" onclick="openModal('quiz')">
+      <i class="fa-solid fa-circle-question"></i>
+      <h3>Quizzes</h3>
+      <p>Testes para reforçar o conhecimento técnico.</p>
     </div>
   </div>
 
-  <!-- Script que carrega os conteúdos -->
+  <!-- Modal de conteúdo -->
+  <div id="modalTipo" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+      <h2 id="modalTitle">Listagem</h2>
+      <input type="text" id="modalSearch" placeholder="Buscar..." style="width: 100%; padding: 0.5rem; margin: 1rem 0; font-size: 1rem;" />
+      <div id="modalList" class="item-list"></div>
+    </div>
+  </div>
+
+  <!-- Botão do assistente técnico -->
+  <div class="tech-assistant-fab" onclick="abrirAssistente()">
+    <i class="fa-solid fa-brain"></i>
+  </div>
+
+  <a href="index.html" class="back-button" style="
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: #e0e7ff;
+    color: #b91c1c;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 100;">
+    <i class="fa fa-arrow-left"></i> Voltar
+  </a>
+
+
+  <!-- Scripts -->
   <script src="ativ-con.js"></script>
 </body>
 </html>

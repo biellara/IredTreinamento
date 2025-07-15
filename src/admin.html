@@ -10,6 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+
 
   <!-- Bibliotecas CSS -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
@@ -31,7 +33,6 @@
         <a href="#simulations" class="sidebar-link"><i class="fas fa-tasks fa-fw"></i><span>Simulações</span></a>
         <a href="#quizzes" class="sidebar-link"><i class="fas fa-question-circle fa-fw"></i><span>Quizzes</span></a>
         <a href="#articles" class="sidebar-link"><i class="fas fa-newspaper fa-fw"></i><span>Artigos</span></a>
-        <a href="#knowledge" class="sidebar-link"><i class="fas fa-book fa-fw"></i><span>Base de Conhecimento</span></a>
       </nav>
     </aside>
 
@@ -84,8 +85,53 @@
         </div>
       </section>
 
-      <section id="view-articles" class="view hidden"><h1 class="text-2xl">Gestão de Artigos (em desenvolvimento)</h1></section>
-      <section id="view-knowledge" class="view hidden"><h1 class="text-2xl">Gestão da Base de Conhecimento (em desenvolvimento)</h1></section>
+      <section id="view-articles" class="view hidden">
+  <div class="content-card">
+    <div class="content-card-header">
+      <h2 class="content-card-title">Gestão de Artigos</h2>
+      <button id="addArticleBtn" class="button-minimal"><i class="fas fa-plus mr-2"></i>Adicionar Artigo</button>
+    </div>
+    <div class="table-wrapper">
+      <table id="articlesTable" class="display compact" style="width:100%"></table>
+    </div>
+  </div>
+</section>
+
+<div id="articleModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <h3 id="articleModalTitle" class="modal-title">Adicionar Novo Artigo</h3>
+      <button class="modal-close-btn" onclick="$('#articleModal').removeClass('active')">&times;</button>
+    </div>
+    <form id="articleForm" class="modal-scrollable-content">
+  <input type="hidden" id="articleId" />
+  <div class="form-group">
+    <label for="articleTitle">Título</label>
+    <input type="text" id="articleTitle" class="form-input" required />
+  </div>
+  <div class="form-group">
+    <label for="articleDescription">Descrição</label>
+    <textarea id="articleDescription" class="form-input" rows="3" required></textarea>
+  </div>
+  <div class="form-group">
+    <label for="articleContent">Conteúdo</label>
+    <textarea id="articleContent" class="form-input" rows="10"></textarea>
+    <small class="form-help-text">Você pode usar HTML básico para formatação.</small>
+  </div>
+  <div class="form-group">
+    <label for="articleType">Tipo de Conteúdo</label>
+    <select id="articleType" class="form-input" required>
+    <option value="activity">Artigo Detalhado</option>
+    <option value="knowledgeBase">Base de Conhecimento</option>
+  </select>
+  </div>
+  <div class="modal-actions">
+    <button type="button" class="btn btn-secondary" onclick="$('#articleModal').removeClass('active')">Cancelar</button>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+  </div>
+</form>
+  </div>
+</div>
     </main>
   </div>
 
@@ -175,6 +221,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>

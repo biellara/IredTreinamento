@@ -1,290 +1,290 @@
-document.addEventListener('DOMContentLoaded', async function () {
-  const isAtividades = document.getElementById('activities-main-content') !== null;
-  const isConhecimento = document.getElementById('kb-main-content') !== null;
-  if (!isAtividades && !isConhecimento) return;
+// ativ-con.js
 
-  const mainContent = document.getElementById(isAtividades ? 'activities-main-content' : 'kb-main-content');
-  const articleTemplate = document.getElementById('article-template');
-  const categoriesTemplate = document.getElementById('categories-template');
-  const searchInput = document.getElementById(isAtividades ? 'activities-search-input' : 'kb-search-input');
-  const pageHeader = document.querySelector('.kb-header');
-  const globalBackButton = document.querySelector('body > a.back-button');
+let allContent = [];
+let currentModalType = '';
+let dataLoaded = false;
+const converter = new showdown.Converter({ tables: true, strikethrough: true });
+const CACHE_KEY = 'centralData';
+const CACHE_EXPIRATION_MINUTES = 10;
 
-  const techAssistantModal = document.getElementById('techAssistantModal');
-  const closeTechAssistantModalBtn = document.getElementById('closeTechAssistantModalBtn');
-  const explainForMeBtn = document.getElementById('explainForMeBtn');
-  const explainForCustomerBtn = document.getElementById('explainForCustomerBtn');
-  const techTopicContent = document.getElementById('tech-topic-content');
-  const techAssistantLoader = document.getElementById('tech-assistant-loader');
-  const techAssistantResults = document.getElementById('tech-assistant-results');
-  const techAssistantOutput = document.getElementById('tech-assistant-output');
-  const resultsTitle = techAssistantResults?.querySelector('.results-title');
+// Cria spinner global se não existir
+function ensureGlobalSpinner() {
+  if (!document.getElementById('global-loading')) {
+    const spinner = document.createElement('div');
+    spinner.id = 'global-loading';
+    spinner.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #b91c1c;
+      z-index: 9998;
+    `;
+    spinner.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 0.5rem;"></i> Carregando...';
+    document.body.appendChild(spinner);
+  }
+}
 
-  let knowledgeData = [];
-  let allArticles = [];
-
-  const converter = new showdown.Converter({
-    extensions: [() => [{
-      type: 'output',
-      regex: /<blockquote>\s*<p>\[!(NOTE|WARNING|DANGER)\]/g,
-      replace: (match, type) => {
-        const lType = type.toLowerCase();
-        const icon = lType === 'warning' ? 'fa-triangle-exclamation' : lType === 'danger' ? 'fa-hand' : 'fa-circle-info';
-        return `<div class="callout ${lType}"><i class="callout-icon fa-solid ${icon}"></i><div class="callout-content">`;
-      }
-    }, {
-      type: 'output', regex: /<\/p>\s*<\/blockquote>/g, replace: '</div></div>'
-    }]],
-    strikethrough: true, tables: true
-  });
-
-async function loadData() {
+// Valida cache local
+function getCachedData() {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (!cached) return null;
   try {
-    // Carrega sempre o conteúdo principal
-    const contentResponse = await fetch('/api/getContent');
-    if (!contentResponse.ok) throw new Error('Erro ao buscar dados principais.');
-    const contentData = await contentResponse.json();
-
-    let combined = [...contentData];
-
-    if (isAtividades) {
-  const token = localStorage.getItem('token');
-
-    console.log('Todos os dados combinados:', combined);
-
-  if (!token) {
-    console.error('Token não encontrado. Usuário não autenticado.');
-    throw new Error('Usuário não autenticado. Token ausente.');
+    const parsed = JSON.parse(cached);
+    const age = (Date.now() - parsed.timestamp) / (1000 * 60); // minutos
+    if (age > CACHE_EXPIRATION_MINUTES) return null;
+    return parsed.data;
+  } catch (e) {
+    return null;
   }
+}
 
-  const quizzesResponse = await fetch('/api/getQuiz', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  });
-
-  if (quizzesResponse.status === 401) {
-    throw new Error('Token inválido ou expirado. Faça login novamente.');
-  }
-
-  if (!quizzesResponse.ok) {
-    throw new Error('Erro ao buscar quizzes.');
-  }
-
-  const quizzesData = await quizzesResponse.json();
-
-  const quizzesFormatted = quizzesData.map(q => ({
-    ...q,
-    type: 'quiz',
-    description: q.description || 'Quiz de treinamento.',
-    category: q.category || 'Quizzes'
+function setCachedData(data) {
+  localStorage.setItem(CACHE_KEY, JSON.stringify({
+    data,
+    timestamp: Date.now()
   }));
-
-  combined = [...combined, ...quizzesFormatted];
 }
 
-    const isActivity = doc => doc.type === (isAtividades ? 'activity' : 'knowledgeBase') || (isAtividades && doc.type === 'quiz');
-    const filtered = combined.filter(isActivity);
-    console.log('Filtrados:', filtered);
+// Carrega dados ao iniciar
+window.addEventListener('DOMContentLoaded', async () => {
+  ensureGlobalSpinner();
+  const loading = document.getElementById('global-loading');
+  if (loading) loading.style.display = 'flex';
 
-    if (filtered.length === 0) {
-      throw new Error(isAtividades ? 'Nenhuma atividade encontrada.' : 'Nenhum artigo encontrado.');
-    }
-
-    allArticles = filtered;
-
-    knowledgeData = filtered.reduce((acc, article) => {
-      let category = acc.find(c => c.category === article.category);
-      if (!category) {
-        category = { category: article.category, articles: [] };
-        acc.push(category);
-      }
-      category.articles.push(article);
-      return acc;
-    }, []);
-
-    checkURLAndRender();
-
-  } catch (err) {
-    console.error(err);
-    mainContent.innerHTML = `<p><strong>Erro:</strong> ${err.message}</p>`;
-  }
-}
-
-  function renderCategories(categories = knowledgeData) {
-    const templateNode = categoriesTemplate.content.cloneNode(true);
-    const categoriesContainer = templateNode.querySelector('#categories-container');
-    categoriesContainer.innerHTML = '';
-    mainContent.innerHTML = '';
-
-    categories.forEach(category => {
-      if (category.articles.length > 0) {
-        categoriesContainer.appendChild(buildCategorySection(category));
-      }
-    });
-
-    mainContent.appendChild(templateNode);
-    addCardListeners();
-  }
-
-  function buildCategorySection(category) {
-    const articlesHTML = category.articles.map(article => `
-      <a href="#" class="kb-article-card" data-id="${article.id}">
-        <h3 class="kb-article-title">${article.title}</h3>
-        <p class="kb-article-desc">${article.description}</p>
-      </a>`).join('');
-
-    const section = document.createElement('section');
-    const iconHTML = category.icon ? `<i class="fa-solid ${category.icon}"></i>` : '';
-    section.innerHTML = `<h2 class="kb-category-title">${iconHTML}${category.category}</h2><div class="kb-category-grid">${articlesHTML}</div>`;
-    return section;
-  }
-
-  async function renderArticle(articleId) {
-    const articleData = allArticles.find(a => a.id === articleId);
-    if (!articleData) {
-      mainContent.innerHTML = '<p>Artigo não encontrado.</p>';
-      return;
-    }
-
-    try {
-      const response = await fetch(`./articles/${articleData.file}`);
-      if (!response.ok) throw new Error(`Arquivo '${articleData.file}' não encontrado.`);
-      const markdownContent = await response.text();
-      const htmlContent = converter.makeHtml(markdownContent);
-
-      const templateNode = articleTemplate.content.cloneNode(true);
-      templateNode.querySelector('.article-title').textContent = articleData.title;
-      templateNode.querySelector('.article-content').innerHTML = htmlContent;
-
-      mainContent.innerHTML = '';
-      mainContent.appendChild(templateNode);
-
-      mainContent.querySelector('.back-button')?.addEventListener('click', () => window.history.back());
-
-      mainContent.querySelector('.tech-assistant-button')?.addEventListener('click', () => {
-        const topic = `${articleData.title}\n\n${articleData.description}`;
-        if (techTopicContent) techTopicContent.textContent = topic;
-        if (techAssistantResults) techAssistantResults.style.display = 'none';
-        if (techAssistantLoader) techAssistantLoader.style.display = 'none';
-        if (techAssistantModal) techAssistantModal.classList.add('visible');
-      });
-    } catch (error) {
-      mainContent.innerHTML = `<p><strong>Erro:</strong> ${error.message}</p>`;
-    }
-  }
-
-  searchInput?.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase().trim();
-    if (searchTerm.length < 2) {
-      renderCategories();
-      return;
-    }
-
-    const filteredArticles = allArticles.filter(article =>
-      article.title.toLowerCase().includes(searchTerm) ||
-      article.description.toLowerCase().includes(searchTerm)
-    );
-
-    const filteredCategories = knowledgeData.map(category => ({
-      ...category,
-      articles: category.articles.filter(article => filteredArticles.some(fa => fa.id === article.id))
-    })).filter(category => category.articles.length > 0);
-
-    renderCategories(filteredCategories);
-  });
-
-  function addCardListeners() {
-    document.querySelectorAll('.kb-article-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        e.preventDefault();
-        const articleId = card.dataset.id;
-        const articleData = allArticles.find(a => a.id === articleId);
-
-        if (isAtividades && articleData?.type === 'quiz') {
-          window.location.href = `quiz.html?id=${articleId}`;
-        } else {
-          window.history.pushState({ id: articleId }, '', `?id=${articleId}`);
-          checkURLAndRender();
-        }
-      });
-    });
-  }
-
-  function checkURLAndRender() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const articleId = urlParams.get('id');
-
-    if (articleId) {
-      const articleData = allArticles.find(a => a.id === articleId);
-      if (isAtividades && articleData?.type === 'quiz') {
-        window.location.href = `quiz.html?id=${articleId}`;
-        return;
-      }
-
-      if (pageHeader) pageHeader.style.display = 'none';
-      if (globalBackButton) globalBackButton.style.display = 'none';
-      renderArticle(articleId);
+  try {
+    const cached = getCachedData();
+    if (cached) {
+      allContent = cached;
+      dataLoaded = true;
     } else {
-      if (pageHeader) pageHeader.style.display = 'block';
-      if (globalBackButton) globalBackButton.style.display = 'inline-flex';
-      renderCategories();
+      const [contentResponse, quizResponse] = await Promise.all([
+        fetch('/api/getContent'),
+        fetch('/api/getQuiz', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        })
+      ]);
+
+      if (!contentResponse.ok) throw new Error('Erro ao carregar conteúdos principais.');
+      if (!quizResponse.ok) throw new Error('Erro ao carregar quizzes.');
+
+      const contentData = await contentResponse.json();
+      const quizData = await quizResponse.json();
+
+      const quizzesFormatted = quizData.map(q => ({
+        ...q,
+        type: 'quiz',
+        description: q.description || 'Quiz de treinamento',
+        category: q.category || 'Quizzes'
+      }));
+
+      allContent = [...contentData, ...quizzesFormatted];
+      setCachedData(allContent);
+      dataLoaded = true;
     }
+  } catch (err) {
+    console.error('[INIT] Erro ao carregar conteúdos:', err);
+  } finally {
+    if (loading) loading.style.display = 'none';
+  }
+});
+
+function openModal(type) {
+  if (!dataLoaded) {
+    showLoadingInsideModal();
+    return;
   }
 
-  window.addEventListener('popstate', () => checkURLAndRender());
+  currentModalType = type;
 
-  closeTechAssistantModalBtn?.addEventListener('click', () => techAssistantModal?.classList.remove('visible'));
-  explainForMeBtn?.addEventListener('click', () => handleTechAssistant("Explique para mim, de forma resumida e técnica"));
-  explainForCustomerBtn?.addEventListener('click', () => handleTechAssistant("Gere uma fala simples e empática e também resumida para explicar isso a um cliente leigo"));
-  techAssistantModal?.addEventListener('click', (e) => {
-    if (e.target === techAssistantModal) techAssistantModal.classList.remove('visible');
+  const modal = document.getElementById('modalTipo');
+  const searchInput = document.getElementById('modalSearch');
+
+  if (!modal || !searchInput) return;
+
+  modal.classList.add('active');
+  searchInput.value = '';
+  renderModalList();
+  searchInput.addEventListener('input', renderModalList);
+
+  const titleMap = {
+    activity: 'Artigos Aprofundados',
+    knowledgeBase: 'Base de Conhecimento',
+    quiz: 'Quizzes'
+  };
+  document.getElementById('modalTitle').textContent = titleMap[type] || 'Conteúdo';
+}
+
+function showLoadingInsideModal() {
+  const modal = document.getElementById('modalTipo');
+  const list = document.getElementById('modalList');
+  const searchInput = document.getElementById('modalSearch');
+  const title = document.getElementById('modalTitle');
+
+  if (modal && list && searchInput && title) {
+    modal.classList.add('active');
+    list.innerHTML = '<div style="text-align:center; padding:2rem;"><i class="fa-solid fa-circle-notch fa-spin"></i> Carregando...</div>';
+    searchInput.disabled = true;
+    title.textContent = 'Carregando...';
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('modalTipo');
+  const list = document.getElementById('modalList');
+  if (modal && list) {
+    modal.classList.remove('active');
+    list.innerHTML = '';
+  }
+}
+
+function renderModalList() {
+  const list = document.getElementById('modalList');
+  const search = document.getElementById('modalSearch').value.toLowerCase().trim();
+  list.innerHTML = '';
+
+  const filtered = allContent.filter(item =>
+    item.type === currentModalType &&
+    (item.title.toLowerCase().includes(search) || item.description.toLowerCase().includes(search))
+  );
+
+  const now = Date.now();
+  filtered.forEach(item => {
+    const updatedAt = item.updatedAt?.toDate?.() || new Date(item.updatedAt);
+    const diffDays = Math.floor((now - new Date(updatedAt)) / (1000 * 60 * 60 * 24));
+    const tag = diffDays <= 5 ? '<span class="new">🆕</span>' : '';
+
+    const entry = document.createElement('div');
+    entry.className = 'item-entry';
+    entry.innerHTML = `<strong>${item.title}</strong> ${tag}<br><small>${item.description}</small>`;
+    entry.addEventListener('click', () => {
+      const page = currentModalType === 'quiz' ? 'quiz.html' : 'artigo.html';
+      window.location.href = `${page}?id=${item.id}`;
+    });
+    list.appendChild(entry);
   });
 
-  async function handleTechAssistant(promptPrefix) {
-    const topic = techTopicContent?.textContent?.trim();
-    if (!topic) return;
-    const fullPrompt = `${promptPrefix}:\n${topic}`;
+  document.getElementById('modalSearch').disabled = false;
+}
 
-    techAssistantLoader.style.display = 'block';
-    techAssistantResults.style.display = 'none';
+// Assistente Técnico Universal
+function abrirAssistente() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay active';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  `;
 
-    try {
-      const responseText = await callGeminiAPI(fullPrompt);
-      techAssistantOutput.innerHTML = converter.makeHtml(responseText);
-      if (resultsTitle) resultsTitle.textContent = promptPrefix.split(',')[0];
-      techAssistantResults.style.display = 'block';
-    } catch (err) {
-      techAssistantOutput.innerHTML = `<p style="color: var(--brand-red);"><strong>Erro:</strong> ${err.message}</p>`;
-      if (resultsTitle) resultsTitle.textContent = "Erro";
-      techAssistantResults.style.display = 'block';
-    } finally {
-      techAssistantLoader.style.display = 'none';
-    }
+  modal.innerHTML = `
+    <div style="
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      font-family: 'Inter', sans-serif;
+      position: relative;
+    ">
+      <button onclick="this.closest('.modal-overlay').remove()" style="
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.25rem;
+        background: none;
+        border: none;
+        color: #991b1b;
+        cursor: pointer;
+      ">&times;</button>
+
+      <h2 style="color: #991b1b; font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">
+        <i class="fa-solid fa-brain"></i> Assistente Técnico
+      </h2>
+
+      <textarea id="techQuestion" placeholder="Digite sua dúvida técnica..." style="
+        width: 95%;
+        height: 100px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        resize: true;
+        margin-bottom: 1rem;
+        font-family: inherit;
+      "></textarea>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button onclick="enviarPergunta('Explique tecnicamente')" style="
+          flex: 1;
+          background: #991b1b;
+          color: white;
+          padding: 0.6rem;
+          border: none;
+          border-radius: 0.4rem;
+          font-weight: 600;
+          cursor: pointer;
+        ">Explicação Técnica</button>
+
+        <button onclick="enviarPergunta('Explique para o cliente')" style="
+          flex: 1;
+          background: #b91c1c;
+          color: white;
+          padding: 0.6rem;
+          border: none;
+          border-radius: 0.4rem;
+          font-weight: 600;
+          cursor: pointer;
+        ">Explicação para o Cliente</button>
+      </div>
+
+      <div id="techAssistantResposta" class="prose" style="margin-top: 2rem; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+async function enviarPergunta(promptPrefix) {
+  const pergunta = document.getElementById('techQuestion')?.value.trim();
+  if (!pergunta) return;
+
+  const respostaDiv = document.getElementById('techAssistantResposta');
+  respostaDiv.innerHTML = '<p><em>Processando resposta com IA...</em></p>';
+
+  try {
+    const payload = {
+      contents: [{ role: "user", parts: [{ text: `${promptPrefix}:
+${pergunta}` }] }]
+    };
+
+    const response = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error(await response.text());
+    const result = await response.json();
+    const resposta = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta.';
+    respostaDiv.innerHTML = converter.makeHtml(resposta);
+  } catch (err) {
+    respostaDiv.innerHTML = `<p style="color:red;"><strong>Erro:</strong> ${err.message}</p>`;
   }
-
-  async function callGeminiAPI(prompt) {
-    const apiEndpoint = '/api/gemini';
-    try {
-      const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`Erro ${response.status}: ${errorBody}`);
-      }
-      const result = await response.json();
-      return result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta.';
-    } catch (error) {
-      console.error("Erro ao chamar Gemini API:", error);
-      throw error;
-    }
-  }
-
-  loadData();
-});
+}
