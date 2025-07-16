@@ -1,171 +1,201 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <title>Leitura | IRED</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <title>Leitura | IRED</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      background: #f4f6f9;
-    }
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        background: #f4f6f9;
+      }
 
-    #global-loading {
-      position: fixed;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      font-size: 1.2rem;
-      color: #b91c1c;
-    }
+      #global-loading {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-size: 1.2rem;
+        color: #b91c1c;
+      }
 
-    .prose {
-      max-width: 800px;
-      margin: 4rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      line-height: 1.7;
-    }
+      .prose {
+        max-width: 800px;
+        margin: 4rem auto;
+        background: #fff;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        line-height: 1.7;
+      }
 
-    .prose h1, .prose h2, .prose h3 {
-      color: #b91c1c;
-      margin-top: 2rem;
-    }
+      .prose h1,
+      .prose h2,
+      .prose h3 {
+        color: #b91c1c;
+        margin-top: 2rem;
+      }
 
-    .prose p {
-      margin: 1rem 0;
-    }
+      .prose p {
+        margin: 1rem 0;
+      }
 
-    .prose ul {
-      margin-left: 1.5rem;
-    }
+      .prose ul {
+        margin-left: 1.5rem;
+      }
 
-    .prose blockquote {
-      border-left: 4px solid #ccc;
-      padding-left: 1rem;
-      font-style: italic;
-      color: #555;
-      margin: 1rem 0;
-    }
+      .prose blockquote {
+        border-left: 4px solid #ccc;
+        padding-left: 1rem;
+        font-style: italic;
+        color: #555;
+        margin: 1rem 0;
+      }
 
-    .callout {
-      margin: 1rem 0;
-      padding: 1rem;
-      border-left: 5px solid;
-      border-radius: 0.5rem;
-      background-color: #f9f9f9;
-    }
+      .callout {
+        margin: 1rem 0;
+        padding: 1rem;
+        border-left: 5px solid;
+        border-radius: 0.5rem;
+        background-color: #f9f9f9;
+      }
 
-    .callout.note    { border-color: #007acc; background-color: #e6f0fb; }
-    .callout.warning { border-color: #ffcc00; background-color: #fffbe6; }
-    .callout.danger  { border-color: #d9534f; background-color: #fdecea; }
+      .callout.note {
+        border-color: #007acc;
+        background-color: #e6f0fb;
+      }
+      .callout.warning {
+        border-color: #ffcc00;
+        background-color: #fffbe6;
+      }
+      .callout.danger {
+        border-color: #d9534f;
+        background-color: #fdecea;
+      }
 
-    .callout .callout-icon {
-      margin-right: 0.5rem;
-      color: inherit;
-    }
+      .callout .callout-icon {
+        margin-right: 0.5rem;
+        color: inherit;
+      }
 
-    .callout-content {
-      display: inline;
-    }
-  </style>
-</head>
-<body>
+      .callout-content {
+        display: inline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="global-loading">
+      <i class="fa-solid fa-circle-notch fa-spin"></i> Carregando conteúdo...
+    </div>
 
-  <div id="global-loading">
-    <i class="fa-solid fa-circle-notch fa-spin"></i> Carregando conteúdo...
-  </div>
+    <div id="articleContent" class="prose"></div>
 
-  <div id="articleContent" class="prose"></div>
+    <div style="text-align: center; margin-top: 2rem">
+      <a
+        href="atividades.html"
+        class="back-button"
+        style="
+          position: fixed;
+          top: 1rem;
+          left: 1rem;
+          background: #e0e7ff;
+          color: #b91c1c;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          text-decoration: none;
+          font-weight: bold;
+          z-index: 100;
+        "
+      >
+        <i class="fa fa-arrow-left"></i> Voltar
+      </a>
+    </div>
 
-  <div style="text-align: center; margin-top: 2rem;">
-  <a href="atividades.html" class="back-button" style="
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    background: #e0e7ff;
-    color: #b91c1c;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    font-weight: bold;
-    z-index: 100;">
-    <i class="fa fa-arrow-left"></i> Voltar
-  </a>
-</div>
+    <script>
+      const contentDiv = document.getElementById("articleContent");
+      const loader = document.getElementById("global-loading");
+      const converter = new showdown.Converter({
+        tables: true,
+        strikethrough: true,
+        extensions: [
+          () => [
+            {
+              type: "output",
+              regex: /<blockquote>\\s*<p>\\[!(NOTE|WARNING|DANGER)\\]/g,
+              replace: (match, type) => {
+                const lType = type.toLowerCase();
+                const icon =
+                  lType === "warning"
+                    ? "fa-triangle-exclamation"
+                    : lType === "danger"
+                    ? "fa-hand"
+                    : "fa-circle-info";
+                return `<div class="callout ${lType}"><i class="callout-icon fa-solid ${icon}"></i><div class="callout-content">`;
+              },
+            },
+            {
+              type: "output",
+              regex: /<\/p>\\s*<\/blockquote>/g,
+              replace: "</div></div>",
+            },
+          ],
+        ],
+      });
 
-
-  <script>
-    const contentDiv = document.getElementById('articleContent');
-    const loader = document.getElementById('global-loading');
-    const converter = new showdown.Converter({
-      tables: true,
-      strikethrough: true,
-      extensions: [() => [{
-        type: 'output',
-        regex: /<blockquote>\\s*<p>\\[!(NOTE|WARNING|DANGER)\\]/g,
-        replace: (match, type) => {
-          const lType = type.toLowerCase();
-          const icon = lType === 'warning' ? 'fa-triangle-exclamation' : lType === 'danger' ? 'fa-hand' : 'fa-circle-info';
-          return `<div class="callout ${lType}"><i class="callout-icon fa-solid ${icon}"></i><div class="callout-content">`;
+      function getCachedData() {
+        const cached = localStorage.getItem("centralData");
+        if (!cached) return null;
+        try {
+          const parsed = JSON.parse(cached);
+          return parsed.data;
+        } catch (e) {
+          return null;
         }
-      }, {
-        type: 'output',
-        regex: /<\/p>\\s*<\/blockquote>/g,
-        replace: '</div></div>'
-      }]]
-    });
-
-    function getCachedData() {
-      const cached = localStorage.getItem('centralData');
-      if (!cached) return null;
-      try {
-        const parsed = JSON.parse(cached);
-        return parsed.data;
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function loadArticle() {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
-      if (!id) {
-        contentDiv.innerHTML = '<p><strong>Erro:</strong> Artigo não especificado.</p>';
-        loader.style.display = 'none';
-        return;
       }
 
-      const data = getCachedData();
-      if (!data) {
-        contentDiv.innerHTML = '<p><strong>Erro:</strong> Dados não encontrados em cache.</p>';
-        loader.style.display = 'none';
-        return;
+      async function loadArticle() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        if (!id) {
+          contentDiv.innerHTML =
+            "<p><strong>Erro:</strong> Artigo não especificado.</p>";
+          loader.style.display = "none";
+          return;
+        }
+
+        const data = getCachedData();
+        if (!data) {
+          contentDiv.innerHTML =
+            "<p><strong>Erro:</strong> Dados não encontrados em cache.</p>";
+          loader.style.display = "none";
+          return;
+        }
+
+        const article = data.find((item) => item.id === id);
+        if (!article) {
+          contentDiv.innerHTML =
+            "<p><strong>Erro:</strong> Conteúdo não encontrado.</p>";
+          loader.style.display = "none";
+          return;
+        }
+
+        const html = converter.makeHtml(article.content);
+        contentDiv.innerHTML = `<h1>${article.title}</h1>${html}`;
+        loader.style.display = "none";
       }
 
-      const article = data.find(item => item.id === id);
-      if (!article) {
-        contentDiv.innerHTML = '<p><strong>Erro:</strong> Conteúdo não encontrado.</p>';
-        loader.style.display = 'none';
-        return;
-      }
-
-      const html = converter.makeHtml(article.content);
-      contentDiv.innerHTML = `<h1>${article.title}</h1>${html}`;
-      loader.style.display = 'none';
-    }
-
-    loadArticle();
-  </script>
-</body>
+      loadArticle();
+    </script>
+  </body>
 </html>
