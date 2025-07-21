@@ -13,10 +13,14 @@ const quizFeedbackEl = document.getElementById('quiz-feedback-area');
 const quizFeedbackMessage = document.getElementById('quiz-feedback-message');
 const nextButton = document.getElementById('quiz-next-button');
 const restartButton = document.getElementById('quiz-restart-button');
+// Novo elemento para status da submissão
+const submissionStatusEl = document.getElementById('quiz-submission-status');
 
 let currentQuiz = null;
 let currentQuestionIndex = 0;
 let score = 0;
+// Array para armazenar as respostas detalhadas do usuário
+let userAnswers = [];
 
 async function loadQuizData() {
   try {
@@ -28,6 +32,7 @@ async function loadQuizData() {
 
     if (!quizId) return showError('Nenhum ID de quiz foi fornecido.');
 
+    // Usando a rota que você já tem para buscar um quiz
     const response = await fetch(`/api/getQuiz?id=${quizId}`, {
       method: 'GET',
       headers: {
@@ -58,10 +63,10 @@ async function loadQuizData() {
   }
 }
 
-
 function startQuiz() {
   currentQuestionIndex = 0;
   score = 0;
+  userAnswers = []; // Limpa as respostas anteriores ao reiniciar
   loadingView.style.display = 'none';
   resultsView.style.display = 'none';
   mainView.style.display = 'block';
@@ -92,17 +97,25 @@ function displayQuestion() {
 
 function handleAnswer(selectedIndex, selectedButton) {
   const questionData = currentQuiz.questions[currentQuestionIndex];
-  const correctAnswerText = questionData.answer; // aqui é texto, não índice
-
-  // Descobre índice correto buscando a opção que bate com o texto da resposta
+  const correctAnswerText = questionData.answer;
   const correctIndex = questionData.options.findIndex(opt => opt === correctAnswerText);
+  const isCorrect = selectedIndex === correctIndex;
+
+  // --- ATUALIZAÇÃO: Armazena a resposta do usuário ---
+  userAnswers.push({
+    question: questionData.question,
+    selectedOption: questionData.options[selectedIndex],
+    correctAnswer: correctAnswerText,
+    isCorrect: isCorrect
+  });
+  // --- FIM DA ATUALIZAÇÃO ---
 
   document.querySelectorAll('.quiz-option-button').forEach((btn, idx) => {
     btn.disabled = true;
     if (idx === correctIndex) btn.classList.add('correct');
   });
 
-  if (selectedIndex === correctIndex) {
+  if (isCorrect) {
     score++;
     selectedButton.classList.add('correct');
     quizFeedbackMessage.textContent = 'Resposta Correta!';
@@ -127,7 +140,8 @@ function showNextQuestion() {
   }
 }
 
-function showResults() {
+// --- ATUALIZAÇÃO: Função agora é async para lidar com a API ---
+async function showResults() {
   mainView.style.display = 'none';
   resultsView.style.display = 'block';
 
@@ -144,7 +158,55 @@ function showResults() {
   } else {
     feedbackTextEl.textContent = 'Bom esforço. Recomendamos revisar os artigos relacionados e tentar novamente.';
   }
+
+  // Envia os resultados para o backend
+  await submitQuizResults(percentage);
 }
+
+// --- ATUALIZAÇÃO: Nova função para enviar os resultados ---
+async function submitQuizResults(finalScore) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    submissionStatusEl.textContent = 'Erro: Usuário não autenticado.';
+    submissionStatusEl.className = 'submission-status error';
+    return;
+  }
+
+  submissionStatusEl.textContent = 'Salvando resultado...';
+  submissionStatusEl.className = 'submission-status loading';
+  submissionStatusEl.style.display = 'block';
+
+  const payload = {
+    quizId: currentQuiz.id,
+    answers: userAnswers,
+    score: finalScore,
+  };
+
+  try {
+    const response = await fetch('/api/getQuiz?action=submit', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Falha ao enviar o resultado.');
+    }
+
+    submissionStatusEl.textContent = 'Resultado salvo com sucesso!';
+    submissionStatusEl.className = 'submission-status success';
+
+  } catch (error) {
+    console.error('Erro ao salvar resultado do quiz:', error);
+    submissionStatusEl.textContent = `Erro ao salvar: ${error.message}`;
+    submissionStatusEl.className = 'submission-status error';
+  }
+}
+// --- FIM DA ATUALIZAÇÃO ---
 
 function showError(message) {
   loadingView.style.display = 'none';

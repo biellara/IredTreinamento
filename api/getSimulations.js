@@ -1,4 +1,4 @@
-// Ficheiro: /api/simulations.js
+// Ficheiro: /api/getSimulations.js
 
 const { db } = require('../firebase'); // Ajuste o caminho se necessário
 const jwt = require('jsonwebtoken');
@@ -36,17 +36,20 @@ module.exports = async (req, res) => {
   // ======================================================
   if (req.method === 'POST') {
     try {
-      const { scenario, chatHistory, feedback } = req.body;
+      // ATUALIZAÇÃO: Recebe 'feedbackScores' diretamente do frontend.
+      const { scenario, chatHistory, feedback, feedbackScores } = req.body;
 
       if (!scenario || !chatHistory || !Array.isArray(chatHistory)) {
         return res.status(400).json({ error: 'Campos obrigatórios ausentes ou inválidos.' });
       }
 
       const newSimulation = {
-        userId: decoded.id, // ID do utilizador vindo do token
+        userId: decoded.id,
         scenario,
         chatHistory,
         feedback: feedback || null,
+        // ATUALIZAÇÃO: Salva o objeto de notas recebido.
+        feedbackScores: feedbackScores || { empathy: 0, clarity: 0, resolution: 0 },
         createdAt: new Date().toISOString(),
       };
 
@@ -83,14 +86,15 @@ module.exports = async (req, res) => {
       };
 
       let query;
-      // Visão de Administrador/Relatório (com filtros)
       if (view === 'admin') {
+        if (decoded.role !== 'admin') {
+            return res.status(403).json({ error: 'Acesso negado.' });
+        }
         query = db.collection('simulations');
         if (scenario) query = query.where('scenario', '==', scenario);
         if (start) query = query.where('createdAt', '>=', start);
         if (end) query = query.where('createdAt', '<=', end);
       } 
-      // Visão Padrão (simulações do próprio utilizador)
       else {
         query = db.collection('simulations').where('userId', '==', decoded.id);
       }
@@ -112,6 +116,5 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Se o método não for GET nem POST, retorna o erro 405
   return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
 };

@@ -1,79 +1,134 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiz Interativo | IRED</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Interativo | IRED</title>
 
-  <!-- Fontes e Ícones -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-  <!-- CSS Customizado -->
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <script src="auth.js"></script>
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Estilos para o status da submissão */
+      .submission-status {
+        margin-top: 1.5rem;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        text-align: center;
+        display: none; /* Começa escondido */
+      }
+      .submission-status.loading {
+        background-color: #eef2ff;
+        color: #4f46e5;
+      }
+      .submission-status.success {
+        background-color: #dcfce7;
+        color: #16a34a;
+      }
+      .submission-status.error {
+        background-color: #fee2e2;
+        color: #dc2626;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="auth.js"></script>
     <script>
-    protectPage(); // Redireciona para login.html se não tiver token
+      protectPage(); // Redireciona para login.html se não tiver token
     </script>
-  <a href="atividades.html" class="back-button">
-    <i class="fa-solid fa-arrow-left"></i>
-    <span>Voltar para Atividades</span>
-  </a>
+    <a href="atividades.html" class="back-button">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Voltar para Atividades</span>
+    </a>
 
-  <main class="page-container">
-    <div id="quiz-container" class="hub-content">
-      
-      <!-- Tela de Carregamento -->
-      <div id="quiz-loading" class="view active">
-        <h1 class="hub-title">Carregando Quiz...</h1>
-        <i class="fa-solid fa-circle-notch fa-spin" style="color: var(--brand-red); font-size: 2.25rem; margin-top: 1rem;"></i>
-      </div>
+    <main class="page-container">
+      <div id="quiz-container" class="hub-content">
+        <!-- Tela de Carregamento -->
+        <div id="quiz-loading" class="view active">
+          <h1 class="hub-title">Carregando Quiz...</h1>
+          <i
+            class="fa-solid fa-circle-notch fa-spin"
+            style="
+              color: var(--brand-red);
+              font-size: 2.25rem;
+              margin-top: 1rem;
+            "
+          ></i>
+        </div>
 
-      <!-- Tela do Quiz -->
-      <div id="quiz-main-view" class="view">
-        <header class="quiz-header">
-          <h1 id="quiz-title" class="hub-title"></h1>
-          <p id="quiz-progress" class="hub-subtitle"></p>
-        </header>
+        <!-- Tela do Quiz -->
+        <div id="quiz-main-view" class="view">
+          <header class="quiz-header">
+            <h1 id="quiz-title" class="hub-title"></h1>
+            <p id="quiz-progress" class="hub-subtitle"></p>
+          </header>
 
-        <div id="quiz-card" class="card" style="text-align: left;">
-          <h2 id="quiz-question" class="quiz-question-title"></h2>
+          <div id="quiz-card" class="card" style="text-align: left">
+            <h2 id="quiz-question" class="quiz-question-title"></h2>
 
-          <div id="quiz-options-area" class="quiz-options-grid">
-            <!-- Opções de resposta serão injetadas aqui -->
+            <div id="quiz-options-area" class="quiz-options-grid">
+              <!-- Opções de resposta serão injetadas aqui -->
+            </div>
+
+            <div
+              id="quiz-feedback-area"
+              class="quiz-feedback"
+              style="margin-top: 1rem; display: none"
+            >
+              <p id="quiz-feedback-message"></p>
+            </div>
+
+            <button
+              id="quiz-next-button"
+              class="button button-red"
+              style="display: none; margin-top: 2rem"
+            >
+              Próxima Pergunta
+            </button>
           </div>
+        </div>
 
-          <div id="quiz-feedback-area" class="quiz-feedback" style="margin-top: 1rem; display: none;">
-            <p id="quiz-feedback-message"></p>
+        <!-- Tela de Resultados -->
+        <div id="quiz-results-view" class="view">
+          <header>
+            <h1 class="hub-title">Quiz Finalizado!</h1>
+          </header>
+          <div class="card" style="margin-top: 2rem">
+            <h2 style="font-size: 1.5rem; font-weight: 700">Seu Resultado:</h2>
+            <p id="quiz-score"></p>
+            <p
+              id="quiz-feedback-text"
+              style="font-size: 1.125rem; color: var(--text-light)"
+            ></p>
+
+            <!-- ATUALIZAÇÃO: Elemento para mostrar o status do envio -->
+            <p id="quiz-submission-status" class="submission-status"></p>
+
+            <button
+              id="quiz-restart-button"
+              class="button button-blue"
+              style="margin-top: 2rem"
+            >
+              Tentar Novamente
+            </button>
           </div>
-
-          <button id="quiz-next-button" class="button button-red" style="display: none; margin-top: 2rem;">
-            Próxima Pergunta
-          </button>
         </div>
       </div>
+    </main>
 
-      <!-- Tela de Resultados -->
-      <div id="quiz-results-view" class="view">
-        <header>
-          <h1 class="hub-title">Quiz Finalizado!</h1>
-        </header>
-        <div class="card" style="margin-top: 2rem;">
-          <h2 style="font-size: 1.5rem; font-weight: 700;">Seu Resultado:</h2>
-          <p id="quiz-score"></p>
-          <p id="quiz-feedback-text" style="font-size: 1.125rem; color: var(--text-light);"></p>
-          <button id="quiz-restart-button" class="button button-blue" style="margin-top: 2rem;">Tentar Novamente</button>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <!-- Script principal -->
-  <script type="module" src="quiz.js"></script>
-</body>
+    <!-- Script principal -->
+    <script src="quiz.js"></script>
+  </body>
 </html>
