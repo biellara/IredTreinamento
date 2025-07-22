@@ -5,14 +5,30 @@
   <title>Login</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="auth-page-container">
-  <div class="auth-card">
-    <h1>Login</h1>
-    <form id="login-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Senha" required />
-      <button type="submit">Entrar</button>
-    </form>
+<body>
+  <div class="auth-page-container">
+    <div class="auth-card">
+      <h1>Login</h1>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Senha" required />
+        <button type="submit">Entrar</button>
+        <p id="error-msg" class="error-message"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal troca de senha -->
+  <div id="passwordChangeModal">
+    <div class="modal-content">
+      <h2>Troque sua senha</h2>
+      <form id="passwordChangeForm">
+        <input type="password" id="newPassword" placeholder="Nova senha (mín. 6 caracteres)" required />
+        <input type="password" id="confirmPassword" placeholder="Confirmar nova senha" required />
+        <p id="passwordChangeError" class="error-message"></p>
+        <button type="submit" id="btnAtualizarSenha">Atualizar Senha</button>
+      </form>
+    </div>
   </div>
   <script src="auth.js"></script>
 </body>

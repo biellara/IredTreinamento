@@ -1,85 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hub de Atendimento | IRED</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hub de Atendimento | IRED</title>
 
-  <!-- Fontes e Ícones -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-  />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-  <!-- CSS Customizado -->
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .top-right {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      left: auto;
-    }
-  </style>
-</head>
-<body>
-  <script src="auth.js"></script>
-  <script>
-    protectPage(); // Redireciona para login.html se não tiver token
-  </script>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .top-right {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        left: auto;
+        display: flex;
+        gap: 0.75rem;
+      }
 
-  <!-- ATUALIZAÇÃO: Botão alterado para um link para a página "Minha Conta" -->
-  <a href="minha-conta.html" class="back-button top-right">
-    <i class="fa-solid fa-user-circle"></i>
-    <span>Minha Conta</span>
-  </a>
+      .logout-button,
+      .admin-button {
+        background-color: #d32f2f;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        transition: background-color 0.3s ease;
+      }
 
-  <!-- Container principal da página inicial -->
-  <main class="page-container">
-    <div class="hub-content">
-      <!-- Logo -->
-      <img
-        src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png"
-        alt="Logo da IRED"
-        class="hub-logo"
-        onerror="this.style.display='none'"
-      />
+      .logout-button:hover {
+        background-color: #b71c1c;
+      }
 
-      <!-- Mensagem de Boas-Vindas -->
-      <h1 class="hub-title">Seja bem-vindo ao SAC!</h1>
-      <p class="hub-subtitle">O que você precisa hoje?</p>
+      .admin-button {
+        background-color: #1976d2;
+      }
 
-      <!-- Barra de Pesquisa Inteligente -->
-      <div class="search-container" style="max-width: 28rem; margin-left: auto; margin-right: auto;">
-        <i class="fa-solid fa-search search-icon"></i>
-        <input
-          type="text"
-          id="universalSearch"
-          placeholder="Busque por um problema, procedimento ou política..."
-          class="search-input"
-        />
-      </div>
+      .admin-button:hover {
+        background-color: #0d47a1;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="auth.js"></script>
+    <script>
+      protectPage(); // Redireciona se não tiver token
+    </script>
 
-      <!-- Menu de Navegação Principal -->
-      <nav class="hub-nav">
-        <a href="ferramentas.html" class="hub-button">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>Ferramentas de IA</span>
-        </a>
-        <a href="atividades.html" class="hub-button">
-          <i class="fa-solid fa-pencil-alt"></i>
-          <span>Artigos e Atividades</span>
-        </a>
-      </nav>
+    <div class="top-right">
+      <button onclick="logout()" class="logout-button">
+        <i class="fa-solid fa-sign-out-alt"></i> Sair
+      </button>
+      <button id="adminOnlyButton" class="admin-button" style="display: none;">
+        <i class="fa-solid fa-user-shield"></i> Painel Admin
+      </button>
     </div>
-  </main>
 
-  <script src="script.js"></script>
-</body>
+    <main class="page-container">
+      <div class="hub-content">
+        <img
+          src="https://i.ibb.co/fVwtcjjz/IRED-internet-VERMELHO.png"
+          alt="Logo da IRED"
+          class="hub-logo"
+          onerror="this.style.display='none'"
+        />
+
+        <h1 class="hub-title">Seja bem-vindo ao SAC!</h1>
+        <p class="hub-subtitle">O que você precisa hoje?</p>
+
+        <div
+          class="search-container"
+          style="max-width: 28rem; margin-left: auto; margin-right: auto"
+        >
+          <i class="fa-solid fa-search search-icon"></i>
+          <input
+            type="text"
+            id="universalSearch"
+            placeholder="Busque por um problema, procedimento ou política..."
+            class="search-input"
+          />
+        </div>
+
+        <nav class="hub-nav">
+          <a href="ferramentas.html" class="hub-button">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Ferramentas de IA</span>
+          </a>
+          <a href="atividades.html" class="hub-button">
+            <i class="fa-solid fa-pencil-alt"></i>
+            <span>Artigos e Atividades</span>
+          </a>
+        </nav>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
 </html>

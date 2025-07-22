@@ -1,8 +1,8 @@
-// O seu ficheiro de login, agora atualizado para incluir a 'role' no token.
+// login.js
 
-const bcrypt = require('bcryptjs'); // Recomendo usar bcryptjs para evitar problemas de compilação
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db } = require('../../firebase'); // Assumindo que o seu ficheiro firebase.js está dois níveis acima
+const { db } = require('../../firebase');
 
 module.exports = async (req, res) => {
   const { email, password } = req.body;
@@ -35,10 +35,6 @@ module.exports = async (req, res) => {
       role: user.role
     };
 
-    // --- LOG DE DEPURAÇÃO ADICIONADO ---
-    // Vamos verificar se a JWT_SECRET está a ser carregada corretamente aqui.
-    console.log('[API de Login] Gerando token com JWT_SECRET:', process.env.JWT_SECRET ? `...${process.env.JWT_SECRET.slice(-6)}` : 'NÃO DEFINIDA');
-
     const token = jwt.sign(
       tokenPayload,
       process.env.JWT_SECRET,
@@ -47,7 +43,9 @@ module.exports = async (req, res) => {
 
     res.status(200).json({
       message: 'Login realizado com sucesso.',
-      token
+      token,
+      senhaTemporaria: user.senhaTemporaria || false,
+      userId: userId
     });
 
   } catch (error) {

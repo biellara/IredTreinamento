@@ -689,8 +689,11 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  width: 100vw;
   background: linear-gradient(to bottom, var(--background-accent), var(--background-body) 40vh);
   padding: 2rem;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .auth-card {
@@ -698,10 +701,13 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 1rem;
   padding: 2.5rem 2rem;
-  max-width: 400px;
+  max-width: 350px;
   width: 100%;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   animation: fadeIn 0.4s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .auth-card h1 {
@@ -770,4 +776,96 @@ body {
     padding: 2rem 1.25rem;
   }
 }
+
+
+/* ------------------------- */
+/* Estilo do modal de senha  */
+/* ------------------------- */
+
+#passwordChangeModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#passwordChangeModal.active {
+  display: flex;
+}
+
+#passwordChangeModal .modal-content {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: slideDown 0.3s ease-out;
+}
+
+#passwordChangeModal .modal-content h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--brand-red);
+  text-align: center;
+}
+
+#passwordChangeModal input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background-color: var(--background-body);
+}
+
+#passwordChangeModal input[type="password"]:focus {
+  border-color: var(--brand-red);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(196, 0, 0, 0.15);
+}
+
+#passwordChangeModal button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--brand-red);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-weight: 600;
+}
+
+#passwordChangeModal button:hover {
+  background-color: var(--brand-red-dark);
+}
+
+#passwordChangeError {
+  color: var(--brand-red);
+  font-size: 0.95rem;
+  text-align: center;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
