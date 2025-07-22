@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Mostrar botão de admin se role for 'admin'
   const role = localStorage.getItem("role");
-  if (role === "admin") {
+  if (role === "admin", "supervisor") {
     document.getElementById("adminOnlyButton").style.display = "inline-block";
   }
 
