@@ -672,6 +672,7 @@ $(document).ready(function () {
           { data: "content", title: "Conteúdo", render: (data) => { const plainText = $("<div>").html(data).text(); return plainText.length > 80 ? plainText.substring(0, 80) + "..." : plainText; } },
           { data: "createdAt", title: "Criado em", render: (data) => { if (!data) return "N/A"; const seconds = data.seconds || data._seconds; if (seconds) { return new Date(seconds * 1000).toLocaleDateString("pt-BR"); } const parsed = new Date(data); return isNaN(parsed) ? "N/A" : parsed.toLocaleDateString("pt-BR"); } },
           { data: "id", title: "Ações", orderable: false, render: (data, type, row) => `<button class="btn-action edit-btn" data-id="${row.id}" title="Editar"><i class="fas fa-edit"></i></button> <button class="btn-action delete-btn" data-id="${row.id}" title="Excluir"><i class="fas fa-trash"></i></button>` },
+          { data: "userId", title: "Criado por", render: (data) => data || "Desconhecido" }
         ],
         language: dataTableLanguage,
       });

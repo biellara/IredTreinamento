@@ -262,10 +262,10 @@
         color: #111;
       }
       .chat-bubble.loading {
-          background-color: #f1f0f0;
-          color: #888;
-          align-self: flex-start;
-          font-style: italic;
+        background-color: #f1f0f0;
+        color: #888;
+        align-self: flex-start;
+        font-style: italic;
       }
       #modalAssistente.modal {
         position: fixed;
@@ -291,8 +291,11 @@
         padding-bottom: 1rem;
         border-bottom: 1px solid #eee;
       }
-       #modalAssistente .modal-header button {
-        border: none; background: none; font-size: 1.5rem; cursor: pointer;
+      #modalAssistente .modal-header button {
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        cursor: pointer;
       }
       #modalAssistente .modal-footer {
         display: flex;
@@ -306,7 +309,7 @@
         padding: 0.75rem;
         margin-right: 0.5rem;
       }
-       #modalAssistente .modal-footer button {
+      #modalAssistente .modal-footer button {
         background: var(--brand-red);
         color: white;
         border: none;
@@ -380,13 +383,17 @@
           <h2>Assistente Virtual</h2>
           <button onclick="fecharAssistente()">&times;</button>
         </div>
-        
+
         <div id="chatContainer" class="chat-container">
           <!-- As mensagens serão adicionadas aqui via JavaScript -->
         </div>
 
         <div class="modal-footer">
-          <input type="text" id="mensagemAssistente" placeholder="Digite sua pergunta...">
+          <input
+            type="text"
+            id="mensagemAssistente"
+            placeholder="Digite sua pergunta..."
+          />
           <button id="btnEnviarAssistente">Enviar</button>
         </div>
       </div>

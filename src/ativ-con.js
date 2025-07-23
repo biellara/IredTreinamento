@@ -368,3 +368,20 @@ document.addEventListener("DOMContentLoaded", () => {
     enviarBtn.addEventListener("click", lidarComEnvio);
   }
 });
+
+// Fechar modais ao clicar fora do conteúdo
+window.addEventListener('click', (e) => {
+  document.querySelectorAll('.modal, .modal-overlay').forEach(modal => {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+    }
+  });
+});
+
+// Fechar modais ao clicar em botões de fechar com classe modal-close-btn
+document.querySelectorAll('.modal-close-btn, .modal .modal-header button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modal = btn.closest('.modal, .modal-overlay');
+    if (modal) modal.classList.remove('active');
+  });
+});

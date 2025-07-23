@@ -55,6 +55,7 @@ async function createArticle(req, res) {
       type: data.type === "knowledgeBase" ? "knowledgeBase" : "activity",
       createdAt: new Date(),
       updatedAt: new Date(),
+      userId: req.user?.uid || null,
     };
 
     await db.collection("content").doc(slug).set(newArticle);

@@ -106,6 +106,30 @@
       </div>
     </main>
 
+    <div class="tech-assistant-fab" onclick="abrirAssistente()">
+      <i class="fa-solid fa-brain"></i>
+    </div>
+
+    <!-- Modal do Assistente Virtual -->
+    <div id="modalAssistente" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Assistente Virtual</h2>
+          <button onclick="fecharAssistente()">&times;</button>
+        </div>
+        
+        <div id="chatContainer" class="chat-container">
+          <!-- As mensagens serão adicionadas aqui via JavaScript -->
+        </div>
+
+        <div class="modal-footer">
+          <input type="text" id="mensagemAssistente" placeholder="Digite sua pergunta...">
+          <button id="btnEnviarAssistente">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src= "ativ-con.js"></script> 
     <script src="script.js"></script>
   </body>
 </html>
