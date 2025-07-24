@@ -1043,6 +1043,14 @@ $(document).ready(function () {
     $("#deleteModal").addClass("active");
   });
 
+      $(document).on("input", ".option-input", function () {
+        const text = $(this).val();
+        const radio = $(this)
+          .closest(".option-entry")
+          .find('input[type="radio"]');
+            radio.val(text);
+    });
+
   $("#quizForm").on("submit", async function (e) {
     e.preventDefault();
     const quizId = $("#quizId").val();
@@ -1063,14 +1071,6 @@ $(document).ready(function () {
       }
     });
 
-    $(document).on("input", ".option-input", function () {
-      const text = $(this).val();
-      const radio = $(this)
-        .closest(".option-entry")
-        .find('input[type="radio"]');
-      radio.val(text);
-    });
-
     if (questions.length === 0) {
       alert(
         "Por favor, adicione pelo menos uma pergunta válida com duas opções e uma resposta correta."
@@ -1079,6 +1079,7 @@ $(document).ready(function () {
     }
 
     const data = {
+      id: ($("#quizTitle").val()),
       title: $("#quizTitle").val(),
       description: $("#quizDescription").val(),
       questions: questions,
