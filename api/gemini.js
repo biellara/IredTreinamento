@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Corpo da requisição inválido.', detalhe: parseError.message });
   }
 
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
   try {
     const response = await fetch(apiUrl, {

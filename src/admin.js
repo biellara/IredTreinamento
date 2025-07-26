@@ -1079,7 +1079,6 @@ $(document).ready(function () {
     }
 
     const data = {
-      id: ($("#quizTitle").val()),
       title: $("#quizTitle").val(),
       description: $("#quizDescription").val(),
       questions: questions,
