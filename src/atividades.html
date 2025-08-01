@@ -226,98 +226,6 @@
         font-weight: bold;
         z-index: 100;
       }
-      .chat-container {
-        height: 400px;
-        overflow-y: auto;
-        padding: 10px;
-        border-top: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .chat-bubble {
-        max-width: 80%;
-        padding: 10px 15px;
-        border-radius: 18px;
-        line-height: 1.5;
-        word-wrap: break-word;
-      }
-      .chat-bubble.user {
-        background-color: #007bff;
-        color: white;
-        align-self: flex-end;
-        border-bottom-right-radius: 4px;
-      }
-      .chat-bubble.model {
-        background-color: #f1f0f0;
-        color: #333;
-        align-self: flex-start;
-        border-bottom-left-radius: 4px;
-      }
-      .chat-bubble.model p {
-        margin: 0;
-      }
-      .chat-bubble.model strong {
-        color: #111;
-      }
-      .chat-bubble.loading {
-        background-color: #f1f0f0;
-        color: #888;
-        align-self: flex-start;
-        font-style: italic;
-      }
-      #modalAssistente.modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-      #modalAssistente.modal.active {
-        display: flex;
-      }
-      #modalAssistente .modal-content {
-        display: flex;
-        flex-direction: column;
-        max-height: 80vh;
-      }
-      #modalAssistente .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #eee;
-      }
-      #modalAssistente .modal-header button {
-        border: none;
-        background: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-      }
-      #modalAssistente .modal-footer {
-        display: flex;
-        padding-top: 1rem;
-        border-top: 1px solid #eee;
-      }
-      #modalAssistente .modal-footer input {
-        flex-grow: 1;
-        border: 1px solid #ccc;
-        border-radius: 0.5rem;
-        padding: 0.75rem;
-        margin-right: 0.5rem;
-      }
-      #modalAssistente .modal-footer button {
-        background: var(--brand-red);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: bold;
-        cursor: pointer;
-      }
     </style>
   </head>
   <body>
@@ -372,43 +280,11 @@
       </div>
     </div>
 
-    <div class="tech-assistant-fab" onclick="abrirAssistente()">
-      <i class="fa-solid fa-brain"></i>
-    </div>
-
-    <!-- Modal do Assistente Virtual -->
-    <div id="modalAssistente" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Assistente Virtual</h2>
-          <button onclick="fecharAssistente()">&times;</button>
-        </div>
-
-        <div id="chatContainer" class="chat-container">
-          <!-- As mensagens serão adicionadas aqui via JavaScript -->
-        </div>
-
-        <div class="modal-footer">
-          <input
-            type="text"
-            id="mensagemAssistente"
-            placeholder="Digite sua pergunta..."
-          />
-          <button id="btnEnviarAssistente">Enviar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- O botão duplicado foi removido daqui -->
-
     <a href="index.html" class="back-button">
       <i class="fa fa-arrow-left"></i> Voltar
     </a>
 
-    <script>
-      // Funções inline movidas para o arquivo JS principal para melhor organização
-    </script>
-
     <script src="ativ-con.js"></script>
+    <script src="assistente-loader.js" defer></script>
   </body>
 </html>

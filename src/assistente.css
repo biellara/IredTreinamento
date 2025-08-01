@@ -1,0 +1,183 @@
+/* style.css */
+
+/* Reset e fonte */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Botão flutuante */
+.tech-assistant-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 30px;
+  height: 30px;
+  background-color: #b91c1c;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tech-assistant-fab:hover {
+  transform: scale(1.1);
+}
+
+.tech-assistant-fab i {
+  font-size: 1.25rem;
+}
+
+/* Overlay do modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal.show {
+  display: flex;
+}
+
+/* Container principal */
+.modal-content {
+  background-color: #fff;
+  border: 1px solid #b91c1c;  /* borda fina vermelha */
+  border-radius: 0.25rem;     /* cantos menores */
+  max-width: 600px;
+  width: 90%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabeçalho */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #242424;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.modal-header button:hover {
+  opacity: 0.8;
+}
+
+/* Área de mensagens */
+.chat-container {
+  flex: 1;
+  background-color: #f9fafb00;
+  padding: 0.75rem 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bolhas de mensagem estilo WhatsApp, mas em tons de vermelho/branco */
+.chat-message {
+  position: relative;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+  max-width: 75%;
+  line-height: 1.4;
+}
+
+/* Assistente (bolha branca com borda vermelha) */
+.chat-message.assistant {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid #b91c1c;
+  color: #000;
+}
+.chat-message.assistant::before {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  left: -0.4rem;
+  border-top: 0.4rem solid transparent;
+  border-right: 0.4rem solid #fff;
+  border-bottom: 0.4rem solid transparent;
+}
+
+/* Usuário (bolha vermelha com texto branco) */
+.chat-message.user {
+  align-self: flex-end;
+  background: #b91c1c;
+  color: #fff;
+}
+.chat-message.user::after {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  right: -0.4rem;
+  border-top: 0.4rem solid transparent;
+  border-left: 0.4rem solid #b91c1c;
+  border-bottom: 0.4rem solid transparent;
+}
+
+/* Mensagem em loading */
+.chat-message.loading {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+/* Rodapé / área de digitação */
+.modal-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modal-footer input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 1.5rem;
+  outline: none;
+}
+
+.modal-footer input:focus {
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 2px rgba(185,28,28,0.3);
+}
+
+.modal-footer button {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #b91c1c;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-footer button:hover {
+  opacity: 0.7;
+}

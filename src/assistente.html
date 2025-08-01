@@ -1,151 +1,20 @@
-<!-- Botão flutuante -->
-<button id="assistenteBtn" class="assistente-flutuante">
-  🤖
-</button>
 
-<!-- Modal do Assistente -->
-<div id="assistenteModal" class="assistente-modal hidden">
-  <div class="assistente-header">
-    <span>Assistente Virtual</span>
-    <button id="fecharAssistente">&times;</button>
-  </div>
-  <div id="chatArea" class="assistente-chat"></div>
-  <div class="assistente-input">
-    <input type="text" id="userInput" placeholder="Digite sua pergunta..." />
-    <button id="enviarPergunta">Enviar</button>
-  </div>
+<div class="tech-assistant-fab">
+  <i class="fa-solid fa-brain"></i>
 </div>
 
-<style>
-  .assistente-flutuante {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #2d89ff;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  }
-
-  .assistente-modal {
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 350px;
-    max-height: 500px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 999;
-  }
-
-  .assistente-modal.hidden {
-    display: none;
-  }
-
-  .assistente-header {
-    background-color: #2d89ff;
-    color: white;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .assistente-chat {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    background: #f8f8f8;
-    font-size: 0.9rem;
-  }
-
-  .assistente-input {
-    display: flex;
-    border-top: 1px solid #ccc;
-  }
-
-  .assistente-input input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-  }
-
-  .assistente-input button {
-    padding: 10px 15px;
-    background: #2d89ff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-
-  .mensagem {
-    margin: 8px 0;
-  }
-
-  .usuario {
-    text-align: right;
-    color: #333;
-  }
-
-  .assistente {
-    text-align: left;
-    color: #2d89ff;
-  }
-</style>
-
-<script>
-  const btn = document.getElementById('assistenteBtn');
-  const modal = document.getElementById('assistenteModal');
-  const fechar = document.getElementById('fecharAssistente');
-  const chatArea = document.getElementById('chatArea');
-  const input = document.getElementById('userInput');
-  const enviar = document.getElementById('enviarPergunta');
-
-  btn.addEventListener('click', () => {
-    modal.classList.toggle('hidden');
-  });
-
-  fechar.addEventListener('click', () => {
-    modal.classList.add('hidden');
-  });
-
-  enviar.addEventListener('click', () => {
-    const pergunta = input.value.trim();
-    if (!pergunta) return;
-
-    renderMensagem(pergunta, 'usuario');
-    input.value = '';
-    
-    fetch('/api/gemini', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pergunta })
-    })
-    .then(res => res.json())
-    .then(data => {
-      renderMensagem(data.resposta, 'assistente');
-    })
-    .catch(() => {
-      renderMensagem('Desculpe, houve um erro ao buscar a resposta.', 'assistente');
-    });
-  });
-
-  function renderMensagem(texto, classe) {
-    const msg = document.createElement('div');
-    msg.classList.add('mensagem', classe);
-    msg.textContent = texto;
-    chatArea.appendChild(msg);
-    chatArea.scrollTop = chatArea.scrollHeight;
-  }
-</script>
+<div id="modalAssistente" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Assistente Virtual</h2>
+      <button>&times;</button>
+    </div>
+    <div id="chatContainer" class="chat-container">
+      <div class="chat-message assistant">Olá! Como posso ajudar hoje?</div>
+    </div>
+    <div class="modal-footer">
+      <input type="text" id="mensagemAssistente" placeholder="Digite sua pergunta..." />
+      <button id="btnEnviarAssistente"><i class="fa fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
