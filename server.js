@@ -40,4 +40,10 @@ if (require.main === module) {
   });
 }
 
+import addProcedimento from './api/procedimentos/add.js';
+app.post('/api/procedimentos', addProcedimento);
+import searchProcedimentos from './api/procedimentos/search.js';
+app.post('/api/procedimentos/search', searchProcedimentos);
+
+
 module.exports = serverless(app);
