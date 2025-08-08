@@ -1,5 +1,6 @@
 $(document).ready(function () {
   let easyMDE = null;
+  let procedureIdToDelete = null;
   let usersTable, articlesTable, quizzesTable, quizResultsTable;
   let simulationsChart, quizPerformanceChart, quizPassFailChart;
 
@@ -134,6 +135,52 @@ $(document).ready(function () {
     if (viewName === "articles" && !articlesLoaded) {
       await loadArticles();
       articlesLoaded = true;
+    }
+    if (viewName === "procedures" && !window.proceduresLoaded) {
+      await loadProcedures();
+      window.proceduresLoaded = true;
+    }
+  }
+
+  async function loadProcedures() {
+    try {
+      const response = await secureFetch("/api/procedimentos", {
+        method: "POST",
+        body: JSON.stringify({ action: "list" }),
+      });
+
+      const procedimentos = await response.json();
+
+      if ($.fn.DataTable.isDataTable("#proceduresTable")) {
+        $("#proceduresTable").DataTable().destroy();
+      }
+
+      $("#proceduresTable").DataTable({
+        data: procedimentos,
+        responsive: true,
+        columns: [
+          { data: "titulo", title: "Título" },
+          { data: "descricao", title: "Descrição" },
+          {
+            data: "tags",
+            title: "Tags",
+            render: (tags) => tags.join(", "),
+          },
+          {
+            data: null,
+            title: "Ações",
+            orderable: false,
+            render: (data, type, row) =>
+              `<button class="btn-action edit-procedure" data-id="${row.id}"><i class="fas fa-edit"></i></button>
+             <button class="btn-action delete-procedure" data-id="${row.id}"><i class="fas fa-trash"></i></button>`,
+          },
+        ],
+        language: dataTableLanguage,
+      });
+
+      window.allProcedures = procedimentos;
+    } catch (error) {
+      console.error("Erro ao carregar procedimentos:", error);
     }
   }
 
@@ -1043,13 +1090,11 @@ $(document).ready(function () {
     $("#deleteModal").addClass("active");
   });
 
-      $(document).on("input", ".option-input", function () {
-        const text = $(this).val();
-        const radio = $(this)
-          .closest(".option-entry")
-          .find('input[type="radio"]');
-            radio.val(text);
-    });
+  $(document).on("input", ".option-input", function () {
+    const text = $(this).val();
+    const radio = $(this).closest(".option-entry").find('input[type="radio"]');
+    radio.val(text);
+  });
 
   $("#quizForm").on("submit", async function (e) {
     e.preventDefault();
@@ -1223,7 +1268,13 @@ $(document).ready(function () {
 
   $("#confirmDeleteBtn").on("click", async function () {
     const currentView = window.location.hash;
-    let url, successCallback, errorMsg;
+    let url = null;
+    let method = "DELETE";
+    let body = null;
+    let successCallback = null;
+    let errorMsg = null;
+
+    const procedureIdFromDOM = $("#deleteModal").data("procedure-id");
 
     if (currentView.includes("users") && userIdToDelete) {
       url = `/api/users?id=${userIdToDelete}`;
@@ -1240,22 +1291,32 @@ $(document).ready(function () {
       successCallback = loadQuizzesManagement;
       errorMsg = "Não foi possível excluir o quiz.";
       quizIdToDelete = null;
+    } else if (currentView.includes("procedures") && procedureIdFromDOM) {
+      url = `/api/procedimentos`;
+      method = "POST";
+      body = JSON.stringify({ action: "delete", id: procedureIdFromDOM });
+      successCallback = loadProcedures;
+      errorMsg = "Não foi possível excluir o procedimento.";
     }
 
     if (url) {
       try {
-        const response = await secureFetch(url, { method: "DELETE" });
+        const response = await secureFetch(url, { method, body });
         if (!response.ok) throw new Error("Falha ao excluir.");
+
         $("#deleteModal").removeClass("active");
+        $("#deleteModal").removeData("procedure-id");
+
         if (successCallback === loadUsers) allUsers = [];
         if (successCallback === loadQuizzesManagement) allQuizzes = [];
+        if (successCallback === loadProcedures) window.proceduresLoaded = false;
+
         await successCallback();
       } catch (error) {
-        if (error.message && !error.message.includes("Token")) alert(errorMsg);
+        alert(errorMsg);
       }
     }
   });
-
   $("#cancelBtn, #userModal .modal-close-btn").on("click", () =>
     $("#userModal").removeClass("active")
   );
@@ -1267,7 +1328,172 @@ $(document).ready(function () {
   );
 
   setupAdminPage();
+
+$("#addProcedureBtn").on("click", () => openProcedureModal());
+
+function openProcedureModal() {
+  $("#procedureForm")[0].reset();
+  $("#procedureId").val("");
+  $("#procedureModalTitle").text("Adicionar Procedimento");
+  $("#procedureModal").addClass("active");
+}
+
+// Submit (envia somente: titulo, descricao, tags, conteudo)
+$("#procedureForm").on("submit", async function (e) {
+  e.preventDefault();
+
+  const titulo = $("#procedureTitle").val().trim();
+  const descricao = $("#procedureDescription").val().trim();
+  const tags = $("#procedureTags")
+    .val()
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+  const conteudo = $("#procedureContent").val().trim();
+
+  if (!titulo || !descricao || !conteudo) {
+    alert("Preencha título, descrição e conteúdo.");
+    return;
+  }
+
+  const id = $("#procedureId").val();
+  const action = id ? "update" : "add";
+
+  const $submit = $("#procedureForm button[type=submit]");
+  $submit.prop("disabled", true).text("Salvando...");
+
+  try {
+    const response = await secureFetch("/api/procedimentos", {
+      method: "POST",
+      body: JSON.stringify({ id, action, titulo, descricao, tags, conteudo }),
+    });
+
+    if (!response.ok) throw new Error("Erro ao salvar procedimento.");
+    alert("Procedimento salvo com sucesso!");
+    $("#procedureModal").removeClass("active");
+    $("#procedureForm")[0].reset();
+    await loadProcedures();
+  } catch (error) {
+    console.error("Erro ao salvar procedimento:", error);
+    alert("Falha ao salvar o procedimento.");
+  } finally {
+    $submit.prop("disabled", false).text("Salvar");
+  }
 });
+
+// Importação (aceita conteudo OU passos legado)
+let importedProcedures = [];
+
+$("#importProceduresBtn").on("click", () => {
+  $("#jsonFileInput").val("");
+  $("#jsonPreview").text("");
+  importedProcedures = [];
+  $("#importProceduresModal").addClass("active");
+});
+
+$("#jsonFileInput").on("change", function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      importedProcedures = JSON.parse(e.target.result);
+      if (!Array.isArray(importedProcedures)) throw new Error("JSON inválido.");
+
+      const preview = importedProcedures
+        .map((p, i) => `${i + 1}. ${p.titulo} (${(p.tags || []).join(", ") || "sem tags"})`)
+        .join("\n");
+
+      $("#jsonPreview").text(preview);
+    } catch (error) {
+      $("#jsonPreview").text("Erro ao ler o arquivo: " + error.message);
+      importedProcedures = [];
+    }
+  };
+  reader.readAsText(file);
+});
+
+$("#importProceduresConfirmBtn").on("click", async () => {
+  if (!Array.isArray(importedProcedures) || importedProcedures.length === 0) {
+    alert("Nenhum procedimento válido para importar.");
+    return;
+  }
+
+  const procedimentosValidos = importedProcedures.filter(
+    (p) =>
+      p.titulo &&
+      p.descricao &&
+      Array.isArray(p.tags) &&
+      (
+        (typeof p.conteudo === "string" && p.conteudo.trim().length > 0) ||
+        Array.isArray(p.passos)
+      )
+  );
+
+  if (procedimentosValidos.length === 0) {
+    alert("Nenhum procedimento válido encontrado no JSON.");
+    return;
+  }
+
+  try {
+    for (const p of procedimentosValidos) {
+      const conteudo = (typeof p.conteudo === "string" && p.conteudo.trim())
+        ? p.conteudo
+        : (p.passos || []).map((s, i) => `${i + 1}. ${s}`).join("\n"); // migra legado p/ texto numerado
+
+      await secureFetch("/api/procedimentos", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "add",
+          titulo: p.titulo,
+          descricao: p.descricao,
+          tags: p.tags,
+          conteudo
+        }),
+      });
+    }
+
+    alert(`Importação concluída: ${procedimentosValidos.length} procedimentos adicionados.`);
+    $("#importProceduresModal").removeClass("active");
+    importedProcedures = [];
+    await loadProcedures();
+  } catch (error) {
+    console.error("Erro ao importar procedimentos:", error);
+    alert("Erro durante a importação. Verifique o console.");
+  }
+});
+
+// Edição (carrega conteudo, ou migra de passos legado)
+$(document).on("click", ".edit-procedure", function () {
+  const id = $(this).data("id");
+  const proc = window.allProcedures.find((p) => p.id === id);
+  if (!proc) return;
+
+  $("#procedureForm")[0].reset();
+  $("#procedureId").val(proc.id);
+  $("#procedureTitle").val(proc.titulo);
+  $("#procedureDescription").val(proc.descricao);
+  $("#procedureTags").val((proc.tags || []).join(", "));
+
+  const conteudo = (proc.conteudo && proc.conteudo.trim())
+    ? proc.conteudo.trim()
+    : (Array.isArray(proc.passos) ? proc.passos.map((s, i) => `${i + 1}. ${s}`).join("\n") : "");
+
+  $("#procedureContent").val(conteudo);
+  $("#procedureModalTitle").text("Editar Procedimento");
+  $("#procedureModal").addClass("active");
+});
+
+// Exclusão (inalterado)
+$(document).on("click", ".delete-procedure", function () {
+  const id = $(this).data("id");
+  $("#deleteModal").data("procedure-id", id);
+  $("#deleteModal .modal-title").text("Confirmar Exclusão de Procedimento");
+  $("#deleteModal p").text("Deseja realmente excluir este procedimento?");
+  $("#deleteModal").addClass("active");
+});
+
 
 window.openSimulationModal = function () {
   $("#simulationModal").addClass("active");
@@ -1280,4 +1506,5 @@ window.openHistoryModal = function () {
 };
 window.closeHistoryModal = function () {
   $("#historyModal").removeClass("active");
-};
+  };
+});

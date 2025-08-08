@@ -51,16 +51,19 @@
         const res = await fetch("/api/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: conversationHistory }),
-        });
+          body: JSON.stringify({
+            assistente: true,
+            pergunta
+          })
+      });
 
         if (!res.ok) {
           const err = await res.json();
           throw new Error(`API ${res.status}: ${err.error || res.statusText}`);
         }
 
-        const { candidates } = await res.json();
-        const textoResposta = candidates?.[0]?.content?.parts?.[0]?.text;
+        const json = await res.json();
+        const textoResposta = json.resposta || json.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (textoResposta) {
           conversationHistory.push({ role: "model", parts: [{ text: textoResposta }] });
@@ -68,6 +71,7 @@
         } else {
           adicionarMensagemAoChat("Erro: resposta inesperada.", "assistant");
         }
+
 
       } catch {
         adicionarMensagemAoChat("Erro na comunicação com o servidor.", "assistant");
